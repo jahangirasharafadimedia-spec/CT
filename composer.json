@@ -1,0 +1,44 @@
+{
+    "type": "project",
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require": {
+        "composer/installers": "*",
+        "johnpbloch/wordpress": "*",
+        "wpackagist-plugin/svg-support": "*",
+        "wpackagist-plugin/wordpress-seo": "*",
+        "wpackagist-plugin/wp-mail-smtp": "^4.4",
+        "ffraenz/private-composer-installer": "^5.0"
+    },
+    "require-dev": {
+        "wp-sync-db/wp-sync-db": "master",
+        "wp-sync-db/wp-sync-db-media-files": "master"
+    },
+    "extra": {
+        "wordpress-install-dir": "wp",
+        "installer-paths": {
+            "wp-content/plugins/{$name}": [
+                "type:wordpress-plugin"
+            ],
+            "wp-content/mu-plugins/": [
+                "type:wordpress-muplugin"
+            ],
+            "wp-content/themes/{$name}": [
+                "type:wordpress-theme"
+            ]
+        }
+    },
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://wpackagist.org"
+        }
+    ],
+    "config": {
+        "allow-plugins": {
+            "johnpbloch/wordpress-core-installer": true,
+            "composer/installers": true,
+            "ffraenz/private-composer-installer": true
+        }
+    }
+}
