@@ -53,5 +53,13 @@ get_header();
 	</main><!-- #main -->
 
 <?php
-get_sidebar();
+if ( is_front_page() && is_active_sidebar( 'homepage-widget' ) ) :
+	?>
+	<aside id="secondary" class="widget-area">
+		<?php dynamic_sidebar( 'homepage-widget' ); ?>
+	</aside><!-- #secondary -->
+	<?php
+else :
+	get_sidebar();
+endif;
 get_footer();

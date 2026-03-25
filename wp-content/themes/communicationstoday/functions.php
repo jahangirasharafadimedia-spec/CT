@@ -131,8 +131,135 @@ function communicationstoday_widgets_init() {
 			'after_title'   => '</h2>',
 		)
 	);
+
+	register_sidebar(
+		array(
+			'name'          => esc_html__( 'Homepage widget', 'communicationstoday' ),
+			'id'            => 'homepage-widget',
+			'description'   => esc_html__( 'Widgets added here will appear on the site front page.', 'communicationstoday' ),
+			// This sidebar is intended for inserting content directly into existing page markup.
+			// Keep wrappers empty so widgets can output the exact HTML structure needed.
+			'before_widget' => '',
+			'after_widget'  => '',
+			'before_title'  => '',
+			'after_title'   => '',
+		)
+	);
 }
 add_action( 'widgets_init', 'communicationstoday_widgets_init' );
+
+/**
+ * Homepage Stories Widget:
+ * Admin me category select karein, aur front page par us category ki latest 3 posts show hon.
+ */
+class Communicationstoday_Homepage_Stories_Widget extends WP_Widget {
+	public function __construct() {
+		parent::__construct(
+			'communicationstoday_homepage_stories',
+			esc_html__( 'Homepage Stories', 'communicationstoday' ),
+			array( 'description' => esc_html__( 'Shows latest 3 posts from selected category.', 'communicationstoday' ) )
+		);
+	}
+
+	public function form( $instance ) {
+		$category_id = isset( $instance['category_id'] ) ? (int) $instance['category_id'] : 0;
+
+		$categories = get_categories(
+			array(
+				'taxonomy'   => 'category',
+				'hide_empty' => false,
+			)
+		);
+		?>
+		<p>
+			<label for="<?php echo esc_attr( $this->get_field_id( 'category_id' ) ); ?>">
+				<?php esc_html_e( 'Select category', 'communicationstoday' ); ?>
+			</label>
+		</p>
+		<p>
+			<select class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'category_id' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'category_id' ) ); ?>">
+				<option value="0"><?php esc_html_e( 'Choose category', 'communicationstoday' ); ?></option>
+				<?php foreach ( $categories as $cat ) : ?>
+					<option value="<?php echo esc_attr( (int) $cat->term_id ); ?>" <?php selected( $category_id, (int) $cat->term_id ); ?>>
+						<?php echo esc_html( $cat->name ); ?>
+					</option>
+				<?php endforeach; ?>
+			</select>
+		</p>
+		<?php
+	}
+
+	public function update( $new_instance, $old_instance ) {
+		$instance = array();
+		$instance['category_id'] = isset( $new_instance['category_id'] ) ? absint( $new_instance['category_id'] ) : 0;
+		return $instance;
+	}
+
+	public function widget( $args, $instance ) {
+		$category_id = isset( $instance['category_id'] ) ? (int) $instance['category_id'] : 0;
+
+		if ( $category_id <= 0 ) {
+			// Keep front-page clean; no extra text inside story grid.
+			return;
+		}
+
+		$cat_name = get_cat_name( $category_id );
+		if ( empty( $cat_name ) ) {
+			return;
+		}
+
+		$query = new WP_Query(
+			array(
+				'post_type'           => 'post',
+				'cat'                 => $category_id,
+				'posts_per_page'      => 3,
+				'ignore_sticky_posts' => true,
+				'no_found_rows'       => true,
+			)
+		);
+
+		if ( ! $query->have_posts() ) {
+			wp_reset_postdata();
+			return;
+		}?>
+		<div class="stories-grid">
+<?php 
+		while ( $query->have_posts() ) :
+			$query->the_post();
+			$post_id = get_the_ID();
+
+			$thumb_url = get_the_post_thumbnail_url( $post_id, 'large' );
+			$title     = get_the_title( $post_id );
+			$link      = get_permalink( $post_id );
+			?>
+			<a href="<?php echo esc_url( $link ); ?>" class="story-card">
+				<div class="story-image">
+					<?php if ( ! empty( $thumb_url ) ) : ?>
+						<img src="<?php echo esc_url( $thumb_url ); ?>" alt="<?php echo esc_attr( $title ); ?>">
+					<?php endif; ?>
+				</div>
+				<div class="story-image-overlay">
+					<div class="story-content">
+						<span class="category-link"><?php echo esc_html( $cat_name ); ?></span>
+						<h3 class="story-title"><?php echo esc_html( $title ); ?></h3>
+					</div>
+				</div>
+			</a>
+			<?php
+		endwhile; ?>
+
+		 </div>
+		<?php
+		wp_reset_postdata();
+	}
+}
+
+add_action(
+	'widgets_init',
+	function() {
+		register_widget( 'Communicationstoday_Homepage_Stories_Widget' );
+	}
+);
 
 /**
  * Enqueue scripts and styles.
