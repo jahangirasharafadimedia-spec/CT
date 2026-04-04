@@ -49,7 +49,8 @@ function communicationstoday_setup() {
 	// This theme uses wp_nav_menu() in one location.
 	register_nav_menus(
 		array(
-			'menu-1' => esc_html__( 'Primary', 'communicationstoday' ),
+			'menu-1'        => esc_html__( 'Primary', 'communicationstoday' ),
+			'sidebar-popup' => esc_html__( 'Mobile / sidebar panel', 'communicationstoday' ),
 		)
 	);
 
@@ -114,152 +115,21 @@ function communicationstoday_content_width() {
 }
 add_action( 'after_setup_theme', 'communicationstoday_content_width', 0 );
 
-/**
- * Register widget area.
- *
- * @link https://developer.wordpress.org/themes/functionality/sidebars/#registering-a-sidebar
- */
-function communicationstoday_widgets_init() {
-	register_sidebar(
-		array(
-			'name'          => esc_html__( 'Sidebar', 'communicationstoday' ),
-			'id'            => 'sidebar-1',
-			'description'   => esc_html__( 'Add widgets here.', 'communicationstoday' ),
-			'before_widget' => '<section id="%1$s" class="widget %2$s">',
-			'after_widget'  => '</section>',
-			'before_title'  => '<h2 class="widget-title">',
-			'after_title'   => '</h2>',
-		)
-	);
-
-	register_sidebar(
-		array(
-			'name'          => esc_html__( 'Homepage widget', 'communicationstoday' ),
-			'id'            => 'homepage-widget',
-			'description'   => esc_html__( 'Widgets added here will appear on the site front page.', 'communicationstoday' ),
-			// This sidebar is intended for inserting content directly into existing page markup.
-			// Keep wrappers empty so widgets can output the exact HTML structure needed.
-			'before_widget' => '',
-			'after_widget'  => '',
-			'before_title'  => '',
-			'after_title'   => '',
-		)
-	);
-}
-add_action( 'widgets_init', 'communicationstoday_widgets_init' );
 
 /**
- * Homepage Stories Widget:
- * Admin me category select karein, aur front page par us category ki latest 3 posts show hon.
+ * Widgets & related theme hooks (sidebars, custom widgets, category image, think tank helpers).
  */
-class Communicationstoday_Homepage_Stories_Widget extends WP_Widget {
-	public function __construct() {
-		parent::__construct(
-			'communicationstoday_homepage_stories',
-			esc_html__( 'Homepage Stories', 'communicationstoday' ),
-			array( 'description' => esc_html__( 'Shows latest 3 posts from selected category.', 'communicationstoday' ) )
-		);
-	}
+require get_template_directory() . '/inc/functions/widgets.php';
 
-	public function form( $instance ) {
-		$category_id = isset( $instance['category_id'] ) ? (int) $instance['category_id'] : 0;
+/**
+ * Custom post types.
+ */
+require get_template_directory() . '/inc/post-types/register.php';
 
-		$categories = get_categories(
-			array(
-				'taxonomy'   => 'category',
-				'hide_empty' => false,
-			)
-		);
-		?>
-		<p>
-			<label for="<?php echo esc_attr( $this->get_field_id( 'category_id' ) ); ?>">
-				<?php esc_html_e( 'Select category', 'communicationstoday' ); ?>
-			</label>
-		</p>
-		<p>
-			<select class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'category_id' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'category_id' ) ); ?>">
-				<option value="0"><?php esc_html_e( 'Choose category', 'communicationstoday' ); ?></option>
-				<?php foreach ( $categories as $cat ) : ?>
-					<option value="<?php echo esc_attr( (int) $cat->term_id ); ?>" <?php selected( $category_id, (int) $cat->term_id ); ?>>
-						<?php echo esc_html( $cat->name ); ?>
-					</option>
-				<?php endforeach; ?>
-			</select>
-		</p>
-		<?php
-	}
-
-	public function update( $new_instance, $old_instance ) {
-		$instance = array();
-		$instance['category_id'] = isset( $new_instance['category_id'] ) ? absint( $new_instance['category_id'] ) : 0;
-		return $instance;
-	}
-
-	public function widget( $args, $instance ) {
-		$category_id = isset( $instance['category_id'] ) ? (int) $instance['category_id'] : 0;
-
-		if ( $category_id <= 0 ) {
-			// Keep front-page clean; no extra text inside story grid.
-			return;
-		}
-
-		$cat_name = get_cat_name( $category_id );
-		if ( empty( $cat_name ) ) {
-			return;
-		}
-
-		$query = new WP_Query(
-			array(
-				'post_type'           => 'post',
-				'cat'                 => $category_id,
-				'posts_per_page'      => 3,
-				'ignore_sticky_posts' => true,
-				'no_found_rows'       => true,
-			)
-		);
-
-		if ( ! $query->have_posts() ) {
-			wp_reset_postdata();
-			return;
-		}?>
-		<div class="stories-grid">
-<?php 
-		while ( $query->have_posts() ) :
-			$query->the_post();
-			$post_id = get_the_ID();
-
-			$thumb_url = get_the_post_thumbnail_url( $post_id, 'large' );
-			$title     = get_the_title( $post_id );
-			$link      = get_permalink( $post_id );
-			?>
-			<a href="<?php echo esc_url( $link ); ?>" class="story-card">
-				<div class="story-image">
-					<?php if ( ! empty( $thumb_url ) ) : ?>
-						<img src="<?php echo esc_url( $thumb_url ); ?>" alt="<?php echo esc_attr( $title ); ?>">
-					<?php endif; ?>
-				</div>
-				<div class="story-image-overlay">
-					<div class="story-content">
-						<span class="category-link"><?php echo esc_html( $cat_name ); ?></span>
-						<h3 class="story-title"><?php echo esc_html( $title ); ?></h3>
-					</div>
-				</div>
-			</a>
-			<?php
-		endwhile; ?>
-
-		 </div>
-		<?php
-		wp_reset_postdata();
-	}
-}
-
-add_action(
-	'widgets_init',
-	function() {
-		register_widget( 'Communicationstoday_Homepage_Stories_Widget' );
-	}
-);
+/**
+ * Live search (AJAX).
+ */
+require get_template_directory() . '/inc/ajax-live-search.php';
 
 /**
  * Enqueue scripts and styles.
@@ -270,11 +140,40 @@ function communicationstoday_scripts() {
 
 	wp_enqueue_script( 'communicationstoday-navigation', get_template_directory_uri() . '/js/navigation.js', array(), _S_VERSION, true );
 
+	wp_register_script(
+		'swiper',
+		'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js',
+		array(),
+		'11.0.0',
+		true
+	);
+	wp_enqueue_script(
+		'communicationstoday-custom',
+		get_template_directory_uri() . '/asset/js/custom.js',
+		array( 'swiper' ),
+		_S_VERSION,
+		true
+	);
+	wp_localize_script(
+		'communicationstoday-custom',
+		'communicationstodaySearch',
+		array(
+			'ajaxUrl' => admin_url( 'admin-ajax.php' ),
+			'nonce'   => wp_create_nonce( 'communicationstoday_search' ),
+			'i18n'    => array(
+				'minChars' => __( 'Type at least 3 characters to search.', 'communicationstoday' ),
+				'loading'  => __( 'Searching…', 'communicationstoday' ),
+				'error'    => __( 'Something went wrong. Try again.', 'communicationstoday' ),
+			),
+		)
+	);
+
 	if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
 		wp_enqueue_script( 'comment-reply' );
 	}
 }
 add_action( 'wp_enqueue_scripts', 'communicationstoday_scripts' );
+
 
 /**
  * Implement the Custom Header feature.
@@ -290,6 +189,11 @@ require get_template_directory() . '/inc/template-tags.php';
  * Functions which enhance the theme by hooking into WordPress.
  */
 require get_template_directory() . '/inc/template-functions.php';
+
+/**
+ * Sidebar off-canvas menu walker.
+ */
+require get_template_directory() . '/inc/class-communicationstoday-sidebar-nav-walker.php';
 
 /**
  * Customizer additions.

@@ -53,13 +53,10 @@ get_header();
 	</main><!-- #main -->
 
 <?php
-if ( is_front_page() && is_active_sidebar( 'homepage-widget' ) ) :
-	?>
-	<aside id="secondary" class="widget-area">
-		<?php dynamic_sidebar( 'homepage-widget' ); ?>
-	</aside><!-- #secondary -->
-	<?php
-else :
+if ( is_front_page() ) {
+	communicationstoday_render_homepage_widget_area();
+}
+if ( ! is_front_page() || ! is_active_sidebar( 'homepage-widget' ) ) {
 	get_sidebar();
-endif;
+}
 get_footer();

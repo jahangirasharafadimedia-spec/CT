@@ -1,6 +1,6 @@
 <?php
 /**
- * The template for displaying archive pages
+ * Archive pages: category, tag, author, date, post type (except templates like archive-ct_video.php).
  *
  * @link https://developer.wordpress.org/themes/basics/template-hierarchy/
  *
@@ -10,42 +10,67 @@
 get_header();
 ?>
 
-	<main id="primary" class="site-main">
+<main id="primary" class="site-main">
 
-		<?php if ( have_posts() ) : ?>
+	<section class="article-listing-section">
+		<div class="container">
 
-			<header class="page-header">
-				<?php
-				the_archive_title( '<h1 class="page-title">', '</h1>' );
-				the_archive_description( '<div class="archive-description">', '</div>' );
-				?>
-			</header><!-- .page-header -->
+			<header class="archive-page-header">
+				<?php the_archive_title( '<h1 class="page-title archive-page-title">', '</h1>' ); ?>
+				<?php the_archive_description( '<div class="archive-description taxonomy-description">', '</div>' ); ?>
+			</header>
 
-			<?php
-			/* Start the Loop */
-			while ( have_posts() ) :
-				the_post();
+			<div class="article-listing-layout">
 
-				/*
-				 * Include the Post-Type-specific template for the content.
-				 * If you want to override this in a child theme, then include a file
-				 * called content-___.php (where ___ is the Post Type name) and that will be used instead.
-				 */
-				get_template_part( 'template-parts/content', get_post_type() );
+				<div class="article-lisitng-content-wrapper">
 
-			endwhile;
+					<?php if ( have_posts() ) : ?>
 
-			the_posts_navigation();
+						<?php
+						$communicationstoday_archive_after_first = false;
+						while ( have_posts() ) :
+							the_post();
+							get_template_part( 'template-parts/content', 'archive' );
+							if ( ! $communicationstoday_archive_after_first ) {
+								communicationstoday_render_archive_mid_ad();
+								$communicationstoday_archive_after_first = true;
+							}
+						endwhile;
+						?>
 
-		else :
+						<nav class="archive-pagination" aria-label="<?php esc_attr_e( 'Posts navigation', 'communicationstoday' ); ?>">
+							<?php
+							the_posts_pagination(
+								array(
+									'mid_size'  => 2,
+									'prev_text' => __( 'Newer posts', 'communicationstoday' ),
+									'next_text' => __( 'Older posts', 'communicationstoday' ),
+								)
+							);
+							?>
+						</nav>
 
-			get_template_part( 'template-parts/content', 'none' );
+					<?php else : ?>
 
-		endif;
-		?>
+						<?php get_template_part( 'template-parts/content', 'none' ); ?>
 
-	</main><!-- #main -->
+					<?php endif; ?>
+
+				</div>
+
+				<div class="post_mobile">
+					<span class="listing-article-category"><?php esc_html_e( 'More posts', 'communicationstoday' ); ?></span>
+				</div>
+
+				<div class="article-lisitng-banner">
+					<?php communicationstoday_render_archive_listing_banner(); ?>
+				</div>
+
+			</div>
+		</div>
+	</section>
+
+</main>
 
 <?php
-get_sidebar();
 get_footer();

@@ -39,4 +39,11 @@
 			}
 		} );
 	} );
+
+	// Footer copyright (Customizer → Footer).
+	wp.customize( 'communicationstoday_footer_copyright', function( value ) {
+		value.bind( function( to ) {
+			$( '.footer-copyright' ).text( to );
+		} );
+	} );
 }( jQuery ) );

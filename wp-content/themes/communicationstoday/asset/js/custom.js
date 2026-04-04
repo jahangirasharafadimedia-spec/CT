@@ -83,92 +83,114 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Initialize TOP EVENTS Swiper
-    const topEventsSwiper = new Swiper('.top-events-swiper', {
-        slidesPerView: 5,
-        spaceBetween: 25,
-        loop: true,
-        navigation: {
-            nextEl: '.top-events-next',
-            prevEl: '.top-events-prev',
-        },
-        breakpoints: {
-            0: {
-                slidesPerView: 2,
-                spaceBetween: 20,
-            },
-            768: {
-                slidesPerView: 3,
-                spaceBetween: 25,
-            },
-            1024: {
-                slidesPerView: 4,
-                spaceBetween: 25,
-            },
-            1200: {
-                slidesPerView: 4,
-                spaceBetween: 25,
-            }
+    // TOP EVENTS Swiper — one instance per section (widget-safe)
+    document.querySelectorAll('.top-events-section').forEach(function (section) {
+        const swiperEl = section.querySelector('.top-events-swiper');
+        if (!swiperEl || swiperEl.swiper) {
+            return;
         }
+        const nextEl = section.querySelector('.top-events-next');
+        const prevEl = section.querySelector('.top-events-prev');
+        if (!nextEl || !prevEl) {
+            return;
+        }
+        new Swiper(swiperEl, {
+            slidesPerView: 5,
+            spaceBetween: 25,
+            loop: true,
+            navigation: {
+                nextEl: nextEl,
+                prevEl: prevEl,
+            },
+            breakpoints: {
+                0: {
+                    slidesPerView: 2,
+                    spaceBetween: 20,
+                },
+                768: {
+                    slidesPerView: 3,
+                    spaceBetween: 25,
+                },
+                1024: {
+                    slidesPerView: 4,
+                    spaceBetween: 25,
+                },
+                1200: {
+                    slidesPerView: 4,
+                    spaceBetween: 25,
+                }
+            }
+        });
     });
 
-    // Initialize PERSPECTIVE Swiper
-    const perspectiveSwiper = new Swiper('.perspective-swiper', {
-        slidesPerView: 'auto',
-        spaceBetween: 25,
-        loop: false,
-        navigation: {
-            nextEl: '.perspective-next',
-            prevEl: '.perspective-prev',
-        },
-        on: {
-            init: function() {
-                // Hide left arrow on first slide
-                if (this.isBeginning) {
-                    this.navigation.prevEl.classList.add('swiper-button-disabled');
-                }
-                // Hide right arrow on last slide
-                if (this.isEnd) {
-                    this.navigation.nextEl.classList.add('swiper-button-disabled');
-                }
-            },
-            slideChange: function() {
-                // Show/hide arrows based on position
-                if (this.isBeginning) {
-                    this.navigation.prevEl.classList.add('swiper-button-disabled');
-                } else {
-                    this.navigation.prevEl.classList.remove('swiper-button-disabled');
-                }
-                
-                if (this.isEnd) {
-                    this.navigation.nextEl.classList.add('swiper-button-disabled');
-                } else {
-                    this.navigation.nextEl.classList.remove('swiper-button-disabled');
-                }
-            }
-        },
-        breakpoints: {
-            0: {
-                slidesPerView: 2,
-                spaceBetween: 15,
-            },
-            480: {
-                slidesPerView: 1.5,
-                spaceBetween: 20,
-            },
-            768: {
-                slidesPerView: 2.5,
-                spaceBetween: 20,
-            },
-            1024: {
-                slidesPerView: 3.5,
-                spaceBetween: 25,
-            },
-            1200: {
-                slidesPerView: 4,
-                spaceBetween: 15,
-            }
+    // Initialize PERSPECTIVE Swiper (one instance per .perspective-section — supports widget + static markup)
+    document.querySelectorAll('.perspective-section').forEach(function (section) {
+        const swiperEl = section.querySelector('.perspective-swiper');
+        if (!swiperEl || swiperEl.swiper) {
+            return;
         }
+        const nextEl = section.querySelector('.perspective-next');
+        const prevEl = section.querySelector('.perspective-prev');
+        if (!nextEl || !prevEl) {
+            return;
+        }
+        new Swiper(swiperEl, {
+            slidesPerView: 'auto',
+            spaceBetween: 25,
+            loop: false,
+            navigation: {
+                nextEl: nextEl,
+                prevEl: prevEl,
+            },
+            on: {
+                init: function () {
+                    if (this.isBeginning && this.navigation.prevEl) {
+                        this.navigation.prevEl.classList.add('swiper-button-disabled');
+                    }
+                    if (this.isEnd && this.navigation.nextEl) {
+                        this.navigation.nextEl.classList.add('swiper-button-disabled');
+                    }
+                },
+                slideChange: function () {
+                    if (this.navigation.prevEl) {
+                        if (this.isBeginning) {
+                            this.navigation.prevEl.classList.add('swiper-button-disabled');
+                        } else {
+                            this.navigation.prevEl.classList.remove('swiper-button-disabled');
+                        }
+                    }
+                    if (this.navigation.nextEl) {
+                        if (this.isEnd) {
+                            this.navigation.nextEl.classList.add('swiper-button-disabled');
+                        } else {
+                            this.navigation.nextEl.classList.remove('swiper-button-disabled');
+                        }
+                    }
+                },
+            },
+            breakpoints: {
+                0: {
+                    slidesPerView: 2,
+                    spaceBetween: 15,
+                },
+                480: {
+                    slidesPerView: 1.5,
+                    spaceBetween: 20,
+                },
+                768: {
+                    slidesPerView: 2.5,
+                    spaceBetween: 20,
+                },
+                1024: {
+                    slidesPerView: 3.5,
+                    spaceBetween: 25,
+                },
+                1200: {
+                    slidesPerView: 4,
+                    spaceBetween: 15,
+                },
+            },
+        });
     });
 
     // Hamburger Menu Toggle
@@ -240,12 +262,26 @@ document.addEventListener('DOMContentLoaded', function() {
         searchSidebar.classList.add('active');
         searchSidebarOverlay.classList.add('active');
         document.body.style.overflow = 'hidden';
+        const liveIn = document.getElementById('liveSearchInput');
+        if (liveIn) {
+            setTimeout(function () {
+                liveIn.focus();
+            }, 100);
+        }
     }
 
     function closeSearchSidebar() {
         searchSidebar.classList.remove('active');
         searchSidebarOverlay.classList.remove('active');
         document.body.style.overflow = '';
+        const liveIn = document.getElementById('liveSearchInput');
+        const liveOut = document.getElementById('liveSearchResults');
+        if (liveIn) {
+            liveIn.value = '';
+        }
+        if (liveOut) {
+            liveOut.innerHTML = '';
+        }
     }
 
     if (searchIcon) {
@@ -266,6 +302,79 @@ document.addEventListener('DOMContentLoaded', function() {
         searchSidebarOverlay.addEventListener('click', function() {
             closeSearchSidebar();
         });
+    }
+
+    // Live search (header panel): 3+ chars, matches title, content, excerpt, ACF/post meta.
+    if (typeof communicationstodaySearch !== 'undefined') {
+        const liveSearchInput = document.getElementById('liveSearchInput');
+        const liveSearchResults = document.getElementById('liveSearchResults');
+        let liveSearchTimer = null;
+
+        function setLiveSearchMessage(text) {
+            if (!liveSearchResults) {
+                return;
+            }
+            if (!text) {
+                liveSearchResults.innerHTML = '';
+                return;
+            }
+            liveSearchResults.innerHTML = '<p class="search-results-empty">' + text + '</p>';
+        }
+
+        function runLiveSearch(term) {
+            if (!liveSearchResults) {
+                return;
+            }
+            setLiveSearchMessage(communicationstodaySearch.i18n.loading);
+
+            const body = new URLSearchParams();
+            body.append('action', 'communicationstoday_live_search');
+            body.append('nonce', communicationstodaySearch.nonce);
+            body.append('term', term);
+
+            fetch(communicationstodaySearch.ajaxUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+                body: body.toString(),
+                credentials: 'same-origin',
+            })
+                .then(function (response) {
+                    return response.json();
+                })
+                .then(function (data) {
+                    if (!data || !data.success) {
+                        setLiveSearchMessage(communicationstodaySearch.i18n.error);
+                        return;
+                    }
+                    if (data.data.too_short) {
+                        setLiveSearchMessage(communicationstodaySearch.i18n.minChars);
+                        return;
+                    }
+                    liveSearchResults.innerHTML = data.data.html || '';
+                })
+                .catch(function () {
+                    setLiveSearchMessage(communicationstodaySearch.i18n.error);
+                });
+        }
+
+        if (liveSearchInput && liveSearchResults) {
+            liveSearchInput.addEventListener('input', function () {
+                const term = liveSearchInput.value.trim();
+                clearTimeout(liveSearchTimer);
+                if (term.length === 0) {
+                    liveSearchResults.innerHTML = '';
+                    return;
+                }
+                if (term.length < 3) {
+                    setLiveSearchMessage(communicationstodaySearch.i18n.minChars);
+                    return;
+                }
+                liveSearchTimer = setTimeout(function () {
+                    runLiveSearch(term);
+                }, 350);
+            });
+
+        }
     }
 
     // Sticky Header Container Functionality
