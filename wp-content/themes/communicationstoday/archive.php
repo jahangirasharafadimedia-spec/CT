@@ -16,13 +16,20 @@ get_header();
 		<div class="container">
 
 			<header class="archive-page-header">
-				<?php the_archive_title( '<h1 class="page-title archive-page-title">', '</h1>' ); ?>
-				<?php the_archive_description( '<div class="archive-description taxonomy-description">', '</div>' ); ?>
+				<h1 class="listing-article-category">
+					<?php
+					if ( is_category() ) {
+						single_cat_title();
+					} else {
+						the_archive_title();
+					}
+					?>
+				</h1>
 			</header>
 
 			<div class="article-listing-layout">
 
-				<div class="article-lisitng-content-wrapper">
+				<div class="article-lisitng-content-wrapper" id="archive-post-list">
 
 					<?php if ( have_posts() ) : ?>
 
@@ -38,17 +45,20 @@ get_header();
 						endwhile;
 						?>
 
-						<nav class="archive-pagination" aria-label="<?php esc_attr_e( 'Posts navigation', 'communicationstoday' ); ?>">
-							<?php
-							the_posts_pagination(
-								array(
-									'mid_size'  => 2,
-									'prev_text' => __( 'Newer posts', 'communicationstoday' ),
-									'next_text' => __( 'Older posts', 'communicationstoday' ),
-								)
-							);
-							?>
-						</nav>
+						<?php global $wp_query; ?>
+						<?php if ( isset( $wp_query->max_num_pages ) && (int) $wp_query->max_num_pages > 1 ) : ?>
+						<div class="archive-load-more-wrap">
+							<button
+								type="button"
+								class="listing-article-category archive-load-more-button"
+								data-page="1"
+								data-max-pages="<?php echo esc_attr( (string) (int) $wp_query->max_num_pages ); ?>"
+								data-query-vars="<?php echo esc_attr( wp_json_encode( $wp_query->query_vars ) ); ?>"
+							>
+								<?php esc_html_e( 'More posts', 'communicationstoday' ); ?>
+							</button>
+						</div>
+						<?php endif; ?>
 
 					<?php else : ?>
 
@@ -56,10 +66,6 @@ get_header();
 
 					<?php endif; ?>
 
-				</div>
-
-				<div class="post_mobile">
-					<span class="listing-article-category"><?php esc_html_e( 'More posts', 'communicationstoday' ); ?></span>
 				</div>
 
 				<div class="article-lisitng-banner">

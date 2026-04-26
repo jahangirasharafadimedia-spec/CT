@@ -207,3 +207,76 @@ function communicationstoday_ajax_live_search() {
 }
 add_action( 'wp_ajax_communicationstoday_live_search', 'communicationstoday_ajax_live_search' );
 add_action( 'wp_ajax_nopriv_communicationstoday_live_search', 'communicationstoday_ajax_live_search' );
+
+/**
+ * AJAX: archive "More posts" button.
+ *
+ * @return void
+ */
+function communicationstoday_ajax_archive_load_more() {
+	check_ajax_referer( 'communicationstoday_archive_load_more', 'nonce' );
+
+	$page = isset( $_POST['page'] ) ? absint( $_POST['page'] ) : 1;
+	$page = max( 2, $page );
+
+	$query_vars_json = isset( $_POST['query_vars'] ) ? wp_unslash( $_POST['query_vars'] ) : '';
+	$query_vars      = is_string( $query_vars_json ) ? json_decode( $query_vars_json, true ) : array();
+	if ( ! is_array( $query_vars ) ) {
+		wp_send_json_error(
+			array(
+				'message' => __( 'Invalid request.', 'communicationstoday' ),
+			)
+		);
+	}
+
+	$allowed_keys = array(
+		'cat',
+		'category_name',
+		'tag',
+		'tag_id',
+		'author',
+		'author_name',
+		'year',
+		'monthnum',
+		'day',
+		'post_type',
+		'taxonomy',
+		'term',
+		's',
+	);
+	$query = array();
+	foreach ( $allowed_keys as $k ) {
+		if ( isset( $query_vars[ $k ] ) ) {
+			$query[ $k ] = $query_vars[ $k ];
+		}
+	}
+
+	$query['post_status']         = 'publish';
+	$query['ignore_sticky_posts'] = true;
+	$query['posts_per_page']      = 10;
+	$query['paged']               = $page;
+
+	$wpq = new WP_Query( $query );
+
+	ob_start();
+	if ( $wpq->have_posts() ) {
+		while ( $wpq->have_posts() ) {
+			$wpq->the_post();
+			get_template_part( 'template-parts/content', 'archive' );
+		}
+	}
+	wp_reset_postdata();
+
+	$html    = (string) ob_get_clean();
+	$has_more = $wpq->max_num_pages > $page;
+
+	wp_send_json_success(
+		array(
+			'html'      => $html,
+			'has_more'  => $has_more,
+			'next_page' => $page + 1,
+		)
+	);
+}
+add_action( 'wp_ajax_communicationstoday_archive_load_more', 'communicationstoday_ajax_archive_load_more' );
+add_action( 'wp_ajax_nopriv_communicationstoday_archive_load_more', 'communicationstoday_ajax_archive_load_more' );

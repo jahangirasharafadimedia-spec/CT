@@ -8,6 +8,7 @@
 				var $input = $wrap.find( '.think-tank-attachment-id' );
 				var $preview = $wrap.find( '.think-tank-attachment-preview' );
 				var $remove = $wrap.find( '.communicationstoday-think-tank-remove' );
+				var $url = $wrap.find( '.think-tank-image-url' );
 
 				if ( typeof wp === 'undefined' || ! wp.media ) {
 					return;
@@ -28,6 +29,7 @@
 							? att.sizes.medium.url
 							: att.url;
 					$preview.attr( 'src', url ).show();
+					$url.val( att.url ? att.url : url );
 					$remove.show();
 				} );
 
@@ -41,6 +43,7 @@
 				var $wrap = $( this ).closest( '.communicationstoday-think-tank-ad-media' );
 				$wrap.find( '.think-tank-attachment-id' ).val( '' );
 				$wrap.find( '.think-tank-attachment-preview' ).attr( 'src', '' ).hide();
+				$wrap.find( '.think-tank-image-url' ).val( '' );
 				$( this ).hide();
 			} );
 	}

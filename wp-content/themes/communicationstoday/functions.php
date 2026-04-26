@@ -167,6 +167,19 @@ function communicationstoday_scripts() {
 			),
 		)
 	);
+	wp_localize_script(
+		'communicationstoday-custom',
+		'communicationstodayArchiveLoadMore',
+		array(
+			'ajaxUrl' => admin_url( 'admin-ajax.php' ),
+			'nonce'   => wp_create_nonce( 'communicationstoday_archive_load_more' ),
+			'i18n'    => array(
+				'more'    => __( 'More posts', 'communicationstoday' ),
+				'loading' => __( 'Loading...', 'communicationstoday' ),
+				'error'   => __( 'Unable to load more posts.', 'communicationstoday' ),
+			),
+		)
+	);
 
 	if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
 		wp_enqueue_script( 'comment-reply' );

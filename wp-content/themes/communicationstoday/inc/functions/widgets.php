@@ -1164,7 +1164,7 @@ class Communicationstoday_Headlines_Day_Widget extends WP_Widget {
 	public function __construct() {
 		parent::__construct(
 			'communicationstoday_headlines_day',
-			esc_html__( 'Headlines of the Day', 'communicationstoday' ),
+			esc_html__( 'Homepage section', 'communicationstoday' ),
 			array(
 				'description' => esc_html__( 'Latest post (large) + optional side ad + 3 more posts from one category.', 'communicationstoday' ),
 			)
@@ -1172,7 +1172,7 @@ class Communicationstoday_Headlines_Day_Widget extends WP_Widget {
 	}
 
 	public function form( $instance ) {
-		$header_label       = isset( $instance['header_label'] ) ? $instance['header_label'] : __( 'Headlines of the Day', 'communicationstoday' );
+		$header_label       = isset( $instance['header_label'] ) ? $instance['header_label'] : __( 'Homepage section', 'communicationstoday' );
 		$category_id        = isset( $instance['category_id'] ) ? (int) $instance['category_id'] : 0;
 		$ad_attachment_id   = isset( $instance['ad_attachment_id'] ) ? absint( $instance['ad_attachment_id'] ) : 0;
 		$ad_url             = isset( $instance['ad_url'] ) ? $instance['ad_url'] : '';
@@ -1231,7 +1231,7 @@ class Communicationstoday_Headlines_Day_Widget extends WP_Widget {
 	}
 
 	public function widget( $args, $instance ) {
-		$header_label     = ! empty( $instance['header_label'] ) ? $instance['header_label'] : __( 'Headlines of the Day', 'communicationstoday' );
+		$header_label     = ! empty( $instance['header_label'] ) ? $instance['header_label'] : __( 'Homepage section', 'communicationstoday' );
 		$category_id      = isset( $instance['category_id'] ) ? (int) $instance['category_id'] : 0;
 		$ad_attachment_id = isset( $instance['ad_attachment_id'] ) ? absint( $instance['ad_attachment_id'] ) : 0;
 		$ad_url_raw       = ! empty( $instance['ad_url'] ) ? $instance['ad_url'] : '';
@@ -1509,165 +1509,224 @@ class Communicationstoday_Top_Events_Videos_Widget extends WP_Widget {
 }
 
 /**
- * Leaderboard slot: image URL + optional click URL (use inside “Leaderboard (top, site-wide)”).
+ * Media-upload helper widget base for ad/banner style widgets.
  */
-class Communicationstoday_Leaderboard_Banner_Widget extends WP_Widget {
+abstract class Communicationstoday_Abstract_Attachment_Banner_Widget extends WP_Widget {
+
+	/**
+	 * @param int $attachment_id Attachment ID.
+	 * @return string
+	 */
+	protected function get_attachment_image_url( $attachment_id ) {
+		$attachment_id = absint( $attachment_id );
+		if ( $attachment_id <= 0 ) {
+			return '';
+		}
+		$url = wp_get_attachment_image_url( $attachment_id, 'full' );
+		return $url ? (string) $url : '';
+	}
+
+	/**
+	 * @param string $field_base  Field base key.
+	 * @param int    $attachment_id Attachment ID.
+	 * @param string $image_label Label.
+	 * @return void
+	 */
+	protected function render_media_field( $field_base, $attachment_id, $image_label ) {
+		$preview_url = $this->get_attachment_image_url( $attachment_id );
+		?>
+		<div class="communicationstoday-think-tank-ad-media">
+			<p>
+				<label><?php echo esc_html( $image_label ); ?></label><br>
+				<input type="hidden" class="think-tank-attachment-id" id="<?php echo esc_attr( $this->get_field_id( $field_base ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( $field_base ) ); ?>" value="<?php echo esc_attr( (string) $attachment_id ); ?>">
+				<img src="<?php echo esc_url( $preview_url ); ?>" alt="" class="think-tank-attachment-preview" style="max-width:100%;height:auto;<?php echo $preview_url ? '' : 'display:none;'; ?>">
+			</p>
+			<p>
+				<button type="button" class="button communicationstoday-think-tank-media"><?php esc_html_e( 'Select image', 'communicationstoday' ); ?></button>
+				<button type="button" class="button communicationstoday-think-tank-remove" style="<?php echo $attachment_id ? '' : 'display:none;'; ?>"><?php esc_html_e( 'Remove image', 'communicationstoday' ); ?></button>
+			</p>
+			<p>
+				<label><?php esc_html_e( 'Image URL', 'communicationstoday' ); ?></label>
+				<input class="widefat think-tank-image-url" type="url" value="<?php echo esc_attr( $preview_url ); ?>" readonly>
+			</p>
+		</div>
+		<?php
+	}
+
+	/**
+	 * @param array<string, mixed> $instance Instance.
+	 * @param string               $class     CSS class.
+	 * @param bool                 $allow_link Optional target link.
+	 * @return void
+	 */
+	protected function render_banner_output( $instance, $class, $allow_link = false ) {
+		$attachment_id = isset( $instance['attachment_id'] ) ? absint( $instance['attachment_id'] ) : 0;
+		$image_url     = $this->get_attachment_image_url( $attachment_id );
+		if ( '' === $image_url && isset( $instance['image_url'] ) ) {
+			$image_url = esc_url( (string) $instance['image_url'] );
+		}
+		if ( '' === $image_url ) {
+			return;
+		}
+
+		$alt = isset( $instance['alt'] ) ? sanitize_text_field( (string) $instance['alt'] ) : '';
+		if ( '' === $alt ) {
+			$alt = __( 'Advertisement', 'communicationstoday' );
+		}
+
+		$link = '';
+		if ( $allow_link ) {
+			$link = isset( $instance['link_url'] ) ? esc_url( (string) $instance['link_url'] ) : '';
+		}
+
+		if ( $allow_link && $link ) {
+			echo '<a href="' . esc_url( $link ) . '" class="' . esc_attr( $class ) . '" target="_blank" rel="noopener noreferrer">';
+		} else {
+			echo '<div class="' . esc_attr( $class ) . '">';
+		}
+
+		printf(
+			'<img src="%1$s" alt="%2$s" loading="lazy" decoding="async">',
+			esc_url( $image_url ),
+			esc_attr( $alt )
+		);
+
+		if ( $allow_link && $link ) {
+			echo '</a>';
+		} else {
+			echo '</div>';
+		}
+	}
+}
+
+/**
+ * Archive right rail side banner with media upload + image URL + optional target link.
+ */
+class Communicationstoday_Archive_Side_Banner_Widget extends Communicationstoday_Abstract_Attachment_Banner_Widget {
+
+	public function __construct() {
+		parent::__construct(
+			'communicationstoday_archive_side_banner',
+			esc_html__( 'Archive side banner', 'communicationstoday' ),
+			array(
+				'description' => esc_html__( 'For “Archive listing — right rail”: upload image (with visible image URL) and optional click URL.', 'communicationstoday' ),
+			)
+		);
+	}
+
+	public function form( $instance ) {
+		$attachment_id = isset( $instance['attachment_id'] ) ? absint( $instance['attachment_id'] ) : 0;
+		$link_url      = isset( $instance['link_url'] ) ? (string) $instance['link_url'] : '';
+		$alt           = isset( $instance['alt'] ) ? (string) $instance['alt'] : '';
+		$this->render_media_field( 'attachment_id', $attachment_id, __( 'Banner image', 'communicationstoday' ) );
+		?>
+		<p>
+			<label for="<?php echo esc_attr( $this->get_field_id( 'link_url' ) ); ?>"><?php esc_html_e( 'Click URL (optional)', 'communicationstoday' ); ?></label>
+			<input class="widefat" type="url" id="<?php echo esc_attr( $this->get_field_id( 'link_url' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'link_url' ) ); ?>" value="<?php echo esc_attr( $link_url ); ?>" placeholder="https://">
+		</p>
+		<p>
+			<label for="<?php echo esc_attr( $this->get_field_id( 'alt' ) ); ?>"><?php esc_html_e( 'Image alt text', 'communicationstoday' ); ?></label>
+			<input class="widefat" type="text" id="<?php echo esc_attr( $this->get_field_id( 'alt' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'alt' ) ); ?>" value="<?php echo esc_attr( $alt ); ?>">
+		</p>
+		<?php
+	}
+
+	public function update( $new_instance, $old_instance ) {
+		unset( $old_instance );
+		$instance                  = array();
+		$instance['attachment_id'] = isset( $new_instance['attachment_id'] ) ? absint( $new_instance['attachment_id'] ) : 0;
+		$instance['link_url']      = isset( $new_instance['link_url'] ) ? esc_url_raw( trim( wp_unslash( $new_instance['link_url'] ) ) ) : '';
+		$instance['alt']           = isset( $new_instance['alt'] ) ? sanitize_text_field( wp_unslash( $new_instance['alt'] ) ) : '';
+		return $instance;
+	}
+
+	public function widget( $args, $instance ) {
+		echo $args['before_widget'];
+		$this->render_banner_output( $instance, 'archive-side-banner', true );
+		echo $args['after_widget'];
+	}
+}
+
+/**
+ * Leaderboard top banner (site-wide) - image upload only (no click URL).
+ */
+class Communicationstoday_Leaderboard_Banner_Widget extends Communicationstoday_Abstract_Attachment_Banner_Widget {
 
 	public function __construct() {
 		parent::__construct(
 			'communicationstoday_leaderboard_banner',
 			esc_html__( 'Leaderboard banner', 'communicationstoday' ),
 			array(
-				'description' => esc_html__( 'Banner image and optional link. Place in “Leaderboard (top, site-wide)” to show site-wide.', 'communicationstoday' ),
+				'description' => esc_html__( 'Top leaderboard image upload (no click URL). Place in “Leaderboard (top, site-wide)”.', 'communicationstoday' ),
 			)
 		);
 	}
 
 	public function form( $instance ) {
-		$image_url = isset( $instance['image_url'] ) ? $instance['image_url'] : '';
-		$link_url  = isset( $instance['link_url'] ) ? $instance['link_url'] : '';
-		$alt       = isset( $instance['alt'] ) ? $instance['alt'] : '';
+		$attachment_id = isset( $instance['attachment_id'] ) ? absint( $instance['attachment_id'] ) : 0;
+		$alt           = isset( $instance['alt'] ) ? (string) $instance['alt'] : '';
+		$this->render_media_field( 'attachment_id', $attachment_id, __( 'Banner image', 'communicationstoday' ) );
 		?>
 		<p>
-			<label for="<?php echo esc_attr( $this->get_field_id( 'image_url' ) ); ?>"><?php esc_html_e( 'Banner image URL', 'communicationstoday' ); ?></label>
-			<input class="widefat" type="url" id="<?php echo esc_attr( $this->get_field_id( 'image_url' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'image_url' ) ); ?>" value="<?php echo esc_attr( (string) $image_url ); ?>" placeholder="https://">
-		</p>
-		<p>
-			<label for="<?php echo esc_attr( $this->get_field_id( 'link_url' ) ); ?>"><?php esc_html_e( 'Link URL (optional)', 'communicationstoday' ); ?></label>
-			<input class="widefat" type="url" id="<?php echo esc_attr( $this->get_field_id( 'link_url' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'link_url' ) ); ?>" value="<?php echo esc_attr( (string) $link_url ); ?>" placeholder="https://">
-		</p>
-		<p>
 			<label for="<?php echo esc_attr( $this->get_field_id( 'alt' ) ); ?>"><?php esc_html_e( 'Image alt text', 'communicationstoday' ); ?></label>
-			<input class="widefat" type="text" id="<?php echo esc_attr( $this->get_field_id( 'alt' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'alt' ) ); ?>" value="<?php echo esc_attr( (string) $alt ); ?>">
+			<input class="widefat" type="text" id="<?php echo esc_attr( $this->get_field_id( 'alt' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'alt' ) ); ?>" value="<?php echo esc_attr( $alt ); ?>">
 		</p>
 		<?php
 	}
 
 	public function update( $new_instance, $old_instance ) {
 		unset( $old_instance );
-		$instance              = array();
-		$instance['image_url'] = isset( $new_instance['image_url'] ) ? esc_url_raw( trim( wp_unslash( $new_instance['image_url'] ) ) ) : '';
-		$instance['link_url']  = isset( $new_instance['link_url'] ) ? esc_url_raw( trim( wp_unslash( $new_instance['link_url'] ) ) ) : '';
-		$instance['alt']       = isset( $new_instance['alt'] ) ? sanitize_text_field( wp_unslash( $new_instance['alt'] ) ) : '';
+		$instance                  = array();
+		$instance['attachment_id'] = isset( $new_instance['attachment_id'] ) ? absint( $new_instance['attachment_id'] ) : 0;
+		$instance['alt']           = isset( $new_instance['alt'] ) ? sanitize_text_field( wp_unslash( $new_instance['alt'] ) ) : '';
 		return $instance;
 	}
 
 	public function widget( $args, $instance ) {
-		$raw_img = isset( $instance['image_url'] ) ? trim( (string) $instance['image_url'] ) : '';
-		$img     = $raw_img ? esc_url( $raw_img ) : '';
-		if ( '' === $img ) {
-			return;
-		}
-
-		$raw_link = isset( $instance['link_url'] ) ? trim( (string) $instance['link_url'] ) : '';
-		$link     = $raw_link ? esc_url( $raw_link ) : '';
-		$alt      = isset( $instance['alt'] ) ? sanitize_text_field( (string) $instance['alt'] ) : '';
-		if ( '' === $alt ) {
-			$alt = __( 'Advertisement', 'communicationstoday' );
-		}
-
 		echo $args['before_widget'];
-
-		if ( $link ) {
-			echo '<a href="' . esc_url( $link ) . '" class="top-ad-banner" target="_blank" rel="noopener noreferrer">';
-		} else {
-			echo '<div class="top-ad-banner">';
-		}
-
-		printf(
-			'<img src="%1$s" alt="%2$s" loading="lazy" decoding="async">',
-			esc_url( $img ),
-			esc_attr( $alt )
-		);
-
-		if ( $link ) {
-			echo '</a>';
-		} else {
-			echo '</div>';
-		}
-
+		$this->render_banner_output( $instance, 'top-ad-banner', false );
 		echo $args['after_widget'];
 	}
 }
 
 /**
- * Same as leaderboard widget but uses .bottom-ad-banner (archive mid-ad slot).
+ * Leaderboard bottom banner (archive mid ad) - image upload only (no click URL).
  */
-class Communicationstoday_Bottom_Ad_Banner_Widget extends WP_Widget {
+class Communicationstoday_Bottom_Ad_Banner_Widget extends Communicationstoday_Abstract_Attachment_Banner_Widget {
 
 	public function __construct() {
 		parent::__construct(
 			'communicationstoday_bottom_ad_banner',
 			esc_html__( 'Leaderboard banner (bottom)', 'communicationstoday' ),
 			array(
-				'description' => esc_html__( 'Image + optional link using .bottom-ad-banner. For “Archive listing — mid ad”.', 'communicationstoday' ),
+				'description' => esc_html__( 'Bottom leaderboard image upload (no click URL). For “Archive listing — mid ad”.', 'communicationstoday' ),
 			)
 		);
 	}
 
 	public function form( $instance ) {
-		$image_url = isset( $instance['image_url'] ) ? $instance['image_url'] : '';
-		$link_url  = isset( $instance['link_url'] ) ? $instance['link_url'] : '';
-		$alt       = isset( $instance['alt'] ) ? $instance['alt'] : '';
+		$attachment_id = isset( $instance['attachment_id'] ) ? absint( $instance['attachment_id'] ) : 0;
+		$alt           = isset( $instance['alt'] ) ? (string) $instance['alt'] : '';
+		$this->render_media_field( 'attachment_id', $attachment_id, __( 'Banner image', 'communicationstoday' ) );
 		?>
 		<p>
-			<label for="<?php echo esc_attr( $this->get_field_id( 'image_url' ) ); ?>"><?php esc_html_e( 'Banner image URL', 'communicationstoday' ); ?></label>
-			<input class="widefat" type="url" id="<?php echo esc_attr( $this->get_field_id( 'image_url' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'image_url' ) ); ?>" value="<?php echo esc_attr( (string) $image_url ); ?>" placeholder="https://">
-		</p>
-		<p>
-			<label for="<?php echo esc_attr( $this->get_field_id( 'link_url' ) ); ?>"><?php esc_html_e( 'Link URL (optional)', 'communicationstoday' ); ?></label>
-			<input class="widefat" type="url" id="<?php echo esc_attr( $this->get_field_id( 'link_url' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'link_url' ) ); ?>" value="<?php echo esc_attr( (string) $link_url ); ?>" placeholder="https://">
-		</p>
-		<p>
 			<label for="<?php echo esc_attr( $this->get_field_id( 'alt' ) ); ?>"><?php esc_html_e( 'Image alt text', 'communicationstoday' ); ?></label>
-			<input class="widefat" type="text" id="<?php echo esc_attr( $this->get_field_id( 'alt' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'alt' ) ); ?>" value="<?php echo esc_attr( (string) $alt ); ?>">
+			<input class="widefat" type="text" id="<?php echo esc_attr( $this->get_field_id( 'alt' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'alt' ) ); ?>" value="<?php echo esc_attr( $alt ); ?>">
 		</p>
 		<?php
 	}
 
 	public function update( $new_instance, $old_instance ) {
 		unset( $old_instance );
-		$instance              = array();
-		$instance['image_url'] = isset( $new_instance['image_url'] ) ? esc_url_raw( trim( wp_unslash( $new_instance['image_url'] ) ) ) : '';
-		$instance['link_url']  = isset( $new_instance['link_url'] ) ? esc_url_raw( trim( wp_unslash( $new_instance['link_url'] ) ) ) : '';
-		$instance['alt']       = isset( $new_instance['alt'] ) ? sanitize_text_field( wp_unslash( $new_instance['alt'] ) ) : '';
+		$instance                  = array();
+		$instance['attachment_id'] = isset( $new_instance['attachment_id'] ) ? absint( $new_instance['attachment_id'] ) : 0;
+		$instance['alt']           = isset( $new_instance['alt'] ) ? sanitize_text_field( wp_unslash( $new_instance['alt'] ) ) : '';
 		return $instance;
 	}
 
 	public function widget( $args, $instance ) {
-		$raw_img = isset( $instance['image_url'] ) ? trim( (string) $instance['image_url'] ) : '';
-		$img     = $raw_img ? esc_url( $raw_img ) : '';
-		if ( '' === $img ) {
-			return;
-		}
-
-		$raw_link = isset( $instance['link_url'] ) ? trim( (string) $instance['link_url'] ) : '';
-		$link     = $raw_link ? esc_url( $raw_link ) : '';
-		$alt      = isset( $instance['alt'] ) ? sanitize_text_field( (string) $instance['alt'] ) : '';
-		if ( '' === $alt ) {
-			$alt = __( 'Advertisement', 'communicationstoday' );
-		}
-
 		echo $args['before_widget'];
-
-		if ( $link ) {
-			echo '<a href="' . esc_url( $link ) . '" class="bottom-ad-banner" target="_blank" rel="noopener noreferrer">';
-		} else {
-			echo '<div class="bottom-ad-banner">';
-		}
-
-		printf(
-			'<img src="%1$s" alt="%2$s" loading="lazy" decoding="async">',
-			esc_url( $img ),
-			esc_attr( $alt )
-		);
-
-		if ( $link ) {
-			echo '</a>';
-		} else {
-			echo '</div>';
-		}
-
+		$this->render_banner_output( $instance, 'bottom-ad-banner', false );
 		echo $args['after_widget'];
 	}
 }
@@ -1680,6 +1739,7 @@ add_action(
 		register_widget( 'Communicationstoday_Perspective_Swiper_Widget' );
 		register_widget( 'Communicationstoday_Headlines_Day_Widget' );
 		register_widget( 'Communicationstoday_Top_Events_Videos_Widget' );
+		register_widget( 'Communicationstoday_Archive_Side_Banner_Widget' );
 		register_widget( 'Communicationstoday_Leaderboard_Banner_Widget' );
 		register_widget( 'Communicationstoday_Bottom_Ad_Banner_Widget' );
 	}

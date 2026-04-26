@@ -10,31 +10,47 @@
 get_header();
 ?>
 
-	<main id="primary" class="site-main">
+<main id="primary" class="site-main single-post-main">
+	<?php while ( have_posts() ) : the_post(); ?>
+		<section class="article-detail-section">
+			<div class="container">
+				<div class="article-detail-layout">
+					<div class="article-content-wrapper">
+						<div class="article-date-wrapper">
+							<div class="article-header">
+								<?php
+								$categories      = get_the_category();
+								$primary_cat     = ! empty( $categories ) ? $categories[0]->name : __( 'Uncategorized', 'communicationstoday' );
+								?>
+								<span class="category-link"><?php echo esc_html( strtoupper( $primary_cat ) ); ?></span>
+								<span class="article-date"><?php echo esc_html( get_the_date( 'M j, Y' ) ); ?></span>
+							</div>
+							<h1 class="detail-title"><?php the_title(); ?></h1>
+						</div>
+						<div class="article-right">
+							<?php if ( has_post_thumbnail() ) : ?>
+								<?php the_post_thumbnail( 'full', array( 'class' => 'w-100', 'alt' => the_title_attribute( array( 'echo' => false ) ) ) ); ?>
+							<?php endif; ?>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
 
-		<?php
-		while ( have_posts() ) :
-			the_post();
+		<section class="article-detail-content">
+			<div class="container">
+				<div class="article-content-wrapper1">
+					<div class="article-detail-content-left">
+						<?php the_content(); ?>
+					</div>
 
-			get_template_part( 'template-parts/content', get_post_type() );
+					<div class="article-detail-content-right">
+						<?php communicationstoday_render_archive_listing_banner(); ?>
+					</div>
+				</div>
+			</div>
+		</section>
+	<?php endwhile; ?>
+</main>
 
-			the_post_navigation(
-				array(
-					'prev_text' => '<span class="nav-subtitle">' . esc_html__( 'Previous:', 'communicationstoday' ) . '</span> <span class="nav-title">%title</span>',
-					'next_text' => '<span class="nav-subtitle">' . esc_html__( 'Next:', 'communicationstoday' ) . '</span> <span class="nav-title">%title</span>',
-				)
-			);
-
-			// If comments are open or we have at least one comment, load up the comment template.
-			if ( comments_open() || get_comments_number() ) :
-				comments_template();
-			endif;
-
-		endwhile; // End of the loop.
-		?>
-
-	</main><!-- #main -->
-
-<?php
-get_sidebar();
-get_footer();
+<?php get_footer();

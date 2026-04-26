@@ -377,6 +377,74 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // Archive listing "More posts" button (AJAX append).
+    if (typeof communicationstodayArchiveLoadMore !== 'undefined') {
+        const moreBtn = document.querySelector('.archive-load-more-button');
+        const postList = document.getElementById('archive-post-list');
+        if (moreBtn && postList) {
+            moreBtn.addEventListener('click', function () {
+                const page = parseInt(moreBtn.getAttribute('data-page') || '1', 10);
+                const maxPages = parseInt(moreBtn.getAttribute('data-max-pages') || '1', 10);
+                const nextPage = page + 1;
+                if (nextPage > maxPages) {
+                    moreBtn.closest('.archive-load-more-wrap')?.remove();
+                    return;
+                }
+
+                const queryVars = moreBtn.getAttribute('data-query-vars') || '{}';
+                moreBtn.disabled = true;
+                moreBtn.textContent = communicationstodayArchiveLoadMore.i18n.loading;
+
+                const body = new URLSearchParams();
+                body.append('action', 'communicationstoday_archive_load_more');
+                body.append('nonce', communicationstodayArchiveLoadMore.nonce);
+                body.append('page', String(nextPage));
+                body.append('query_vars', queryVars);
+
+                fetch(communicationstodayArchiveLoadMore.ajaxUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+                    body: body.toString(),
+                    credentials: 'same-origin',
+                })
+                    .then(function (response) {
+                        return response.json();
+                    })
+                    .then(function (data) {
+                        if (!data || !data.success || !data.data || typeof data.data.html !== 'string') {
+                            throw new Error('Invalid response');
+                        }
+
+                        if (data.data.html) {
+                            const loadMoreWrap = moreBtn.closest('.archive-load-more-wrap');
+                            if (loadMoreWrap) {
+                                // Keep the button at the very end of list.
+                                loadMoreWrap.insertAdjacentHTML('beforebegin', data.data.html);
+                            } else {
+                                postList.insertAdjacentHTML('beforeend', data.data.html);
+                            }
+                            moreBtn.setAttribute('data-page', String(nextPage));
+                        }
+
+                        if (!data.data.has_more || nextPage >= maxPages) {
+                            moreBtn.closest('.archive-load-more-wrap')?.remove();
+                            return;
+                        }
+
+                        moreBtn.disabled = false;
+                        moreBtn.textContent = communicationstodayArchiveLoadMore.i18n.more;
+                    })
+                    .catch(function () {
+                        moreBtn.disabled = false;
+                        moreBtn.textContent = communicationstodayArchiveLoadMore.i18n.error;
+                        setTimeout(function () {
+                            moreBtn.textContent = communicationstodayArchiveLoadMore.i18n.more;
+                        }, 1200);
+                    });
+            });
+        }
+    }
+
     // Sticky Header Container Functionality
     const headerContainer = document.querySelector('.header-container');
     

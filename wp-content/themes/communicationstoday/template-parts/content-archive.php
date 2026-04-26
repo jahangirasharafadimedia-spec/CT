@@ -36,9 +36,6 @@ if ( '' === trim( wp_strip_all_tags( (string) $excerpt ) ) ) {
 		</a>
 	</div>
 	<div class="listing-article-content">
-		<?php if ( '' !== $cat_label ) : ?>
-		<span class="listing-article-category"><?php echo esc_html( $cat_label ); ?></span>
-		<?php endif; ?>
 		<h2 class="listing-article-title">
 			<a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
 		</h2>
