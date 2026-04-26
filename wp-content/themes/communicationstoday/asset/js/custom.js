@@ -498,12 +498,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const key = (e.key || '').toLowerCase();
         const ctrlShift = e.ctrlKey && e.shiftKey;
 
-        // F12
-        if (e.keyCode === 123) {
-            e.preventDefault();
-            return;
-        }
-
         // Ctrl+Shift+I / Ctrl+Shift+J / Ctrl+Shift+C
         if (ctrlShift && (key === 'i' || key === 'j' || key === 'c')) {
             e.preventDefault();
