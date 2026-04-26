@@ -132,6 +132,11 @@ require get_template_directory() . '/inc/post-types/register.php';
 require get_template_directory() . '/inc/ajax-live-search.php';
 
 /**
+ * Impression admin pages.
+ */
+require get_template_directory() . '/inc/functions/impressions.php';
+
+/**
  * Enqueue scripts and styles.
  */
 function communicationstoday_scripts() {

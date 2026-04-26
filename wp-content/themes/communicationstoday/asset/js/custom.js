@@ -488,4 +488,31 @@ document.addEventListener('DOMContentLoaded', function() {
         // Initial check
         handleScroll();
     }
+
+    // Basic content protection: disable right-click + common devtools shortcuts.
+    document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+    });
+
+    document.addEventListener('keydown', function(e) {
+        const key = (e.key || '').toLowerCase();
+        const ctrlShift = e.ctrlKey && e.shiftKey;
+
+        // F12
+        if (e.keyCode === 123) {
+            e.preventDefault();
+            return;
+        }
+
+        // Ctrl+Shift+I / Ctrl+Shift+J / Ctrl+Shift+C
+        if (ctrlShift && (key === 'i' || key === 'j' || key === 'c')) {
+            e.preventDefault();
+            return;
+        }
+
+        // Ctrl+U (view source)
+        if (e.ctrlKey && key === 'u') {
+            e.preventDefault();
+        }
+    });
 });
