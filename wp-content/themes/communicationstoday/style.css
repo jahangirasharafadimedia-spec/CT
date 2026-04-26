@@ -2093,9 +2093,61 @@ body {
     height: 100%;
 }
 
+
+.article-detail-content-left ul {
+    font-family: var(--font-roboto);
+    font-size: 18px;
+    font-weight: 400;
+    color: #000;
+    line-height: 31px;
+    transition: color 0.3s ease;
+    margin-bottom: 20px;
+    padding-left: 25px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+
+.article-lisitng-banner{
+    width: 320px;
+}
+
+/* Hide everything */
+.itf-pdf-page header,
+.itf-pdf-page footer,
+.itf-pdf-page .sidebar,
+.itf-pdf-page .widget,
+.itf-pdf-page .ads,
+.itf-pdf-page .elementor-location-header,
+.itf-pdf-page .elementor-location-footer {
+    display: none !important;
+}
+
+/* Remove all spacing */
+.itf-pdf-page #content,
+.itf-pdf-page .site,
+.itf-pdf-page .container,
+.itf-pdf-page .row {
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+}
+
+
+
+.itf-pdf-fullscreen iframe {
+    width: 100%;
+    height: 1000px;
+    border: none;
+}
+
+
 .article-lisitng-banner .widget {
     margin: 0 0 20px 0;
 }
+
+
 
 .archive-pagination {
     margin-top: 32px;
@@ -2788,7 +2840,7 @@ body.archive .bottom-ad-banner {
     display: flex;
     flex-direction: column;
     padding: 0px 0;
-    width: 740px;
+    width: 680px;
 }
 
 

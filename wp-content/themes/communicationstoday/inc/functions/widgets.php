@@ -1785,3 +1785,25 @@ add_action(
 );
 
 add_action( 'customize_controls_enqueue_scripts', 'communicationstoday_enqueue_think_tank_widget_admin' );
+
+
+
+
+
+function itf_pdf_shortcode($atts, $content = null) {
+    if (!$content) return '';
+
+    $pdf_url = trim($content);
+
+    add_filter('body_class', function($classes) {
+        $classes[] = 'itf-pdf-page';
+        return $classes;
+    });
+
+    return '
+    <div class="itf-pdf-fullscreen">
+        <iframe src="' . esc_url($pdf_url) . '#toolbar=0&navpanes=0&scrollbar=0"></iframe>
+    </div>
+    ';
+}
+add_shortcode('ITFPDF', 'itf_pdf_shortcode');
