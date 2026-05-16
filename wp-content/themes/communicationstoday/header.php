@@ -1,42 +1,26 @@
 <?php
-
 /**
  * The header for our theme
- *
- * This is the template that displays all of the <head> section and everything up until <div id="content">
  *
  * @link https://developer.wordpress.org/themes/basics/template-files/#template-partials
  *
  * @package Communicationstoday
  */
-
 ?>
+
 <!doctype html>
 <html <?php language_attributes(); ?>>
-
 <head>
-	<meta charset="<?php bloginfo('charset'); ?>">
+	<meta charset="<?php bloginfo( 'charset' ); ?>">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="profile" href="https://gmpg.org/xfn/11">
-
-	<!-- Theme main stylesheet -->
-	<link rel="stylesheet" href="<?php echo esc_url( get_stylesheet_uri() ); ?>">
-
-	<!-- Font Awesome -->
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-	<!-- Swiper CSS -->
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
-
 	<?php wp_head(); ?>
-
-
-
 </head>
 
 <body <?php body_class(); ?>>
-	<?php wp_body_open(); ?>
+<?php wp_body_open(); ?>
 	<div id="page" class="site">
-		<a class="skip-link screen-reader-text" href="#primary"><?php esc_html_e('Skip to content', 'communicationstoday'); ?></a>
+		<a class="skip-link screen-reader-text" href="#primary"><?php esc_html_e( 'Skip to content', 'communicationstoday' ); ?></a>
 
 		<!-- Sidebar Menu -->
 		<div class="sidebar-menu" id="sidebarMenu">
@@ -51,14 +35,14 @@
 				if ( has_nav_menu( 'sidebar-popup' ) ) {
 					wp_nav_menu(
 						array(
-							'theme_location'  => 'sidebar-popup',
-							'container'       => false,
-							'menu_class'      => '',
-							'menu_id'         => '',
-							'items_wrap'      => '%3$s',
-							'depth'           => 2,
-							'fallback_cb'     => false,
-							'walker'          => new Communicationstoday_Sidebar_Nav_Walker(),
+							'theme_location' => 'sidebar-popup',
+							'container'      => false,
+							'menu_class'     => '',
+							'menu_id'        => '',
+							'items_wrap'     => '%3$s',
+							'depth'          => 2,
+							'fallback_cb'    => false,
+							'walker'         => new Communicationstoday_Sidebar_Nav_Walker(),
 						)
 					);
 				} elseif ( current_user_can( 'edit_theme_options' ) ) {
@@ -127,74 +111,42 @@
 				</div>
 			</div>
 
-
-				<div class="nav-bar">
-					<div class="container">
-						<nav class="nav-menu">
-							<div class="nav-item">
-								<a href="#">HOME</a>
-							</div>
-							<div class="nav-item dropdown">
-								<a href="#" class="dropdown-toggle">ENTERPRISE <i class="fas fa-chevron-down"></i></a>
-								<ul class="dropdown-menu">
-									<li><a href="#">Enterprise Solutions</a></li>
-									<li><a href="#">Enterprise News</a></li>
-									<li><a href="#">Enterprise Reports</a></li>
-								</ul>
-							</div>
-							<div class="nav-item dropdown">
-								<a href="#" class="dropdown-toggle">CARRIERS <i class="fas fa-chevron-down"></i></a>
-								<ul class="dropdown-menu">
-									<li><a href="#">Carrier News</a></li>
-									<li><a href="#">Carrier Analysis</a></li>
-									<li><a href="#">Carrier Reports</a></li>
-								</ul>
-							</div>
-							<div class="nav-item dropdown">
-								<a href="#" class="dropdown-toggle">BROADCAST <i class="fas fa-chevron-down"></i></a>
-								<ul class="dropdown-menu">
-									<li><a href="#">Broadcast News</a></li>
-									<li><a href="#">Broadcast Technology</a></li>
-									<li><a href="#">Broadcast Industry</a></li>
-								</ul>
-							</div>
-							<div class="nav-item dropdown">
-								<a href="#" class="dropdown-toggle">DAILY NEWS <i class="fas fa-chevron-down"></i></a>
-								<ul class="dropdown-menu">
-									<li><a href="#">Today's News</a></li>
-									<li><a href="#">Weekly Roundup</a></li>
-									<li><a href="#">News Archive</a></li>
-								</ul>
-							</div>
-							<div class="nav-item">
-								<a href="#">EDITOR'S DESK</a>
-							</div>
-							<div class="nav-item">
-								<a href="#">PERSPECTIVE</a>
-							</div>
-							<div class="nav-item">
-								<a href="#">REPORTS</a>
-							</div>
-							<div class="nav-item">
-								<a href="#">VIDEOS</a>
-							</div>
-							<div class="nav-item">
-								<a href="#">5G</a>
-							</div>
-							<div class="nav-item">
-								<a href="#">IMC 2024</a>
-							</div>
-							<div class="nav-item dropdown">
-								<a href="#" class="dropdown-toggle">NEWSLETTER <i class="fas fa-chevron-down"></i></a>
-								<ul class="dropdown-menu">
-									<li><a href="#">Subscribe</a></li>
-									<li><a href="#">Newsletter Archive</a></li>
-									<li><a href="#">Manage Subscription</a></li>
-								</ul>
-							</div>
-						</nav>
-					</div>
+			<div class="nav-bar">
+				<div class="container">
+					<?php
+					if ( has_nav_menu( 'menu-1' ) ) {
+						wp_nav_menu(
+							array(
+								'theme_location' => 'menu-1',
+								'container'      => false,
+								'menu_class'     => '',
+								'menu_id'        => '',
+								'items_wrap'     => '<nav class="nav-menu" aria-label="%2$s">%3$s</nav>',
+								'depth'          => 2,
+								'fallback_cb'    => false,
+								'walker'         => new Communicationstoday_Primary_Nav_Walker(),
+							)
+						);
+					} elseif ( current_user_can( 'edit_theme_options' ) ) {
+						?>
+					<nav class="nav-menu" aria-label="<?php esc_attr_e( 'Primary menu', 'communicationstoday' ); ?>">
+						<p class="nav-menu-empty">
+							<?php
+							echo esc_html(
+								sprintf(
+									/* translators: %s: Menu location name */
+									__( 'Assign a menu to "%s" under Appearance - Menus.', 'communicationstoday' ),
+									__( 'Primary', 'communicationstoday' )
+								)
+							);
+							?>
+						</p>
+					</nav>
+						<?php
+					}
+					?>
 				</div>
+			</div>
 		</header>
 		<!-- End of Header -->
 

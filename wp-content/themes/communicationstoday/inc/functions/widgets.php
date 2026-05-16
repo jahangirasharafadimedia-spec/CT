@@ -1,11 +1,12 @@
 ﻿<?php
+
 /**
  * Widgets, widget areas, category image (Think Tank), Perspective carousel helpers, widget admin assets.
  *
  * @package Communicationstoday
  */
 
-if ( ! defined( 'ABSPATH' ) ) {
+if (! defined('ABSPATH')) {
 	exit;
 }
 /**
@@ -13,12 +14,13 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @link https://developer.wordpress.org/themes/functionality/sidebars/#registering-a-sidebar
  */
-function communicationstoday_widgets_init() {
+function communicationstoday_widgets_init()
+{
 	register_sidebar(
 		array(
-			'name'          => esc_html__( 'Sidebar', 'communicationstoday' ),
+			'name'          => esc_html__('Sidebar', 'communicationstoday'),
 			'id'            => 'sidebar-1',
-			'description'   => esc_html__( 'Add widgets here.', 'communicationstoday' ),
+			'description'   => esc_html__('Add widgets here.', 'communicationstoday'),
 			'before_widget' => '<section id="%1$s" class="widget %2$s">',
 			'after_widget'  => '</section>',
 			'before_title'  => '<h2 class="widget-title">',
@@ -28,9 +30,9 @@ function communicationstoday_widgets_init() {
 
 	register_sidebar(
 		array(
-			'name'          => esc_html__( 'Homepage widget', 'communicationstoday' ),
+			'name'          => esc_html__('Homepage widget', 'communicationstoday'),
 			'id'            => 'homepage-widget',
-			'description'   => esc_html__( 'Widgets added here will appear on the site front page.', 'communicationstoday' ),
+			'description'   => esc_html__('Widgets added here will appear on the site front page.', 'communicationstoday'),
 			// This sidebar is intended for inserting content directly into existing page markup.
 			// Keep wrappers empty so widgets can output the exact HTML structure needed.
 			'before_widget' => '',
@@ -42,9 +44,9 @@ function communicationstoday_widgets_init() {
 
 	register_sidebar(
 		array(
-			'name'          => esc_html__( 'Leaderboard (top, site-wide)', 'communicationstoday' ),
+			'name'          => esc_html__('Leaderboard (top, site-wide)', 'communicationstoday'),
 			'id'            => 'leaderboard-top',
-			'description'   => esc_html__( 'Shown at the top of every page when this area has content. Use Image, Custom HTML, or an ad widget. Recommended markup: a.top-ad-banner wrapping an img (link + banner).', 'communicationstoday' ),
+			'description'   => esc_html__('Shown at the top of every page when this area has content. Use Image, Custom HTML, or an ad widget. Recommended markup: a.top-ad-banner wrapping an img (link + banner).', 'communicationstoday'),
 			'before_widget' => '',
 			'after_widget'  => '',
 			'before_title'  => '',
@@ -54,9 +56,21 @@ function communicationstoday_widgets_init() {
 
 	register_sidebar(
 		array(
-			'name'          => esc_html__( 'Archive listing — right rail', 'communicationstoday' ),
+			'name'          => __("Editor's Desk — archive sidebar", 'communicationstoday'),
+			'id'            => 'editors-desk-archive',
+			'description'   => __("Right column on the editors-desk category archive only. Add the \"From The Editor's Desk\" widget here to update photo, name, and bio.", 'communicationstoday'),
+			'before_widget' => '',
+			'after_widget'  => '',
+			'before_title'  => '',
+			'after_title'   => '',
+		)
+	);
+
+	register_sidebar(
+		array(
+			'name'          => esc_html__('Archive listing — right rail', 'communicationstoday'),
 			'id'            => 'archive-listing-banner',
-			'description'   => esc_html__( 'Right column on category, tag, date, and author archives (article listing layout). Add Image widgets or Custom HTML.', 'communicationstoday' ),
+			'description'   => esc_html__('Right column on other category/tag archives. Use “Archive side banner” image widgets here.', 'communicationstoday'),
 			'before_widget' => '',
 			'after_widget'  => '',
 			'before_title'  => '',
@@ -66,9 +80,9 @@ function communicationstoday_widgets_init() {
 
 	register_sidebar(
 		array(
-			'name'          => esc_html__( 'Archive listing — mid ad', 'communicationstoday' ),
+			'name'          => esc_html__('Archive listing — mid ad', 'communicationstoday'),
 			'id'            => 'archive-listing-mid-ad',
-			'description'   => esc_html__( 'Optional ad between the first and second post on archive listing pages. Use “Leaderboard banner (bottom)” or Custom HTML with class bottom-ad-banner.', 'communicationstoday' ),
+			'description'   => esc_html__('Banner after Homepage Stories on the front page; between the first and second post on archives (only when an image is set). Use “Leaderboard banner (bottom)” here.', 'communicationstoday'),
 			'before_widget' => '',
 			'after_widget'  => '',
 			'before_title'  => '',
@@ -76,13 +90,13 @@ function communicationstoday_widgets_init() {
 		)
 	);
 
-	for ( $i = 1; $i <= 5; $i++ ) {
+	for ($i = 1; $i <= 5; $i++) {
 		register_sidebar(
 			array(
 				/* translators: %d: footer column number (1–5). */
-				'name'          => sprintf( esc_html__( 'Footer %d', 'communicationstoday' ), $i ),
+				'name'          => sprintf(esc_html__('Footer %d', 'communicationstoday'), $i),
 				'id'            => 'footer-' . $i,
-				'description'   => esc_html__( 'Footer grid column. Use Navigation Menu, Custom HTML, or other widgets.', 'communicationstoday' ),
+				'description'   => esc_html__('Footer grid column. Use Navigation Menu, Custom HTML, or other widgets.', 'communicationstoday'),
 				'before_widget' => '<section id="%1$s" class="widget %2$s">',
 				'after_widget'  => '</section>',
 				'before_title'  => '<h3 class="footer-column-title">',
@@ -91,13 +105,14 @@ function communicationstoday_widgets_init() {
 		);
 	}
 }
-add_action( 'widgets_init', 'communicationstoday_widgets_init' );
+add_action('widgets_init', 'communicationstoday_widgets_init');
 
 /**
  * Print the Homepage widget sidebar on the front page when widgets output HTML.
  * Uses output buffering so the area still appears if legacy/widget output bypasses is_active_sidebar edge cases.
  */
-function communicationstoday_render_homepage_widget_area() {
+function communicationstoday_render_homepage_widget_area()
+{
 	if ( ! is_front_page() ) {
 		return;
 	}
@@ -115,11 +130,12 @@ function communicationstoday_render_homepage_widget_area() {
 /**
  * Leaderboard ad strip: top of every page, only if the sidebar outputs HTML.
  */
-function communicationstoday_render_leaderboard_banner() {
+function communicationstoday_render_leaderboard_banner()
+{
 	ob_start();
-	dynamic_sidebar( 'leaderboard-top' );
+	dynamic_sidebar('leaderboard-top');
 	$html = ob_get_clean();
-	if ( '' === trim( (string) $html ) ) {
+	if ('' === trim((string) $html)) {
 		return;
 	}
 	echo '<div class="top-banner-wrapper"><div class="container">';
@@ -130,26 +146,200 @@ function communicationstoday_render_leaderboard_banner() {
 /**
  * Archive right column widgets (inside .article-lisitng-banner).
  */
-function communicationstoday_render_archive_listing_banner() {
+function communicationstoday_render_archive_listing_banner()
+{
+	$is_editors_desk = function_exists('communicationstoday_is_editors_desk_category_archive') && communicationstoday_is_editors_desk_category_archive();
+
+	$wrap_class = 'article-lisitng-banner-inner';
+	if ($is_editors_desk) {
+		$wrap_class .= ' article-lisitng-banner-inner--editors-desk editors-desk-sidebar-shell';
+	}
+
+	$sidebar_id = $is_editors_desk ? 'editors-desk-archive' : 'archive-listing-banner';
+
 	ob_start();
-	dynamic_sidebar( 'archive-listing-banner' );
+	dynamic_sidebar($sidebar_id);
 	$html = ob_get_clean();
-	if ( '' === trim( (string) $html ) ) {
+
+	// Fallback if editors-desk sidebar is empty but legacy widgets were placed in archive-listing-banner.
+	if ($is_editors_desk && '' === trim((string) $html)) {
+		ob_start();
+		dynamic_sidebar('archive-listing-banner');
+		$html = ob_get_clean();
+	}
+	if ('' === trim((string) $html)) {
 		return;
 	}
+	echo '<div class="' . esc_attr($wrap_class) . '">';
 	echo $html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	echo '</div>';
 }
 
 /**
- * Optional ad after first post on archives (wrapped in .bottom-ad-banner-wrapper).
+ * Post IDs shown in the archive stories grid (excluded from the listing loop).
+ *
+ * @return int[]
  */
-function communicationstoday_render_archive_mid_ad() {
+function communicationstoday_get_archive_stories_grid_post_ids()
+{
+	global $communicationstoday_archive_stories_grid_post_ids;
+
+	if ( ! is_array( $communicationstoday_archive_stories_grid_post_ids ) ) {
+		$communicationstoday_archive_stories_grid_post_ids = array();
+	}
+
+	return $communicationstoday_archive_stories_grid_post_ids;
+}
+
+/**
+ * Store archive stories grid IDs for this request.
+ *
+ * @param int[] $post_ids Post IDs.
+ * @return void
+ */
+function communicationstoday_set_archive_stories_grid_post_ids( array $post_ids )
+{
+	global $communicationstoday_archive_stories_grid_post_ids;
+
+	$communicationstoday_archive_stories_grid_post_ids = array_values( array_unique( array_filter( array_map( 'absint', $post_ids ) ) ) );
+}
+
+/**
+ * Cached HTML for the archive mid-ad sidebar.
+ *
+ * @return string
+ */
+function communicationstoday_get_archive_mid_ad_html()
+{
+	static $html = null;
+
+	if ( null !== $html ) {
+		return $html;
+	}
+
 	ob_start();
 	dynamic_sidebar( 'archive-listing-mid-ad' );
-	$html = ob_get_clean();
-	if ( '' === trim( (string) $html ) ) {
+	$html = trim( (string) ob_get_clean() );
+
+	return $html;
+}
+
+/**
+ * Whether the archive mid-ad area has a banner image.
+ *
+ * @return bool
+ */
+function communicationstoday_archive_mid_ad_has_image()
+{
+	static $has_image = null;
+
+	if ( null !== $has_image ) {
+		return $has_image;
+	}
+
+	$sidebar_widgets = wp_get_sidebars_widgets();
+	$widget_ids      = ! empty( $sidebar_widgets['archive-listing-mid-ad'] ) ? $sidebar_widgets['archive-listing-mid-ad'] : array();
+
+	foreach ( $widget_ids as $widget_id ) {
+		if ( preg_match( '/^communicationstoday_bottom_ad_banner-(\d+)$/', $widget_id, $matches ) ) {
+			$instances = get_option( 'widget_communicationstoday_bottom_ad_banner', array() );
+			$num       = (int) $matches[1];
+			if ( ! empty( $instances[ $num ]['attachment_id'] ) ) {
+				$has_image = true;
+				return true;
+			}
+		}
+	}
+
+	$html = communicationstoday_get_archive_mid_ad_html();
+	$has_image = ( '' !== $html && (bool) preg_match( '/<img\b/i', $html ) );
+
+	return $has_image;
+}
+
+/**
+ * Top stories grid for category archives (first 3 posts, sticky-aware).
+ *
+ * @param int $category_id Category term ID.
+ * @return WP_Post[]
+ */
+function communicationstoday_get_archive_stories_grid_posts( $category_id )
+{
+	$category_id = absint( $category_id );
+	if ( $category_id <= 0 || ! function_exists( 'communicationstoday_get_posts_for_category_with_sticky' ) ) {
+		return array();
+	}
+
+	return communicationstoday_get_posts_for_category_with_sticky( $category_id, 3 );
+}
+
+/**
+ * Render stories-grid block on category archives.
+ *
+ * @param WP_Post[] $story_posts Posts to show.
+ * @param int       $category_id Category term ID.
+ * @return void
+ */
+function communicationstoday_render_archive_stories_grid( array $story_posts, $category_id )
+{
+	$category_id = absint( $category_id );
+	if ( $category_id <= 0 || empty( $story_posts ) ) {
 		return;
 	}
+
+	$cat_name = get_cat_name( $category_id );
+	if ( empty( $cat_name ) ) {
+		return;
+	}
+
+	communicationstoday_set_archive_stories_grid_post_ids( wp_list_pluck( $story_posts, 'ID' ) );
+	?>
+	<div class="stories-grid stories-grid--archive-listing">
+		<?php
+		foreach ( $story_posts as $story_post ) :
+			if ( ! $story_post instanceof WP_Post ) {
+				continue;
+			}
+
+			$post_id   = $story_post->ID;
+			$thumb_url = get_the_post_thumbnail_url( $post_id, 'large' );
+			$title     = get_the_title( $post_id );
+			$link      = get_permalink( $post_id );
+			?>
+			<a href="<?php echo esc_url( $link ); ?>" class="story-card">
+				<div class="story-image">
+					<?php if ( ! empty( $thumb_url ) ) : ?>
+						<img src="<?php echo esc_url( $thumb_url ); ?>" alt="<?php echo esc_attr( $title ); ?>" loading="lazy" decoding="async">
+					<?php endif; ?>
+				</div>
+				<div class="story-image-overlay">
+					<div class="story-content">
+						<span class="category-link"><?php echo esc_html( $cat_name ); ?></span>
+						<h3 class="story-title"><?php echo esc_html( $title ); ?></h3>
+					</div>
+				</div>
+			</a>
+			<?php
+		endforeach;
+		?>
+	</div>
+	<?php
+}
+
+/**
+ * Optional ad after stories grid on archives (wrapped in .bottom-ad-banner-wrapper).
+ */
+function communicationstoday_render_archive_mid_ad()
+{
+	if ( ! communicationstoday_archive_mid_ad_has_image() ) {
+		return;
+	}
+
+	$html = communicationstoday_get_archive_mid_ad_html();
+	if ( '' === $html ) {
+		return;
+	}
+
 	echo '<div class="bottom-ad-banner-wrapper">';
 	echo $html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	echo '</div>';
@@ -177,44 +367,46 @@ add_action(
 /**
  * @param WP_Term $term Term.
  */
-function communicationstoday_category_image_edit_form_field( $term ) {
-	$image_id = absint( get_term_meta( $term->term_id, 'communicationstoday_category_image_id', true ) );
-	$url      = $image_id ? wp_get_attachment_image_url( $image_id, 'medium' ) : '';
-	wp_nonce_field( 'communicationstoday_save_category_image', 'communicationstoday_category_image_nonce' );
-	?>
+function communicationstoday_category_image_edit_form_field($term)
+{
+	$image_id = absint(get_term_meta($term->term_id, 'communicationstoday_category_image_id', true));
+	$url      = $image_id ? wp_get_attachment_image_url($image_id, 'medium') : '';
+	wp_nonce_field('communicationstoday_save_category_image', 'communicationstoday_category_image_nonce');
+?>
 	<tr class="form-field">
-		<th scope="row"><label><?php esc_html_e( 'Category image', 'communicationstoday' ); ?></label></th>
+		<th scope="row"><label><?php esc_html_e('Category image', 'communicationstoday'); ?></label></th>
 		<td>
 			<div class="communicationstoday-cat-image-field">
-				<input type="hidden" name="communicationstoday_category_image_id" value="<?php echo esc_attr( (string) $image_id ); ?>">
+				<input type="hidden" name="communicationstoday_category_image_id" value="<?php echo esc_attr((string) $image_id); ?>">
 				<p>
-					<img src="<?php echo esc_url( (string) $url ); ?>" alt="" class="communicationstoday-cat-img-preview" style="max-width:220px;height:auto;<?php echo $url ? '' : 'display:none;'; ?>">
+					<img src="<?php echo esc_url((string) $url); ?>" alt="" class="communicationstoday-cat-img-preview" style="max-width:220px;height:auto;<?php echo $url ? '' : 'display:none;'; ?>">
 				</p>
 				<p>
-					<button type="button" class="button communicationstoday-cat-select-image"><?php esc_html_e( 'Select image', 'communicationstoday' ); ?></button>
-					<button type="button" class="button communicationstoday-cat-remove-image" style="<?php echo $image_id ? '' : 'display:none;'; ?>"><?php esc_html_e( 'Remove image', 'communicationstoday' ); ?></button>
+					<button type="button" class="button communicationstoday-cat-select-image"><?php esc_html_e('Select image', 'communicationstoday'); ?></button>
+					<button type="button" class="button communicationstoday-cat-remove-image" style="<?php echo $image_id ? '' : 'display:none;'; ?>"><?php esc_html_e('Remove image', 'communicationstoday'); ?></button>
 				</p>
-				<p class="description"><?php esc_html_e( 'Fallback for Think Tank if this category has no ACF image field set.', 'communicationstoday' ); ?></p>
+				<p class="description"><?php esc_html_e('Fallback for Think Tank if this category has no ACF image field set.', 'communicationstoday'); ?></p>
 			</div>
 		</td>
 	</tr>
-	<?php
+<?php
 }
 
-function communicationstoday_category_image_add_form_field() {
-	wp_nonce_field( 'communicationstoday_save_category_image', 'communicationstoday_category_image_nonce' );
-	?>
+function communicationstoday_category_image_add_form_field()
+{
+	wp_nonce_field('communicationstoday_save_category_image', 'communicationstoday_category_image_nonce');
+?>
 	<div class="form-field communicationstoday-cat-image-field">
-		<label><?php esc_html_e( 'Category image', 'communicationstoday' ); ?></label>
+		<label><?php esc_html_e('Category image', 'communicationstoday'); ?></label>
 		<input type="hidden" name="communicationstoday_category_image_id" value="">
 		<p>
 			<img src="" alt="" class="communicationstoday-cat-img-preview" style="display:none;max-width:220px;height:auto;">
 		</p>
 		<p>
-			<button type="button" class="button communicationstoday-cat-select-image"><?php esc_html_e( 'Select image', 'communicationstoday' ); ?></button>
-			<button type="button" class="button communicationstoday-cat-remove-image" style="display:none;"><?php esc_html_e( 'Remove image', 'communicationstoday' ); ?></button>
+			<button type="button" class="button communicationstoday-cat-select-image"><?php esc_html_e('Select image', 'communicationstoday'); ?></button>
+			<button type="button" class="button communicationstoday-cat-remove-image" style="display:none;"><?php esc_html_e('Remove image', 'communicationstoday'); ?></button>
 		</p>
-		<p class="description"><?php esc_html_e( 'Fallback for Think Tank if this category has no ACF image field set.', 'communicationstoday' ); ?></p>
+		<p class="description"><?php esc_html_e('Fallback for Think Tank if this category has no ACF image field set.', 'communicationstoday'); ?></p>
 	</div>
 	<?php
 }
@@ -225,21 +417,22 @@ function communicationstoday_category_image_add_form_field() {
  * @param mixed $value Field value.
  * @return int Attachment ID or 0.
  */
-function communicationstoday_acf_image_value_to_attachment_id( $value ) {
-	if ( is_numeric( $value ) ) {
-		return absint( $value );
+function communicationstoday_acf_image_value_to_attachment_id($value)
+{
+	if (is_numeric($value)) {
+		return absint($value);
 	}
-	if ( is_array( $value ) ) {
-		if ( isset( $value['ID'] ) ) {
-			return absint( $value['ID'] );
+	if (is_array($value)) {
+		if (isset($value['ID'])) {
+			return absint($value['ID']);
 		}
-		if ( isset( $value['id'] ) ) {
-			return absint( $value['id'] );
+		if (isset($value['id'])) {
+			return absint($value['id']);
 		}
 	}
-	if ( is_string( $value ) && $value !== '' && filter_var( $value, FILTER_VALIDATE_URL ) ) {
-		$found = attachment_url_to_postid( $value );
-		return $found ? absint( $found ) : 0;
+	if (is_string($value) && $value !== '' && filter_var($value, FILTER_VALIDATE_URL)) {
+		$found = attachment_url_to_postid($value);
+		return $found ? absint($found) : 0;
 	}
 	return 0;
 }
@@ -250,21 +443,22 @@ function communicationstoday_acf_image_value_to_attachment_id( $value ) {
  * @param array $fields Field definitions from acf_get_fields().
  * @return string[]
  */
-function communicationstoday_acf_collect_category_image_field_names( $fields ) {
+function communicationstoday_acf_collect_category_image_field_names($fields)
+{
 	$names = array();
-	if ( ! is_array( $fields ) ) {
+	if (! is_array($fields)) {
 		return $names;
 	}
-	foreach ( $fields as $field ) {
-		if ( empty( $field['name'] ) || empty( $field['type'] ) ) {
+	foreach ($fields as $field) {
+		if (empty($field['name']) || empty($field['type'])) {
 			continue;
 		}
-		if ( 'image' === $field['type'] ) {
+		if ('image' === $field['type']) {
 			$names[] = $field['name'];
 			continue;
 		}
-		if ( 'group' === $field['type'] && ! empty( $field['sub_fields'] ) && is_array( $field['sub_fields'] ) ) {
-			$names = array_merge( $names, communicationstoday_acf_collect_category_image_field_names( $field['sub_fields'] ) );
+		if ('group' === $field['type'] && ! empty($field['sub_fields']) && is_array($field['sub_fields'])) {
+			$names = array_merge($names, communicationstoday_acf_collect_category_image_field_names($field['sub_fields']));
 		}
 	}
 	return $names;
@@ -279,57 +473,58 @@ function communicationstoday_acf_collect_category_image_field_names( $fields ) {
  * @param int $term_id Category term ID.
  * @return int Attachment ID or 0.
  */
-function communicationstoday_get_think_tank_category_image_attachment_id( $term_id ) {
-	$term_id = absint( $term_id );
-	if ( ! $term_id ) {
+function communicationstoday_get_think_tank_category_image_attachment_id($term_id)
+{
+	$term_id = absint($term_id);
+	if (! $term_id) {
 		return 0;
 	}
 
-	$term = get_term( $term_id, 'category' );
-	if ( ! $term || is_wp_error( $term ) ) {
+	$term = get_term($term_id, 'category');
+	if (! $term || is_wp_error($term)) {
 		return 0;
 	}
 
 	$acf_context = 'category_' . $term_id;
 
-	if ( function_exists( 'get_field' ) && function_exists( 'acf_get_field_groups' ) && function_exists( 'acf_get_field_group_visibility' ) ) {
-		$screen = array( 'taxonomy' => 'category' );
+	if (function_exists('get_field') && function_exists('acf_get_field_groups') && function_exists('acf_get_field_group_visibility')) {
+		$screen = array('taxonomy' => 'category');
 
-		$preferred = apply_filters( 'communicationstoday_think_tank_acf_category_image_field_names', array() );
-		if ( is_array( $preferred ) ) {
-			foreach ( $preferred as $acf_name ) {
-				if ( ! is_string( $acf_name ) || $acf_name === '' ) {
+		$preferred = apply_filters('communicationstoday_think_tank_acf_category_image_field_names', array());
+		if (is_array($preferred)) {
+			foreach ($preferred as $acf_name) {
+				if (! is_string($acf_name) || $acf_name === '') {
 					continue;
 				}
-				$val = get_field( $acf_name, $acf_context );
-				$id  = communicationstoday_acf_image_value_to_attachment_id( $val );
-				if ( $id > 0 ) {
+				$val = get_field($acf_name, $acf_context);
+				$id  = communicationstoday_acf_image_value_to_attachment_id($val);
+				if ($id > 0) {
 					return $id;
 				}
 			}
 		}
 
 		$groups = acf_get_field_groups();
-		if ( is_array( $groups ) ) {
-			foreach ( $groups as $group ) {
-				if ( ! acf_get_field_group_visibility( $group, $screen ) ) {
+		if (is_array($groups)) {
+			foreach ($groups as $group) {
+				if (! acf_get_field_group_visibility($group, $screen)) {
 					continue;
 				}
-				$group_key = ! empty( $group['key'] ) ? $group['key'] : 0;
-				if ( ! $group_key && ! empty( $group['ID'] ) ) {
+				$group_key = ! empty($group['key']) ? $group['key'] : 0;
+				if (! $group_key && ! empty($group['ID'])) {
 					$group_key = $group['ID'];
 				}
-				if ( ! $group_key || ! function_exists( 'acf_get_fields' ) ) {
+				if (! $group_key || ! function_exists('acf_get_fields')) {
 					continue;
 				}
-				$fields = acf_get_fields( $group_key );
-				if ( ! is_array( $fields ) ) {
+				$fields = acf_get_fields($group_key);
+				if (! is_array($fields)) {
 					continue;
 				}
-				foreach ( communicationstoday_acf_collect_category_image_field_names( $fields ) as $name ) {
-					$val = get_field( $name, $acf_context );
-					$id  = communicationstoday_acf_image_value_to_attachment_id( $val );
-					if ( $id > 0 ) {
+				foreach (communicationstoday_acf_collect_category_image_field_names($fields) as $name) {
+					$val = get_field($name, $acf_context);
+					$id  = communicationstoday_acf_image_value_to_attachment_id($val);
+					if ($id > 0) {
 						return $id;
 					}
 				}
@@ -337,58 +532,60 @@ function communicationstoday_get_think_tank_category_image_attachment_id( $term_
 		}
 	}
 
-	return absint( get_term_meta( $term_id, 'communicationstoday_category_image_id', true ) );
+	return absint(get_term_meta($term_id, 'communicationstoday_category_image_id', true));
 }
 
 /**
  * @param int $term_id Term ID.
  */
-function communicationstoday_category_image_save( $term_id ) {
-	if ( ! isset( $_POST['communicationstoday_category_image_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['communicationstoday_category_image_nonce'] ) ), 'communicationstoday_save_category_image' ) ) {
+function communicationstoday_category_image_save($term_id)
+{
+	if (! isset($_POST['communicationstoday_category_image_nonce']) || ! wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['communicationstoday_category_image_nonce'])), 'communicationstoday_save_category_image')) {
 		return;
 	}
-	if ( ! current_user_can( 'manage_categories' ) ) {
+	if (! current_user_can('manage_categories')) {
 		return;
 	}
-	$id = isset( $_POST['communicationstoday_category_image_id'] ) ? absint( wp_unslash( $_POST['communicationstoday_category_image_id'] ) ) : 0;
-	if ( $id > 0 ) {
-		update_term_meta( $term_id, 'communicationstoday_category_image_id', $id );
+	$id = isset($_POST['communicationstoday_category_image_id']) ? absint(wp_unslash($_POST['communicationstoday_category_image_id'])) : 0;
+	if ($id > 0) {
+		update_term_meta($term_id, 'communicationstoday_category_image_id', $id);
 	} else {
-		delete_term_meta( $term_id, 'communicationstoday_category_image_id' );
+		delete_term_meta($term_id, 'communicationstoday_category_image_id');
 	}
 }
 
-add_action( 'category_add_form_fields', 'communicationstoday_category_image_add_form_field' );
-add_action( 'category_edit_form_fields', 'communicationstoday_category_image_edit_form_field', 10, 1 );
-add_action( 'created_category', 'communicationstoday_category_image_save', 10, 1 );
-add_action( 'edited_category', 'communicationstoday_category_image_save', 10, 1 );
+add_action('category_add_form_fields', 'communicationstoday_category_image_add_form_field');
+add_action('category_edit_form_fields', 'communicationstoday_category_image_edit_form_field', 10, 1);
+add_action('created_category', 'communicationstoday_category_image_save', 10, 1);
+add_action('edited_category', 'communicationstoday_category_image_save', 10, 1);
 
 /**
  * Scripts for category image on Categories screen.
  *
  * @param string $hook_suffix Current admin page.
  */
-function communicationstoday_category_image_admin_assets( $hook_suffix ) {
+function communicationstoday_category_image_admin_assets($hook_suffix)
+{
 	$taxonomy = '';
-	if ( 'edit-tags.php' === $hook_suffix && isset( $_GET['taxonomy'] ) ) {
-		$taxonomy = sanitize_key( wp_unslash( $_GET['taxonomy'] ) );
-	} elseif ( 'term.php' === $hook_suffix && function_exists( 'get_current_screen' ) ) {
+	if ('edit-tags.php' === $hook_suffix && isset($_GET['taxonomy'])) {
+		$taxonomy = sanitize_key(wp_unslash($_GET['taxonomy']));
+	} elseif ('term.php' === $hook_suffix && function_exists('get_current_screen')) {
 		$screen = get_current_screen();
-		if ( $screen && ! empty( $screen->taxonomy ) ) {
+		if ($screen && ! empty($screen->taxonomy)) {
 			$taxonomy = $screen->taxonomy;
 		}
 	}
-	if ( 'category' !== $taxonomy ) {
+	if ('category' !== $taxonomy) {
 		return;
 	}
-	if ( wp_script_is( 'communicationstoday-category-image-admin', 'enqueued' ) ) {
+	if (wp_script_is('communicationstoday-category-image-admin', 'enqueued')) {
 		return;
 	}
 	wp_enqueue_media();
 	wp_enqueue_script(
 		'communicationstoday-category-image-admin',
 		get_template_directory_uri() . '/js/category-image-admin.js',
-		array( 'jquery' ),
+		array('jquery'),
 		_S_VERSION,
 		true
 	);
@@ -396,28 +593,31 @@ function communicationstoday_category_image_admin_assets( $hook_suffix ) {
 		'communicationstoday-category-image-admin',
 		'communicationstodayCategoryImage',
 		array(
-			'select' => esc_html__( 'Choose image', 'communicationstoday' ),
-			'use'    => esc_html__( 'Use image', 'communicationstoday' ),
+			'select' => esc_html__('Choose image', 'communicationstoday'),
+			'use'    => esc_html__('Use image', 'communicationstoday'),
 		)
 	);
 }
-add_action( 'admin_enqueue_scripts', 'communicationstoday_category_image_admin_assets', 20 );
+add_action('admin_enqueue_scripts', 'communicationstoday_category_image_admin_assets', 20);
 
 /**
  * Homepage Stories Widget:
  * Admin me category select karein, aur front page par us category ki latest 3 posts show hon.
  */
-class Communicationstoday_Homepage_Stories_Widget extends WP_Widget {
-	public function __construct() {
+class Communicationstoday_Homepage_Stories_Widget extends WP_Widget
+{
+	public function __construct()
+	{
 		parent::__construct(
 			'communicationstoday_homepage_stories',
-			esc_html__( 'Homepage Stories', 'communicationstoday' ),
-			array( 'description' => esc_html__( 'Shows latest 3 posts from selected category.', 'communicationstoday' ) )
+			esc_html__('Homepage Stories', 'communicationstoday'),
+			array('description' => esc_html__('Shows latest 3 posts from selected category.', 'communicationstoday'))
 		);
 	}
 
-	public function form( $instance ) {
-		$category_id = isset( $instance['category_id'] ) ? (int) $instance['category_id'] : 0;
+	public function form($instance)
+	{
+		$category_id = isset($instance['category_id']) ? (int) $instance['category_id'] : 0;
 
 		$categories = get_categories(
 			array(
@@ -425,114 +625,114 @@ class Communicationstoday_Homepage_Stories_Widget extends WP_Widget {
 				'hide_empty' => false,
 			)
 		);
-		?>
+	?>
 		<p>
-			<label for="<?php echo esc_attr( $this->get_field_id( 'category_id' ) ); ?>">
-				<?php esc_html_e( 'Select category', 'communicationstoday' ); ?>
+			<label for="<?php echo esc_attr($this->get_field_id('category_id')); ?>">
+				<?php esc_html_e('Select category', 'communicationstoday'); ?>
 			</label>
 		</p>
 		<p>
-			<select class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'category_id' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'category_id' ) ); ?>">
-				<option value="0"><?php esc_html_e( 'Choose category', 'communicationstoday' ); ?></option>
-				<?php foreach ( $categories as $cat ) : ?>
-					<option value="<?php echo esc_attr( (int) $cat->term_id ); ?>" <?php selected( $category_id, (int) $cat->term_id ); ?>>
-						<?php echo esc_html( $cat->name ); ?>
+			<select class="widefat" id="<?php echo esc_attr($this->get_field_id('category_id')); ?>" name="<?php echo esc_attr($this->get_field_name('category_id')); ?>">
+				<option value="0"><?php esc_html_e('Choose category', 'communicationstoday'); ?></option>
+				<?php foreach ($categories as $cat) : ?>
+					<option value="<?php echo esc_attr((int) $cat->term_id); ?>" <?php selected($category_id, (int) $cat->term_id); ?>>
+						<?php echo esc_html($cat->name); ?>
 					</option>
 				<?php endforeach; ?>
 			</select>
 		</p>
-		<?php
+	<?php
 	}
 
-	public function update( $new_instance, $old_instance ) {
+	public function update($new_instance, $old_instance)
+	{
 		$instance = array();
-		$instance['category_id'] = isset( $new_instance['category_id'] ) ? absint( $new_instance['category_id'] ) : 0;
+		$instance['category_id'] = isset($new_instance['category_id']) ? absint($new_instance['category_id']) : 0;
 		return $instance;
 	}
 
-	public function widget( $args, $instance ) {
-		$category_id = isset( $instance['category_id'] ) ? (int) $instance['category_id'] : 0;
+	public function widget($args, $instance)
+	{
+		$category_id = isset($instance['category_id']) ? (int) $instance['category_id'] : 0;
 
-		if ( $category_id <= 0 ) {
+		if ($category_id <= 0) {
 			// Keep front-page clean; no extra text inside story grid.
 			return;
 		}
 
-		$cat_name = get_cat_name( $category_id );
-		if ( empty( $cat_name ) ) {
+		$cat_name = get_cat_name($category_id);
+		if (empty($cat_name)) {
 			return;
 		}
 
-		$query = new WP_Query(
-			array(
-				'post_type'           => 'post',
-				'cat'                 => $category_id,
-				'posts_per_page'      => 3,
-				'ignore_sticky_posts' => true,
-				'no_found_rows'       => true,
-			)
-		);
+		$story_posts = communicationstoday_get_posts_for_category_with_sticky($category_id, 3);
 
-		if ( ! $query->have_posts() ) {
-			wp_reset_postdata();
+		if (empty($story_posts)) {
 			return;
-		}?>
+		} ?>
 		<div class="stories-grid">
-<?php 
-		while ( $query->have_posts() ) :
-			$query->the_post();
-			$post_id = get_the_ID();
-
-			$thumb_url = get_the_post_thumbnail_url( $post_id, 'large' );
-			$title     = get_the_title( $post_id );
-			$link      = get_permalink( $post_id );
-			?>
-			<a href="<?php echo esc_url( $link ); ?>" class="story-card">
-				<div class="story-image">
-					<?php if ( ! empty( $thumb_url ) ) : ?>
-						<img src="<?php echo esc_url( $thumb_url ); ?>" alt="<?php echo esc_attr( $title ); ?>">
-					<?php endif; ?>
-				</div>
-				<div class="story-image-overlay">
-					<div class="story-content">
-						<span class="category-link"><?php echo esc_html( $cat_name ); ?></span>
-						<h3 class="story-title"><?php echo esc_html( $title ); ?></h3>
-					</div>
-				</div>
-			</a>
 			<?php
-		endwhile; ?>
+			foreach ($story_posts as $story_post) :
+				$post_id = $story_post->ID;
+				setup_postdata($story_post);
 
-		 </div>
+				$thumb_url = get_the_post_thumbnail_url($post_id, 'large');
+				$title     = get_the_title($post_id);
+				$link      = get_permalink($post_id);
+			?>
+				<a href="<?php echo esc_url($link); ?>" class="story-card">
+					<div class="story-image">
+						<?php if (! empty($thumb_url)) : ?>
+							<img src="<?php echo esc_url($thumb_url); ?>" alt="<?php echo esc_attr($title); ?>">
+						<?php endif; ?>
+					</div>
+					<div class="story-image-overlay">
+						<div class="story-content">
+							<span class="category-link"><?php echo esc_html($cat_name); ?></span>
+							<h3 class="story-title"><?php echo esc_html($title); ?></h3>
+						</div>
+					</div>
+				</a>
+			<?php
+			endforeach;
+			wp_reset_postdata();
+			?>
+
+		</div>
 		<?php
-		wp_reset_postdata();
+		if ( function_exists( 'communicationstoday_render_archive_mid_ad' ) ) {
+			communicationstoday_render_archive_mid_ad();
+		}
 	}
 }
 
 /**
  * Think Tank: add to any widget area (Sidebar, Homepage widget, etc.).
  */
-class Communicationstoday_Think_Tank_Widget extends WP_Widget {
+class Communicationstoday_Think_Tank_Widget extends WP_Widget
+{
 
-	public function __construct() {
+	public function __construct()
+	{
 		parent::__construct(
 			'communicationstoday_think_tank',
-			esc_html__( 'Think Tank', 'communicationstoday' ),
+			esc_html__('Think Tank', 'communicationstoday'),
 			array(
-				'description' => esc_html__( 'Top stories: label, category, Side ads 1 & 2 each with image + optional link URL.', 'communicationstoday' ),
+				'description' => esc_html__('Top stories: label, category, Side ads 1 & 2 each with image + optional link URL.', 'communicationstoday'),
 			)
 		);
 	}
 
-	public function form( $instance ) {
-		$header_label        = isset( $instance['header_label'] ) ? $instance['header_label'] : 'THINK TANK';
-		$category_id         = isset( $instance['category_id'] ) ? (int) $instance['category_id'] : 0;
-		$ad1_attachment_id   = isset( $instance['ad1_attachment_id'] ) ? absint( $instance['ad1_attachment_id'] ) : 0;
-		$ad1_url             = isset( $instance['ad1_url'] ) ? $instance['ad1_url'] : '';
-		$ad2_attachment_id   = isset( $instance['ad2_attachment_id'] ) ? absint( $instance['ad2_attachment_id'] ) : 0;
-		$ad2_url             = isset( $instance['ad2_url'] ) ? $instance['ad2_url'] : '';
-		$ad1_preview_url     = $ad1_attachment_id ? wp_get_attachment_image_url( $ad1_attachment_id, 'medium' ) : '';
-		$ad2_preview_url     = $ad2_attachment_id ? wp_get_attachment_image_url( $ad2_attachment_id, 'medium' ) : '';
+	public function form($instance)
+	{
+		$header_label        = isset($instance['header_label']) ? $instance['header_label'] : 'THINK TANK';
+		$category_id         = isset($instance['category_id']) ? (int) $instance['category_id'] : 0;
+		$ad1_attachment_id   = isset($instance['ad1_attachment_id']) ? absint($instance['ad1_attachment_id']) : 0;
+		$ad1_url             = isset($instance['ad1_url']) ? $instance['ad1_url'] : '';
+		$ad2_attachment_id   = isset($instance['ad2_attachment_id']) ? absint($instance['ad2_attachment_id']) : 0;
+		$ad2_url             = isset($instance['ad2_url']) ? $instance['ad2_url'] : '';
+		$ad1_preview_url     = $ad1_attachment_id ? wp_get_attachment_image_url($ad1_attachment_id, 'medium') : '';
+		$ad2_preview_url     = $ad2_attachment_id ? wp_get_attachment_image_url($ad2_attachment_id, 'medium') : '';
 
 		$categories = get_categories(
 			array(
@@ -540,134 +740,136 @@ class Communicationstoday_Think_Tank_Widget extends WP_Widget {
 				'hide_empty' => false,
 			)
 		);
-		?>
+	?>
 		<p>
-			<label for="<?php echo esc_attr( $this->get_field_id( 'header_label' ) ); ?>"><?php esc_html_e( 'Section label', 'communicationstoday' ); ?></label>
-			<input class="widefat" type="text" id="<?php echo esc_attr( $this->get_field_id( 'header_label' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'header_label' ) ); ?>" value="<?php echo esc_attr( $header_label ); ?>">
+			<label for="<?php echo esc_attr($this->get_field_id('header_label')); ?>"><?php esc_html_e('Section label', 'communicationstoday'); ?></label>
+			<input class="widefat" type="text" id="<?php echo esc_attr($this->get_field_id('header_label')); ?>" name="<?php echo esc_attr($this->get_field_name('header_label')); ?>" value="<?php echo esc_attr($header_label); ?>">
 		</p>
 		<p>
-			<label for="<?php echo esc_attr( $this->get_field_id( 'category_id' ) ); ?>"><?php esc_html_e( 'Category (main block)', 'communicationstoday' ); ?></label>
-			<select class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'category_id' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'category_id' ) ); ?>">
-				<option value="0"><?php esc_html_e( 'Choose category', 'communicationstoday' ); ?></option>
-				<?php foreach ( $categories as $cat ) : ?>
-					<option value="<?php echo esc_attr( (int) $cat->term_id ); ?>" <?php selected( $category_id, (int) $cat->term_id ); ?>>
-						<?php echo esc_html( $cat->name ); ?>
+			<label for="<?php echo esc_attr($this->get_field_id('category_id')); ?>"><?php esc_html_e('Category (main block)', 'communicationstoday'); ?></label>
+			<select class="widefat" id="<?php echo esc_attr($this->get_field_id('category_id')); ?>" name="<?php echo esc_attr($this->get_field_name('category_id')); ?>">
+				<option value="0"><?php esc_html_e('Choose category', 'communicationstoday'); ?></option>
+				<?php foreach ($categories as $cat) : ?>
+					<option value="<?php echo esc_attr((int) $cat->term_id); ?>" <?php selected($category_id, (int) $cat->term_id); ?>>
+						<?php echo esc_html($cat->name); ?>
 					</option>
 				<?php endforeach; ?>
 			</select>
 			<small>
-				<?php esc_html_e( 'Main block uses the ACF image on this category (taxonomy fields), or the theme “Category image” fallback. “See more” uses the category archive. Side ad links are optional; if empty they use the category archive.', 'communicationstoday' ); ?>
+				<?php esc_html_e('Main block uses the ACF image on this category (taxonomy fields), or the theme “Category image” fallback. “See more” uses the category archive. Side ad links are optional; if empty they use the category archive.', 'communicationstoday'); ?>
 			</small>
 		</p>
 		<div class="communicationstoday-think-tank-ad-media">
-			<p><strong><?php esc_html_e( 'Side ad 1', 'communicationstoday' ); ?></strong></p>
+			<p><strong><?php esc_html_e('Side ad 1', 'communicationstoday'); ?></strong></p>
 			<p>
-				<label><?php esc_html_e( 'Image', 'communicationstoday' ); ?></label><br>
-				<input type="hidden" class="think-tank-attachment-id" id="<?php echo esc_attr( $this->get_field_id( 'ad1_attachment_id' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'ad1_attachment_id' ) ); ?>" value="<?php echo esc_attr( (string) $ad1_attachment_id ); ?>">
-				<img src="<?php echo esc_url( (string) $ad1_preview_url ); ?>" alt="" class="think-tank-attachment-preview" style="max-width:100%;height:auto;<?php echo $ad1_preview_url ? '' : 'display:none;'; ?>">
+				<label><?php esc_html_e('Image', 'communicationstoday'); ?></label><br>
+				<input type="hidden" class="think-tank-attachment-id" id="<?php echo esc_attr($this->get_field_id('ad1_attachment_id')); ?>" name="<?php echo esc_attr($this->get_field_name('ad1_attachment_id')); ?>" value="<?php echo esc_attr((string) $ad1_attachment_id); ?>">
+				<img src="<?php echo esc_url((string) $ad1_preview_url); ?>" alt="" class="think-tank-attachment-preview" style="max-width:100%;height:auto;<?php echo $ad1_preview_url ? '' : 'display:none;'; ?>">
 			</p>
 			<p>
-				<button type="button" class="button communicationstoday-think-tank-media"><?php esc_html_e( 'Select image', 'communicationstoday' ); ?></button>
-				<button type="button" class="button communicationstoday-think-tank-remove" style="<?php echo $ad1_attachment_id ? '' : 'display:none;'; ?>"><?php esc_html_e( 'Remove image', 'communicationstoday' ); ?></button>
+				<button type="button" class="button communicationstoday-think-tank-media"><?php esc_html_e('Select image', 'communicationstoday'); ?></button>
+				<button type="button" class="button communicationstoday-think-tank-remove" style="<?php echo $ad1_attachment_id ? '' : 'display:none;'; ?>"><?php esc_html_e('Remove image', 'communicationstoday'); ?></button>
 			</p>
 			<p>
-				<label for="<?php echo esc_attr( $this->get_field_id( 'ad1_url' ) ); ?>"><?php esc_html_e( 'Link URL (optional)', 'communicationstoday' ); ?></label>
-				<input class="widefat" type="url" id="<?php echo esc_attr( $this->get_field_id( 'ad1_url' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'ad1_url' ) ); ?>" value="<?php echo esc_attr( $ad1_url ); ?>">
+				<label for="<?php echo esc_attr($this->get_field_id('ad1_url')); ?>"><?php esc_html_e('Link URL (optional)', 'communicationstoday'); ?></label>
+				<input class="widefat" type="url" id="<?php echo esc_attr($this->get_field_id('ad1_url')); ?>" name="<?php echo esc_attr($this->get_field_name('ad1_url')); ?>" value="<?php echo esc_attr($ad1_url); ?>">
 			</p>
 		</div>
 		<div class="communicationstoday-think-tank-ad-media">
-			<p><strong><?php esc_html_e( 'Side ad 2', 'communicationstoday' ); ?></strong></p>
+			<p><strong><?php esc_html_e('Side ad 2', 'communicationstoday'); ?></strong></p>
 			<p>
-				<label><?php esc_html_e( 'Image', 'communicationstoday' ); ?></label><br>
-				<input type="hidden" class="think-tank-attachment-id" id="<?php echo esc_attr( $this->get_field_id( 'ad2_attachment_id' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'ad2_attachment_id' ) ); ?>" value="<?php echo esc_attr( (string) $ad2_attachment_id ); ?>">
-				<img src="<?php echo esc_url( (string) $ad2_preview_url ); ?>" alt="" class="think-tank-attachment-preview" style="max-width:100%;height:auto;<?php echo $ad2_preview_url ? '' : 'display:none;'; ?>">
+				<label><?php esc_html_e('Image', 'communicationstoday'); ?></label><br>
+				<input type="hidden" class="think-tank-attachment-id" id="<?php echo esc_attr($this->get_field_id('ad2_attachment_id')); ?>" name="<?php echo esc_attr($this->get_field_name('ad2_attachment_id')); ?>" value="<?php echo esc_attr((string) $ad2_attachment_id); ?>">
+				<img src="<?php echo esc_url((string) $ad2_preview_url); ?>" alt="" class="think-tank-attachment-preview" style="max-width:100%;height:auto;<?php echo $ad2_preview_url ? '' : 'display:none;'; ?>">
 			</p>
 			<p>
-				<button type="button" class="button communicationstoday-think-tank-media"><?php esc_html_e( 'Select image', 'communicationstoday' ); ?></button>
-				<button type="button" class="button communicationstoday-think-tank-remove" style="<?php echo $ad2_attachment_id ? '' : 'display:none;'; ?>"><?php esc_html_e( 'Remove image', 'communicationstoday' ); ?></button>
+				<button type="button" class="button communicationstoday-think-tank-media"><?php esc_html_e('Select image', 'communicationstoday'); ?></button>
+				<button type="button" class="button communicationstoday-think-tank-remove" style="<?php echo $ad2_attachment_id ? '' : 'display:none;'; ?>"><?php esc_html_e('Remove image', 'communicationstoday'); ?></button>
 			</p>
 			<p>
-				<label for="<?php echo esc_attr( $this->get_field_id( 'ad2_url' ) ); ?>"><?php esc_html_e( 'Link URL (optional)', 'communicationstoday' ); ?></label>
-				<input class="widefat" type="url" id="<?php echo esc_attr( $this->get_field_id( 'ad2_url' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'ad2_url' ) ); ?>" value="<?php echo esc_attr( $ad2_url ); ?>">
+				<label for="<?php echo esc_attr($this->get_field_id('ad2_url')); ?>"><?php esc_html_e('Link URL (optional)', 'communicationstoday'); ?></label>
+				<input class="widefat" type="url" id="<?php echo esc_attr($this->get_field_id('ad2_url')); ?>" name="<?php echo esc_attr($this->get_field_name('ad2_url')); ?>" value="<?php echo esc_attr($ad2_url); ?>">
 			</p>
-			<p><small><?php esc_html_e( 'If empty, this ad links to the selected category archive.', 'communicationstoday' ); ?></small></p>
+			<p><small><?php esc_html_e('If empty, this ad links to the selected category archive.', 'communicationstoday'); ?></small></p>
 		</div>
-		<?php
+	<?php
 	}
 
-	public function update( $new_instance, $old_instance ) {
+	public function update($new_instance, $old_instance)
+	{
 		$instance                        = array();
-		$instance['header_label']        = isset( $new_instance['header_label'] ) ? sanitize_text_field( wp_unslash( $new_instance['header_label'] ) ) : '';
-		$instance['category_id']       = isset( $new_instance['category_id'] ) ? absint( $new_instance['category_id'] ) : 0;
-		$instance['ad1_attachment_id'] = isset( $new_instance['ad1_attachment_id'] ) ? absint( $new_instance['ad1_attachment_id'] ) : 0;
-		$instance['ad1_url']           = isset( $new_instance['ad1_url'] ) ? esc_url_raw( wp_unslash( $new_instance['ad1_url'] ) ) : '';
-		$instance['ad2_attachment_id'] = isset( $new_instance['ad2_attachment_id'] ) ? absint( $new_instance['ad2_attachment_id'] ) : 0;
-		$instance['ad2_url']           = isset( $new_instance['ad2_url'] ) ? esc_url_raw( wp_unslash( $new_instance['ad2_url'] ) ) : '';
+		$instance['header_label']        = isset($new_instance['header_label']) ? sanitize_text_field(wp_unslash($new_instance['header_label'])) : '';
+		$instance['category_id']       = isset($new_instance['category_id']) ? absint($new_instance['category_id']) : 0;
+		$instance['ad1_attachment_id'] = isset($new_instance['ad1_attachment_id']) ? absint($new_instance['ad1_attachment_id']) : 0;
+		$instance['ad1_url']           = isset($new_instance['ad1_url']) ? esc_url_raw(wp_unslash($new_instance['ad1_url'])) : '';
+		$instance['ad2_attachment_id'] = isset($new_instance['ad2_attachment_id']) ? absint($new_instance['ad2_attachment_id']) : 0;
+		$instance['ad2_url']           = isset($new_instance['ad2_url']) ? esc_url_raw(wp_unslash($new_instance['ad2_url'])) : '';
 		return $instance;
 	}
 
-	public function widget( $args, $instance ) {
-		$header_label = ! empty( $instance['header_label'] ) ? $instance['header_label'] : 'THINK TANK';
-		$category_id  = isset( $instance['category_id'] ) ? (int) $instance['category_id'] : 0;
-		$category_link = ( $category_id > 0 ) ? get_category_link( $category_id ) : '#';
+	public function widget($args, $instance)
+	{
+		$header_label = ! empty($instance['header_label']) ? $instance['header_label'] : 'THINK TANK';
+		$category_id  = isset($instance['category_id']) ? (int) $instance['category_id'] : 0;
+		$category_link = ($category_id > 0) ? get_category_link($category_id) : '#';
 		$see_more_url  = $category_link;
 
-		$ad1_attachment_id = isset( $instance['ad1_attachment_id'] ) ? absint( $instance['ad1_attachment_id'] ) : 0;
-		$ad1_image         = $ad1_attachment_id ? (string) wp_get_attachment_image_url( $ad1_attachment_id, 'full' ) : '';
-		if ( ! $ad1_image && ! empty( $instance['ad1_image'] ) ) {
+		$ad1_attachment_id = isset($instance['ad1_attachment_id']) ? absint($instance['ad1_attachment_id']) : 0;
+		$ad1_image         = $ad1_attachment_id ? (string) wp_get_attachment_image_url($ad1_attachment_id, 'full') : '';
+		if (! $ad1_image && ! empty($instance['ad1_image'])) {
 			$ad1_image = $instance['ad1_image'];
 		}
-		$ad1_url = ! empty( $instance['ad1_url'] ) ? $instance['ad1_url'] : $category_link;
+		$ad1_url = ! empty($instance['ad1_url']) ? $instance['ad1_url'] : $category_link;
 
-		$ad2_attachment_id = isset( $instance['ad2_attachment_id'] ) ? absint( $instance['ad2_attachment_id'] ) : 0;
-		$ad2_image         = $ad2_attachment_id ? (string) wp_get_attachment_image_url( $ad2_attachment_id, 'full' ) : '';
-		if ( ! $ad2_image && ! empty( $instance['ad2_image'] ) ) {
+		$ad2_attachment_id = isset($instance['ad2_attachment_id']) ? absint($instance['ad2_attachment_id']) : 0;
+		$ad2_image         = $ad2_attachment_id ? (string) wp_get_attachment_image_url($ad2_attachment_id, 'full') : '';
+		if (! $ad2_image && ! empty($instance['ad2_image'])) {
 			$ad2_image = $instance['ad2_image'];
 		}
-		$ad2_url = ! empty( $instance['ad2_url'] ) ? $instance['ad2_url'] : $category_link;
+		$ad2_url = ! empty($instance['ad2_url']) ? $instance['ad2_url'] : $category_link;
 
 		$thumb_url  = '';
 		$main_link  = $category_link;
 		$img_alt    = '';
 
-		if ( $category_id > 0 ) {
-			$img_alt   = get_cat_name( $category_id );
-			$image_id  = communicationstoday_get_think_tank_category_image_attachment_id( $category_id );
-			$thumb_url = $image_id ? (string) wp_get_attachment_image_url( $image_id, 'large' ) : '';
+		if ($category_id > 0) {
+			$img_alt   = get_cat_name($category_id);
+			$image_id  = communicationstoday_get_think_tank_category_image_attachment_id($category_id);
+			$thumb_url = $image_id ? (string) wp_get_attachment_image_url($image_id, 'large') : '';
 		}
 
-		?>
+	?>
 		<section class="top-stories">
 			<div class="container">
 				<div class="top-stories-grid mb-30">
-					<span class="category-link "><?php echo esc_html( $header_label ); ?></span>
-					<a href="<?php echo esc_url( $see_more_url ); ?>" class="top-story-card"><?php esc_html_e( 'See More', 'communicationstoday' ); ?> <i class="fas fa-chevron-right"></i></a>
+					<span class="category-link "><?php echo esc_html($header_label); ?></span>
+					<a href="<?php echo esc_url($see_more_url); ?>" class="top-story-card"><?php esc_html_e('See More', 'communicationstoday'); ?> <i class="fas fa-chevron-right"></i></a>
 				</div>
 
 				<div class="top-stories-content">
 					<div class="think_tank_content">
-						<?php if ( $thumb_url ) : ?>
-							<a href="<?php echo esc_url( $main_link ); ?>" class="top-story-card">
-								<img src="<?php echo esc_url( $thumb_url ); ?>" alt="<?php echo esc_attr( $img_alt ); ?>" class="w-100">
+						<?php if ($thumb_url) : ?>
+							<a href="<?php echo esc_url($main_link); ?>" class="top-story-card">
+								<img src="<?php echo esc_url($thumb_url); ?>" alt="<?php echo esc_attr($img_alt); ?>" class="w-100">
 							</a>
 						<?php endif; ?>
 					</div>
 					<div class="side-ad-content">
-						<?php if ( $ad1_image ) : ?>
-							<a href="<?php echo esc_url( $ad1_url ); ?>" class="">
-								<img src="<?php echo esc_url( $ad1_image ); ?>" alt="" class="w-100">
+						<?php if ($ad1_image) : ?>
+							<a href="<?php echo esc_url($ad1_url); ?>" class="">
+								<img src="<?php echo esc_url($ad1_image); ?>" alt="" class="w-100">
 							</a>
 						<?php endif; ?>
-						<?php if ( $ad2_image ) : ?>
-							<a href="<?php echo esc_url( $ad2_url ); ?>" class="">
-								<img src="<?php echo esc_url( $ad2_image ); ?>" alt="" class="w-100">
+						<?php if ($ad2_image) : ?>
+							<a href="<?php echo esc_url($ad2_url); ?>" class="">
+								<img src="<?php echo esc_url($ad2_image); ?>" alt="" class="w-100">
 							</a>
 						<?php endif; ?>
 					</div>
 				</div>
 			</div>
 		</section>
-		<?php
+	<?php
 	}
 }
 
@@ -678,19 +880,20 @@ class Communicationstoday_Think_Tank_Widget extends WP_Widget {
  * @param string $link          URL for the slide anchor.
  * @return array{link: string, thumb: string, title: string}|null
  */
-function communicationstoday_perspective_slide_from_attachment_id( $attachment_id, $link = '#' ) {
-	$attachment_id = absint( $attachment_id );
-	if ( ! $attachment_id || ! function_exists( 'wp_attachment_is_image' ) || ! wp_attachment_is_image( $attachment_id ) ) {
+function communicationstoday_perspective_slide_from_attachment_id($attachment_id, $link = '#')
+{
+	$attachment_id = absint($attachment_id);
+	if (! $attachment_id || ! function_exists('wp_attachment_is_image') || ! wp_attachment_is_image($attachment_id)) {
 		return null;
 	}
-	$url = wp_get_attachment_image_url( $attachment_id, 'large' );
-	if ( ! $url ) {
+	$url = wp_get_attachment_image_url($attachment_id, 'large');
+	if (! $url) {
 		return null;
 	}
 	return array(
 		'link'  => $link,
 		'thumb' => (string) $url,
-		'title' => (string) get_the_title( $attachment_id ),
+		'title' => (string) get_the_title($attachment_id),
 	);
 }
 
@@ -700,20 +903,21 @@ function communicationstoday_perspective_slide_from_attachment_id( $attachment_i
  * @param mixed $val Raw get_field() value.
  * @return array<int, array{link: string, thumb: string, title: string}>
  */
-function communicationstoday_normalize_acf_value_to_perspective_slides( $val ) {
+function communicationstoday_normalize_acf_value_to_perspective_slides($val)
+{
 	$slides = array();
-	if ( empty( $val ) && $val !== 0 && $val !== '0' ) {
+	if (empty($val) && $val !== 0 && $val !== '0') {
 		return $slides;
 	}
-	if ( is_numeric( $val ) ) {
-		$s = communicationstoday_perspective_slide_from_attachment_id( $val, '#' );
-		return $s ? array( $s ) : $slides;
+	if (is_numeric($val)) {
+		$s = communicationstoday_perspective_slide_from_attachment_id($val, '#');
+		return $s ? array($s) : $slides;
 	}
-	if ( is_string( $val ) && filter_var( $val, FILTER_VALIDATE_URL ) ) {
-		$aid = attachment_url_to_postid( $val );
-		if ( $aid ) {
-			$s = communicationstoday_perspective_slide_from_attachment_id( $aid, '#' );
-			return $s ? array( $s ) : $slides;
+	if (is_string($val) && filter_var($val, FILTER_VALIDATE_URL)) {
+		$aid = attachment_url_to_postid($val);
+		if ($aid) {
+			$s = communicationstoday_perspective_slide_from_attachment_id($aid, '#');
+			return $s ? array($s) : $slides;
 		}
 		$slides[] = array(
 			'link'  => '#',
@@ -722,80 +926,80 @@ function communicationstoday_normalize_acf_value_to_perspective_slides( $val ) {
 		);
 		return $slides;
 	}
-	if ( ! is_array( $val ) ) {
+	if (! is_array($val)) {
 		return $slides;
 	}
-	if ( isset( $val['ID'] ) || isset( $val['id'] ) ) {
-		$id = isset( $val['ID'] ) ? absint( $val['ID'] ) : absint( $val['id'] );
-		if ( $id && function_exists( 'wp_attachment_is_image' ) && wp_attachment_is_image( $id ) ) {
-			$url = isset( $val['url'] ) ? $val['url'] : wp_get_attachment_image_url( $id, 'large' );
-			if ( $url ) {
+	if (isset($val['ID']) || isset($val['id'])) {
+		$id = isset($val['ID']) ? absint($val['ID']) : absint($val['id']);
+		if ($id && function_exists('wp_attachment_is_image') && wp_attachment_is_image($id)) {
+			$url = isset($val['url']) ? $val['url'] : wp_get_attachment_image_url($id, 'large');
+			if ($url) {
 				$slides[] = array(
 					'link'  => '#',
 					'thumb' => (string) $url,
-					'title' => ( isset( $val['title'] ) && is_string( $val['title'] ) ) ? $val['title'] : (string) get_the_title( $id ),
+					'title' => (isset($val['title']) && is_string($val['title'])) ? $val['title'] : (string) get_the_title($id),
 				);
 			}
 		}
 		return $slides;
 	}
 	$all_numeric = true;
-	foreach ( $val as $item ) {
-		if ( ! is_numeric( $item ) ) {
+	foreach ($val as $item) {
+		if (! is_numeric($item)) {
 			$all_numeric = false;
 			break;
 		}
 	}
-	if ( $all_numeric && array() !== $val ) {
-		foreach ( $val as $id ) {
-			$s = communicationstoday_perspective_slide_from_attachment_id( $id, '#' );
-			if ( $s ) {
+	if ($all_numeric && array() !== $val) {
+		foreach ($val as $id) {
+			$s = communicationstoday_perspective_slide_from_attachment_id($id, '#');
+			if ($s) {
 				$slides[] = $s;
 			}
 		}
 		return $slides;
 	}
-	foreach ( $val as $row ) {
-		if ( is_numeric( $row ) ) {
-			$s = communicationstoday_perspective_slide_from_attachment_id( $row, '#' );
-			if ( $s ) {
+	foreach ($val as $row) {
+		if (is_numeric($row)) {
+			$s = communicationstoday_perspective_slide_from_attachment_id($row, '#');
+			if ($s) {
 				$slides[] = $s;
 			}
 			continue;
 		}
-		if ( ! is_array( $row ) ) {
+		if (! is_array($row)) {
 			continue;
 		}
 		$link = '';
-		foreach ( array( 'link', 'slide_link' ) as $lk ) {
-			if ( ! empty( $row[ $lk ] ) && is_string( $row[ $lk ] ) ) {
-				$link = $row[ $lk ];
+		foreach (array('link', 'slide_link') as $lk) {
+			if (! empty($row[$lk]) && is_string($row[$lk])) {
+				$link = $row[$lk];
 				break;
 			}
 		}
 		$img_part = null;
-		foreach ( array( 'image', 'slide_image', 'photo', 'picture', 'homepage_perspective_slider' ) as $k ) {
-			if ( ! empty( $row[ $k ] ) ) {
-				$img_part = $row[ $k ];
+		foreach (array('image', 'slide_image', 'photo', 'picture', 'homepage_perspective_slider') as $k) {
+			if (! empty($row[$k])) {
+				$img_part = $row[$k];
 				break;
 			}
 		}
-		if ( null === $img_part ) {
-			$nested = communicationstoday_normalize_acf_value_to_perspective_slides( $row );
-			if ( ! empty( $nested ) ) {
+		if (null === $img_part) {
+			$nested = communicationstoday_normalize_acf_value_to_perspective_slides($row);
+			if (! empty($nested)) {
 				$s = $nested[0];
-				if ( $link !== '' ) {
-					$s['link'] = esc_url_raw( $link );
+				if ($link !== '') {
+					$s['link'] = esc_url_raw($link);
 				}
 				$slides[] = $s;
 			}
 			continue;
 		}
-		$nested = communicationstoday_normalize_acf_value_to_perspective_slides( $img_part );
-		if ( ! empty( $nested ) ) {
+		$nested = communicationstoday_normalize_acf_value_to_perspective_slides($img_part);
+		if (! empty($nested)) {
 			$s = $nested[0];
-			if ( $link !== '' ) {
-				$s['link'] = esc_url_raw( $link );
+			if ($link !== '') {
+				$s['link'] = esc_url_raw($link);
 			}
 			$slides[] = $s;
 		}
@@ -809,20 +1013,21 @@ function communicationstoday_normalize_acf_value_to_perspective_slides( $val ) {
  * @param int $post_id Post ID.
  * @return string
  */
-function communicationstoday_get_perspective_post_image_url( $post_id ) {
-	$post_id = absint( $post_id );
-	if ( ! $post_id ) {
+function communicationstoday_get_perspective_post_image_url($post_id)
+{
+	$post_id = absint($post_id);
+	if (! $post_id) {
 		return '';
 	}
-	$url = get_the_post_thumbnail_url( $post_id, 'large' );
-	if ( $url ) {
+	$url = get_the_post_thumbnail_url($post_id, 'large');
+	if ($url) {
 		return (string) $url;
 	}
-	$attachments = get_attached_media( 'image', $post_id );
-	if ( ! empty( $attachments ) ) {
-		foreach ( $attachments as $att ) {
-			$u = wp_get_attachment_image_url( $att->ID, 'large' );
-			if ( $u ) {
+	$attachments = get_attached_media('image', $post_id);
+	if (! empty($attachments)) {
+		foreach ($attachments as $att) {
+			$u = wp_get_attachment_image_url($att->ID, 'large');
+			if ($u) {
 				return (string) $u;
 			}
 		}
@@ -838,9 +1043,10 @@ function communicationstoday_get_perspective_post_image_url( $post_id ) {
  * @param int $post_id Post ID.
  * @return string Image URL or empty.
  */
-function communicationstoday_get_perspective_post_homepage_slider_image_url( $post_id ) {
-	$post_id = absint( $post_id );
-	if ( ! $post_id || ! function_exists( 'get_field' ) ) {
+function communicationstoday_get_perspective_post_homepage_slider_image_url($post_id)
+{
+	$post_id = absint($post_id);
+	if (! $post_id || ! function_exists('get_field')) {
 		return '';
 	}
 	$names = apply_filters(
@@ -851,21 +1057,21 @@ function communicationstoday_get_perspective_post_homepage_slider_image_url( $po
 			'perspective_slider',
 		)
 	);
-	if ( ! is_array( $names ) ) {
+	if (! is_array($names)) {
 		return '';
 	}
-	foreach ( $names as $name ) {
-		if ( ! is_string( $name ) || $name === '' ) {
+	foreach ($names as $name) {
+		if (! is_string($name) || $name === '') {
 			continue;
 		}
-		$val    = get_field( $name, $post_id );
-		$slides = communicationstoday_normalize_acf_value_to_perspective_slides( $val );
-		if ( ! empty( $slides[0]['thumb'] ) ) {
+		$val    = get_field($name, $post_id);
+		$slides = communicationstoday_normalize_acf_value_to_perspective_slides($val);
+		if (! empty($slides[0]['thumb'])) {
 			return (string) $slides[0]['thumb'];
 		}
 	}
-	if ( apply_filters( 'communicationstoday_perspective_use_featured_if_post_slider_empty', false ) ) {
-		return communicationstoday_get_perspective_post_image_url( $post_id );
+	if (apply_filters('communicationstoday_perspective_use_featured_if_post_slider_empty', false)) {
+		return communicationstoday_get_perspective_post_image_url($post_id);
 	}
 	return '';
 }
@@ -876,38 +1082,39 @@ function communicationstoday_get_perspective_post_homepage_slider_image_url( $po
  * @param int $post_id Post ID.
  * @return int
  */
-function communicationstoday_get_perspective_post_order_value( $post_id ) {
-	$post_id = absint( $post_id );
-	if ( ! $post_id ) {
+function communicationstoday_get_perspective_post_order_value($post_id)
+{
+	$post_id = absint($post_id);
+	if (! $post_id) {
 		return 999999;
 	}
 	$keys = apply_filters(
 		'communicationstoday_perspective_order_acf_field_names',
-		array( 'order', 'Order', 'perspective_order' )
+		array('order', 'Order', 'perspective_order')
 	);
 	$raw  = null;
-	if ( function_exists( 'get_field' ) && is_array( $keys ) ) {
-		foreach ( $keys as $key ) {
-			if ( ! is_string( $key ) || $key === '' ) {
+	if (function_exists('get_field') && is_array($keys)) {
+		foreach ($keys as $key) {
+			if (! is_string($key) || $key === '') {
 				continue;
 			}
-			$v = get_field( $key, $post_id );
-			if ( null !== $v && false !== $v && '' !== $v ) {
+			$v = get_field($key, $post_id);
+			if (null !== $v && false !== $v && '' !== $v) {
 				$raw = $v;
 				break;
 			}
 		}
 	}
-	if ( null === $raw || '' === $raw ) {
-		foreach ( array( 'order', 'Order', 'perspective_order' ) as $meta_key ) {
-			$v = get_post_meta( $post_id, $meta_key, true );
-			if ( null !== $v && '' !== $v ) {
+	if (null === $raw || '' === $raw) {
+		foreach (array('order', 'Order', 'perspective_order') as $meta_key) {
+			$v = get_post_meta($post_id, $meta_key, true);
+			if (null !== $v && '' !== $v) {
 				$raw = $v;
 				break;
 			}
 		}
 	}
-	if ( is_numeric( $raw ) ) {
+	if (is_numeric($raw)) {
 		return (int) $raw;
 	}
 	return 999999;
@@ -918,8 +1125,9 @@ function communicationstoday_get_perspective_post_order_value( $post_id ) {
  *
  * @return array<int, array{link: string, thumb: string, title: string}>
  */
-function communicationstoday_perspective_get_slides_from_acf() {
-	if ( ! function_exists( 'get_field' ) ) {
+function communicationstoday_perspective_get_slides_from_acf()
+{
+	if (! function_exists('get_field')) {
 		return array();
 	}
 	$names = apply_filters(
@@ -930,24 +1138,24 @@ function communicationstoday_perspective_get_slides_from_acf() {
 			'perspective_slider',
 		)
 	);
-	if ( ! is_array( $names ) ) {
+	if (! is_array($names)) {
 		return array();
 	}
-	$contexts   = array( 'option', 'options' );
-	$front_page = (int) get_option( 'page_on_front' );
-	if ( $front_page > 0 ) {
+	$contexts   = array('option', 'options');
+	$front_page = (int) get_option('page_on_front');
+	if ($front_page > 0) {
 		$contexts[] = $front_page;
 	}
-	$contexts = apply_filters( 'communicationstoday_perspective_acf_contexts', $contexts );
-	$contexts = array_unique( array_map( 'strval', $contexts ) );
-	foreach ( $names as $name ) {
-		if ( ! is_string( $name ) || $name === '' ) {
+	$contexts = apply_filters('communicationstoday_perspective_acf_contexts', $contexts);
+	$contexts = array_unique(array_map('strval', $contexts));
+	foreach ($names as $name) {
+		if (! is_string($name) || $name === '') {
 			continue;
 		}
-		foreach ( $contexts as $ctx ) {
-			$val    = get_field( $name, $ctx );
-			$slides = communicationstoday_normalize_acf_value_to_perspective_slides( $val );
-			if ( ! empty( $slides ) ) {
+		foreach ($contexts as $ctx) {
+			$val    = get_field($name, $ctx);
+			$slides = communicationstoday_normalize_acf_value_to_perspective_slides($val);
+			if (! empty($slides)) {
 				return $slides;
 			}
 		}
@@ -958,23 +1166,26 @@ function communicationstoday_perspective_get_slides_from_acf() {
 /**
  * Perspective-style carousel: ACF “Homepage Perspective slider” (or filter names) when set; else posts from a category.
  */
-class Communicationstoday_Perspective_Swiper_Widget extends WP_Widget {
+class Communicationstoday_Perspective_Swiper_Widget extends WP_Widget
+{
 
-	public function __construct() {
+	public function __construct()
+	{
 		parent::__construct(
 			'communicationstoday_perspective_swiper',
-			esc_html__( 'Perspective carousel', 'communicationstoday' ),
+			esc_html__('Perspective carousel', 'communicationstoday'),
 			array(
-				'description' => esc_html__( 'Uses ACF Homepage Perspective slider (Options or front page) if filled; otherwise posts from the selected category.', 'communicationstoday' ),
+				'description' => esc_html__('Uses ACF Homepage Perspective slider (Options or front page) if filled; otherwise posts from the selected category.', 'communicationstoday'),
 			)
 		);
 	}
 
-	public function form( $instance ) {
-		$header_label = isset( $instance['header_label'] ) ? $instance['header_label'] : __( 'Perspective', 'communicationstoday' );
-		$category_id  = isset( $instance['category_id'] ) ? (int) $instance['category_id'] : 0;
-		$post_count   = isset( $instance['post_count'] ) ? absint( $instance['post_count'] ) : 12;
-		$post_count   = min( 30, max( 1, $post_count ) );
+	public function form($instance)
+	{
+		$header_label = isset($instance['header_label']) ? $instance['header_label'] : __('Perspective', 'communicationstoday');
+		$category_id  = isset($instance['category_id']) ? (int) $instance['category_id'] : 0;
+		$post_count   = isset($instance['post_count']) ? absint($instance['post_count']) : 12;
+		$post_count   = min(30, max(1, $post_count));
 
 		$categories = get_categories(
 			array(
@@ -982,60 +1193,66 @@ class Communicationstoday_Perspective_Swiper_Widget extends WP_Widget {
 				'hide_empty' => false,
 			)
 		);
-		?>
+	?>
 		<p>
-			<label for="<?php echo esc_attr( $this->get_field_id( 'header_label' ) ); ?>"><?php esc_html_e( 'Section label', 'communicationstoday' ); ?></label>
-			<input class="widefat" type="text" id="<?php echo esc_attr( $this->get_field_id( 'header_label' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'header_label' ) ); ?>" value="<?php echo esc_attr( $header_label ); ?>">
+			<label for="<?php echo esc_attr($this->get_field_id('header_label')); ?>"><?php esc_html_e('Section label', 'communicationstoday'); ?></label>
+			<input class="widefat" type="text" id="<?php echo esc_attr($this->get_field_id('header_label')); ?>" name="<?php echo esc_attr($this->get_field_name('header_label')); ?>" value="<?php echo esc_attr($header_label); ?>">
 		</p>
 		<p>
-			<label for="<?php echo esc_attr( $this->get_field_id( 'category_id' ) ); ?>"><?php esc_html_e( 'Category', 'communicationstoday' ); ?></label>
-			<select class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'category_id' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'category_id' ) ); ?>">
-				<option value="0"><?php esc_html_e( 'Choose category', 'communicationstoday' ); ?></option>
-				<?php foreach ( $categories as $cat ) : ?>
-					<option value="<?php echo esc_attr( (int) $cat->term_id ); ?>" <?php selected( $category_id, (int) $cat->term_id ); ?>>
-						<?php echo esc_html( $cat->name ); ?>
+			<label for="<?php echo esc_attr($this->get_field_id('category_id')); ?>"><?php esc_html_e('Category', 'communicationstoday'); ?></label>
+			<select class="widefat" id="<?php echo esc_attr($this->get_field_id('category_id')); ?>" name="<?php echo esc_attr($this->get_field_name('category_id')); ?>">
+				<option value="0"><?php esc_html_e('Choose category', 'communicationstoday'); ?></option>
+				<?php foreach ($categories as $cat) : ?>
+					<option value="<?php echo esc_attr((int) $cat->term_id); ?>" <?php selected($category_id, (int) $cat->term_id); ?>>
+						<?php echo esc_html($cat->name); ?>
 					</option>
 				<?php endforeach; ?>
 			</select>
 		</p>
 		<p>
-			<label for="<?php echo esc_attr( $this->get_field_id( 'post_count' ) ); ?>"><?php esc_html_e( 'Max slides (posts in category)', 'communicationstoday' ); ?></label>
-			<input class="small-text" type="number" min="1" max="30" id="<?php echo esc_attr( $this->get_field_id( 'post_count' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'post_count' ) ); ?>" value="<?php echo esc_attr( (string) $post_count ); ?>">
+			<label for="<?php echo esc_attr($this->get_field_id('post_count')); ?>"><?php esc_html_e('Max slides (posts in category)', 'communicationstoday'); ?></label>
+			<input class="small-text" type="number" min="1" max="30" id="<?php echo esc_attr($this->get_field_id('post_count')); ?>" name="<?php echo esc_attr($this->get_field_name('post_count')); ?>" value="<?php echo esc_attr((string) $post_count); ?>">
 		</p>
-		<p><small><?php esc_html_e( 'If Options/front-page ACF gallery is set, it replaces the whole slider. Otherwise each slide uses that post’s ACF “Homepage Perspective slider” image (not the featured image). Sorted by post “Order”, then date. Subcategories included.', 'communicationstoday' ); ?></small></p>
-		<?php
+		<p><small><?php esc_html_e('If Options/front-page ACF gallery is set, it replaces the whole slider. Otherwise each slide uses that post’s ACF “Homepage Perspective slider” image (not the featured image). Sorted by post “Order”, then date. Subcategories included.', 'communicationstoday'); ?></small></p>
+	<?php
 	}
 
-	public function update( $new_instance, $old_instance ) {
-		unset( $old_instance );
+	public function update($new_instance, $old_instance)
+	{
+		unset($old_instance);
 		$instance                 = array();
-		$instance['header_label'] = isset( $new_instance['header_label'] ) ? sanitize_text_field( wp_unslash( $new_instance['header_label'] ) ) : '';
-		$instance['category_id']  = isset( $new_instance['category_id'] ) ? absint( $new_instance['category_id'] ) : 0;
-		$n                        = isset( $new_instance['post_count'] ) ? absint( $new_instance['post_count'] ) : 12;
-		$instance['post_count']   = min( 30, max( 1, $n ) );
+		$instance['header_label'] = isset($new_instance['header_label']) ? sanitize_text_field(wp_unslash($new_instance['header_label'])) : '';
+		$instance['category_id']  = isset($new_instance['category_id']) ? absint($new_instance['category_id']) : 0;
+		$n                        = isset($new_instance['post_count']) ? absint($new_instance['post_count']) : 12;
+		$instance['post_count']   = min(30, max(1, $n));
 		return $instance;
 	}
 
-	public function widget( $args, $instance ) {
-		$header_label = ! empty( $instance['header_label'] ) ? $instance['header_label'] : __( 'Perspective', 'communicationstoday' );
-		$category_id  = isset( $instance['category_id'] ) ? (int) $instance['category_id'] : 0;
-		$post_count   = isset( $instance['post_count'] ) ? absint( $instance['post_count'] ) : 12;
-		$post_count   = min( 30, max( 1, $post_count ) );
+	public function widget($args, $instance)
+	{
+		$header_label = ! empty($instance['header_label']) ? $instance['header_label'] : __('Perspective', 'communicationstoday');
+		$category_id  = isset($instance['category_id']) ? (int) $instance['category_id'] : 0;
+		$post_count   = isset($instance['post_count']) ? absint($instance['post_count']) : 12;
+		$post_count   = min(30, max(1, $post_count));
 
 		$slides = communicationstoday_perspective_get_slides_from_acf();
 
-		if ( empty( $slides ) ) {
-			if ( $category_id <= 0 ) {
+		if (empty($slides)) {
+			if ($category_id <= 0) {
 				return;
 			}
 
-			$fetch_cap = min( 50, max( $post_count * 4, $post_count + 10 ) );
+			$fetch_cap = min(50, max($post_count * 4, $post_count + 10));
+			$p_orderby = function_exists('communicationstoday_get_menu_order_query_orderby')
+				? communicationstoday_get_menu_order_query_orderby()
+				: array('date' => 'DESC');
 			$query     = new WP_Query(
 				array(
 					'post_type'           => 'post',
 					'posts_per_page'      => $fetch_cap,
 					'ignore_sticky_posts' => true,
 					'no_found_rows'       => true,
+					'orderby'             => $p_orderby,
 					'tax_query'           => array(
 						array(
 							'taxonomy'         => 'category',
@@ -1047,45 +1264,46 @@ class Communicationstoday_Perspective_Swiper_Widget extends WP_Widget {
 				)
 			);
 
-			if ( $query->have_posts() ) {
+			if ($query->have_posts()) {
 				$candidates = array();
-				while ( $query->have_posts() ) {
+				while ($query->have_posts()) {
 					$query->the_post();
 					$post_id = get_the_ID();
-					$thumb   = communicationstoday_get_perspective_post_homepage_slider_image_url( $post_id );
-					if ( ! $thumb ) {
+					$thumb   = communicationstoday_get_perspective_post_homepage_slider_image_url($post_id);
+					if (! $thumb) {
 						continue;
 					}
 					$candidates[] = array(
 						'post_id' => $post_id,
 						'thumb'   => $thumb,
-						'title'   => get_the_title( $post_id ),
-						'order'   => communicationstoday_get_perspective_post_order_value( $post_id ),
-						'date'    => (int) get_post_time( 'U', true, $post_id ),
+						'title'   => get_the_title($post_id),
+						'order'   => communicationstoday_get_perspective_post_order_value($post_id),
+						'date'    => (int) get_post_time('U', true, $post_id),
 					);
 				}
 				wp_reset_postdata();
 
-				$tiebreak = apply_filters( 'communicationstoday_perspective_order_tiebreak_date', 'DESC' );
-				$tiebreak = ( is_string( $tiebreak ) && 'ASC' === strtoupper( $tiebreak ) ) ? 'ASC' : 'DESC';
-
-				usort(
-					$candidates,
-					static function ( $a, $b ) use ( $tiebreak ) {
-						if ( $a['order'] !== $b['order'] ) {
-							return $a['order'] <=> $b['order'];
-						}
-						if ( 'ASC' === $tiebreak ) {
-							return $a['date'] <=> $b['date'];
-						}
-						return $b['date'] <=> $a['date'];
+				$candidate_ids = array_column($candidates, 'post_id');
+				if (function_exists('communicationstoday_sort_post_ids_for_category_display')) {
+					$candidate_ids = communicationstoday_sort_post_ids_for_category_display($candidate_ids, $category_id);
+				} else {
+					$candidate_ids = communicationstoday_prioritize_sticky_post_ids($candidate_ids, $category_id);
+				}
+				$by_id         = array();
+				foreach ($candidates as $row) {
+					$by_id[(int) $row['post_id']] = $row;
+				}
+				$candidates = array();
+				foreach ($candidate_ids as $pid) {
+					if (isset($by_id[$pid])) {
+						$candidates[] = $by_id[$pid];
 					}
-				);
+				}
 
-				$candidates = array_slice( $candidates, 0, $post_count );
-				foreach ( $candidates as $c ) {
+				$candidates = array_slice($candidates, 0, $post_count);
+				foreach ($candidates as $c) {
 					$slides[] = array(
-						'link'  => get_permalink( $c['post_id'] ),
+						'link'  => get_permalink($c['post_id']),
 						'thumb' => $c['thumb'],
 						'title' => $c['title'],
 					);
@@ -1093,65 +1311,65 @@ class Communicationstoday_Perspective_Swiper_Widget extends WP_Widget {
 			}
 		}
 
-		if ( empty( $slides ) ) {
+		if (empty($slides)) {
 			return;
 		}
 
 		$category_link = '';
-		if ( $category_id > 0 ) {
-			$link = get_category_link( $category_id );
-			if ( ! is_wp_error( $link ) && $link ) {
+		if ($category_id > 0) {
+			$link = get_category_link($category_id);
+			if (! is_wp_error($link) && $link) {
 				$category_link = $link;
 			}
 		}
 
 		$wrapper_id = 'swiper-wrapper-' . wp_unique_id();
-		$total      = count( $slides );
+		$total      = count($slides);
 
 		echo $args['before_widget'];
-		?>
+	?>
 		<section class="perspective-section">
 			<div class="container">
 				<div class="top-stories-grid mb-30">
-					<span class="category-link"><?php echo esc_html( $header_label ); ?></span>
-					<?php if ( $category_link ) : ?>
-					<a href="<?php echo esc_url( $category_link ); ?>" class="top-story-card"><?php esc_html_e( 'See More', 'communicationstoday' ); ?> <i class="fas fa-chevron-right"></i></a>
+					<span class="category-link"><?php echo esc_html($header_label); ?></span>
+					<?php if ($category_link) : ?>
+						<a href="<?php echo esc_url($category_link); ?>" class="top-story-card"><?php esc_html_e('See More', 'communicationstoday'); ?> <i class="fas fa-chevron-right"></i></a>
 					<?php endif; ?>
 				</div>
 				<div class="perspective-swiper-wrapper">
 					<div class="swiper perspective-swiper">
-						<div class="swiper-wrapper" id="<?php echo esc_attr( $wrapper_id ); ?>" aria-live="polite">
+						<div class="swiper-wrapper" id="<?php echo esc_attr($wrapper_id); ?>" aria-live="polite">
 							<?php
 							$index = 0;
-							foreach ( $slides as $slide ) :
+							foreach ($slides as $slide) :
 								++$index;
 								$aria = sprintf(
 									/* translators: 1: current slide number, 2: total slides */
-									__( '%1$d / %2$d', 'communicationstoday' ),
+									__('%1$d / %2$d', 'communicationstoday'),
 									$index,
 									$total
 								);
-								?>
-							<div class="swiper-slide" role="group" aria-label="<?php echo esc_attr( $aria ); ?>">
-								<a href="<?php echo '#' === $slide['link'] ? '#' : esc_url( $slide['link'] ); ?>" class="speaker-card">
-									<div class="speaker-image">
-										<img src="<?php echo esc_url( $slide['thumb'] ); ?>" alt="<?php echo esc_attr( $slide['title'] ); ?>" class="w-100" loading="lazy" decoding="async">
-									</div>
-								</a>
-							</div>
-								<?php
+							?>
+								<div class="swiper-slide" role="group" aria-label="<?php echo esc_attr($aria); ?>">
+									<a href="<?php echo '#' === $slide['link'] ? '#' : esc_url($slide['link']); ?>" class="speaker-card">
+										<div class="speaker-image">
+											<img src="<?php echo esc_url($slide['thumb']); ?>" alt="<?php echo esc_attr($slide['title']); ?>" class="w-100" loading="lazy" decoding="async">
+										</div>
+									</a>
+								</div>
+							<?php
 							endforeach;
 							?>
 						</div>
 					</div>
 					<div class="perspective-navigation">
-						<div class="swiper-button-prev perspective-prev" tabindex="0" role="button" aria-label="<?php esc_attr_e( 'Previous slide', 'communicationstoday' ); ?>" aria-controls="<?php echo esc_attr( $wrapper_id ); ?>"></div>
-						<div class="swiper-button-next perspective-next" tabindex="0" role="button" aria-label="<?php esc_attr_e( 'Next slide', 'communicationstoday' ); ?>" aria-controls="<?php echo esc_attr( $wrapper_id ); ?>"></div>
+						<div class="swiper-button-prev perspective-prev" tabindex="0" role="button" aria-label="<?php esc_attr_e('Previous slide', 'communicationstoday'); ?>" aria-controls="<?php echo esc_attr($wrapper_id); ?>"></div>
+						<div class="swiper-button-next perspective-next" tabindex="0" role="button" aria-label="<?php esc_attr_e('Next slide', 'communicationstoday'); ?>" aria-controls="<?php echo esc_attr($wrapper_id); ?>"></div>
 					</div>
 				</div>
 			</div>
 		</section>
-		<?php
+	<?php
 		echo $args['after_widget'];
 	}
 }
@@ -1159,24 +1377,27 @@ class Communicationstoday_Perspective_Swiper_Widget extends WP_Widget {
 /**
  * Headlines of the Day: 1 main + side ad + 3 cards (4 latest posts from category). Side ad image + optional URL.
  */
-class Communicationstoday_Headlines_Day_Widget extends WP_Widget {
+class Communicationstoday_Headlines_Day_Widget extends WP_Widget
+{
 
-	public function __construct() {
+	public function __construct()
+	{
 		parent::__construct(
 			'communicationstoday_headlines_day',
-			esc_html__( 'Homepage section', 'communicationstoday' ),
+			esc_html__('Homepage section', 'communicationstoday'),
 			array(
-				'description' => esc_html__( 'Latest post (large) + optional side ad + 3 more posts from one category.', 'communicationstoday' ),
+				'description' => esc_html__('Latest post (large) + optional side ad + 3 more posts from one category.', 'communicationstoday'),
 			)
 		);
 	}
 
-	public function form( $instance ) {
-		$header_label       = isset( $instance['header_label'] ) ? $instance['header_label'] : __( 'Homepage section', 'communicationstoday' );
-		$category_id        = isset( $instance['category_id'] ) ? (int) $instance['category_id'] : 0;
-		$ad_attachment_id   = isset( $instance['ad_attachment_id'] ) ? absint( $instance['ad_attachment_id'] ) : 0;
-		$ad_url             = isset( $instance['ad_url'] ) ? $instance['ad_url'] : '';
-		$ad_preview_url     = $ad_attachment_id ? wp_get_attachment_image_url( $ad_attachment_id, 'medium' ) : '';
+	public function form($instance)
+	{
+		$header_label       = isset($instance['header_label']) ? $instance['header_label'] : __('Homepage section', 'communicationstoday');
+		$category_id        = isset($instance['category_id']) ? (int) $instance['category_id'] : 0;
+		$ad_attachment_id   = isset($instance['ad_attachment_id']) ? absint($instance['ad_attachment_id']) : 0;
+		$ad_url             = isset($instance['ad_url']) ? $instance['ad_url'] : '';
+		$ad_preview_url     = $ad_attachment_id ? wp_get_attachment_image_url($ad_attachment_id, 'medium') : '';
 
 		$categories = get_categories(
 			array(
@@ -1184,169 +1405,153 @@ class Communicationstoday_Headlines_Day_Widget extends WP_Widget {
 				'hide_empty' => false,
 			)
 		);
-		?>
+	?>
 		<p>
-			<label for="<?php echo esc_attr( $this->get_field_id( 'header_label' ) ); ?>"><?php esc_html_e( 'Section label', 'communicationstoday' ); ?></label>
-			<input class="widefat" type="text" id="<?php echo esc_attr( $this->get_field_id( 'header_label' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'header_label' ) ); ?>" value="<?php echo esc_attr( $header_label ); ?>">
+			<label for="<?php echo esc_attr($this->get_field_id('header_label')); ?>"><?php esc_html_e('Section label', 'communicationstoday'); ?></label>
+			<input class="widefat" type="text" id="<?php echo esc_attr($this->get_field_id('header_label')); ?>" name="<?php echo esc_attr($this->get_field_name('header_label')); ?>" value="<?php echo esc_attr($header_label); ?>">
 		</p>
 		<p>
-			<label for="<?php echo esc_attr( $this->get_field_id( 'category_id' ) ); ?>"><?php esc_html_e( 'Category', 'communicationstoday' ); ?></label>
-			<select class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'category_id' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'category_id' ) ); ?>">
-				<option value="0"><?php esc_html_e( 'Choose category', 'communicationstoday' ); ?></option>
-				<?php foreach ( $categories as $cat ) : ?>
-					<option value="<?php echo esc_attr( (int) $cat->term_id ); ?>" <?php selected( $category_id, (int) $cat->term_id ); ?>>
-						<?php echo esc_html( $cat->name ); ?>
+			<label for="<?php echo esc_attr($this->get_field_id('category_id')); ?>"><?php esc_html_e('Category', 'communicationstoday'); ?></label>
+			<select class="widefat" id="<?php echo esc_attr($this->get_field_id('category_id')); ?>" name="<?php echo esc_attr($this->get_field_name('category_id')); ?>">
+				<option value="0"><?php esc_html_e('Choose category', 'communicationstoday'); ?></option>
+				<?php foreach ($categories as $cat) : ?>
+					<option value="<?php echo esc_attr((int) $cat->term_id); ?>" <?php selected($category_id, (int) $cat->term_id); ?>>
+						<?php echo esc_html($cat->name); ?>
 					</option>
 				<?php endforeach; ?>
 			</select>
 		</p>
 		<div class="communicationstoday-think-tank-ad-media">
-			<p><strong><?php esc_html_e( 'Side ad', 'communicationstoday' ); ?></strong></p>
+			<p><strong><?php esc_html_e('Side ad', 'communicationstoday'); ?></strong></p>
 			<p>
-				<label><?php esc_html_e( 'Image', 'communicationstoday' ); ?></label><br>
-				<input type="hidden" class="think-tank-attachment-id" id="<?php echo esc_attr( $this->get_field_id( 'ad_attachment_id' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'ad_attachment_id' ) ); ?>" value="<?php echo esc_attr( (string) $ad_attachment_id ); ?>">
-				<img src="<?php echo esc_url( (string) $ad_preview_url ); ?>" alt="" class="think-tank-attachment-preview" style="max-width:100%;height:auto;<?php echo $ad_preview_url ? '' : 'display:none;'; ?>">
+				<label><?php esc_html_e('Image', 'communicationstoday'); ?></label><br>
+				<input type="hidden" class="think-tank-attachment-id" id="<?php echo esc_attr($this->get_field_id('ad_attachment_id')); ?>" name="<?php echo esc_attr($this->get_field_name('ad_attachment_id')); ?>" value="<?php echo esc_attr((string) $ad_attachment_id); ?>">
+				<img src="<?php echo esc_url((string) $ad_preview_url); ?>" alt="" class="think-tank-attachment-preview" style="max-width:100%;height:auto;<?php echo $ad_preview_url ? '' : 'display:none;'; ?>">
 			</p>
 			<p>
-				<button type="button" class="button communicationstoday-think-tank-media"><?php esc_html_e( 'Select image', 'communicationstoday' ); ?></button>
-				<button type="button" class="button communicationstoday-think-tank-remove" style="<?php echo $ad_attachment_id ? '' : 'display:none;'; ?>"><?php esc_html_e( 'Remove image', 'communicationstoday' ); ?></button>
+				<button type="button" class="button communicationstoday-think-tank-media"><?php esc_html_e('Select image', 'communicationstoday'); ?></button>
+				<button type="button" class="button communicationstoday-think-tank-remove" style="<?php echo $ad_attachment_id ? '' : 'display:none;'; ?>"><?php esc_html_e('Remove image', 'communicationstoday'); ?></button>
 			</p>
 			<p>
-				<label for="<?php echo esc_attr( $this->get_field_id( 'ad_url' ) ); ?>"><?php esc_html_e( 'Ad link URL (optional)', 'communicationstoday' ); ?></label>
-				<input class="widefat" type="url" id="<?php echo esc_attr( $this->get_field_id( 'ad_url' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'ad_url' ) ); ?>" value="<?php echo esc_attr( $ad_url ); ?>">
+				<label for="<?php echo esc_attr($this->get_field_id('ad_url')); ?>"><?php esc_html_e('Ad link URL (optional)', 'communicationstoday'); ?></label>
+				<input class="widefat" type="url" id="<?php echo esc_attr($this->get_field_id('ad_url')); ?>" name="<?php echo esc_attr($this->get_field_name('ad_url')); ?>" value="<?php echo esc_attr($ad_url); ?>">
 			</p>
-			<p><small><?php esc_html_e( 'If ad link is empty, it uses the category archive.', 'communicationstoday' ); ?></small></p>
+			<p><small><?php esc_html_e('If ad link is empty, it uses the category archive.', 'communicationstoday'); ?></small></p>
 		</div>
-		<?php
+	<?php
 	}
 
-	public function update( $new_instance, $old_instance ) {
-		unset( $old_instance );
+	public function update($new_instance, $old_instance)
+	{
+		unset($old_instance);
 		$instance                       = array();
-		$instance['header_label']       = isset( $new_instance['header_label'] ) ? sanitize_text_field( wp_unslash( $new_instance['header_label'] ) ) : '';
-		$instance['category_id']        = isset( $new_instance['category_id'] ) ? absint( $new_instance['category_id'] ) : 0;
-		$instance['ad_attachment_id']   = isset( $new_instance['ad_attachment_id'] ) ? absint( $new_instance['ad_attachment_id'] ) : 0;
-		$instance['ad_url']             = isset( $new_instance['ad_url'] ) ? esc_url_raw( wp_unslash( $new_instance['ad_url'] ) ) : '';
+		$instance['header_label']       = isset($new_instance['header_label']) ? sanitize_text_field(wp_unslash($new_instance['header_label'])) : '';
+		$instance['category_id']        = isset($new_instance['category_id']) ? absint($new_instance['category_id']) : 0;
+		$instance['ad_attachment_id']   = isset($new_instance['ad_attachment_id']) ? absint($new_instance['ad_attachment_id']) : 0;
+		$instance['ad_url']             = isset($new_instance['ad_url']) ? esc_url_raw(wp_unslash($new_instance['ad_url'])) : '';
 		return $instance;
 	}
 
-	public function widget( $args, $instance ) {
-		$header_label     = ! empty( $instance['header_label'] ) ? $instance['header_label'] : __( 'Homepage section', 'communicationstoday' );
-		$category_id      = isset( $instance['category_id'] ) ? (int) $instance['category_id'] : 0;
-		$ad_attachment_id = isset( $instance['ad_attachment_id'] ) ? absint( $instance['ad_attachment_id'] ) : 0;
-		$ad_url_raw       = ! empty( $instance['ad_url'] ) ? $instance['ad_url'] : '';
+	public function widget($args, $instance)
+	{
+		$header_label     = ! empty($instance['header_label']) ? $instance['header_label'] : __('Homepage section', 'communicationstoday');
+		$category_id      = isset($instance['category_id']) ? (int) $instance['category_id'] : 0;
+		$ad_attachment_id = isset($instance['ad_attachment_id']) ? absint($instance['ad_attachment_id']) : 0;
+		$ad_url_raw       = ! empty($instance['ad_url']) ? $instance['ad_url'] : '';
 
-		if ( $category_id <= 0 ) {
+		if ($category_id <= 0) {
 			return;
 		}
 
-		$category_link = get_category_link( $category_id );
-		if ( is_wp_error( $category_link ) || ! $category_link ) {
+		$category_link = get_category_link($category_id);
+		if (is_wp_error($category_link) || ! $category_link) {
 			return;
 		}
 
-		$ad_image = $ad_attachment_id ? (string) wp_get_attachment_image_url( $ad_attachment_id, 'full' ) : '';
+		$ad_image = $ad_attachment_id ? (string) wp_get_attachment_image_url($ad_attachment_id, 'full') : '';
 		$ad_link  = $ad_url_raw ? $ad_url_raw : $category_link;
 
-		$query = new WP_Query(
-			array(
-				'post_type'           => 'post',
-				'posts_per_page'      => 20,
-				'ignore_sticky_posts' => true,
-				'no_found_rows'       => true,
-				'orderby'             => 'date',
-				'order'               => 'DESC',
-				'tax_query'           => array(
-					array(
-						'taxonomy'         => 'category',
-						'field'            => 'term_id',
-						'terms'            => $category_id,
-						'include_children' => true,
-					),
-				),
-			)
-		);
+		$headline_posts = communicationstoday_get_posts_for_category_with_sticky($category_id, 20);
 
 		$items = array();
-		if ( $query->have_posts() ) {
-			while ( $query->have_posts() && count( $items ) < 4 ) {
-				$query->the_post();
-				$post_id = get_the_ID();
-				$img     = communicationstoday_get_perspective_post_image_url( $post_id );
-				if ( ! $img ) {
-					continue;
-				}
-				$items[] = array(
-					'id'    => $post_id,
-					'title' => get_the_title( $post_id ),
-					'link'  => get_permalink( $post_id ),
-					'img'   => $img,
-				);
+		foreach ($headline_posts as $headline_post) {
+			if (count($items) >= 4) {
+				break;
 			}
-			wp_reset_postdata();
+			$post_id = $headline_post->ID;
+			$img     = communicationstoday_get_perspective_post_image_url($post_id);
+			if (! $img) {
+				continue;
+			}
+			$items[] = array(
+				'id'    => $post_id,
+				'title' => get_the_title($post_id),
+				'link'  => get_permalink($post_id),
+				'img'   => $img,
+			);
 		}
 
-		if ( empty( $items ) ) {
+		if (empty($items)) {
 			return;
 		}
 
 		$main = $items[0];
-		$grid = array_slice( $items, 1, 3 );
+		$grid = array_slice($items, 1, 3);
 
 		echo $args['before_widget'];
-		?>
+	?>
 		<section class="headlines-of-the-day">
 			<div class="container">
 				<div class="top-stories-grid mb-30">
-					<span class="category-link"><?php echo esc_html( $header_label ); ?></span>
-					<a href="<?php echo esc_url( $category_link ); ?>" class="top-story-card"><?php esc_html_e( 'See More', 'communicationstoday' ); ?> <i class="fas fa-chevron-right"></i></a>
+					<span class="category-link"><?php echo esc_html($header_label); ?></span>
+					<a href="<?php echo esc_url($category_link); ?>" class="top-story-card"><?php esc_html_e('See More', 'communicationstoday'); ?> <i class="fas fa-chevron-right"></i></a>
 				</div>
 
 				<div class="headlines-of-the-day-content">
 					<div class="headlines-of-the-day-main-content">
-						<a href="<?php echo esc_url( $main['link'] ); ?>" class="headlines-of-the-day-card">
+						<a href="<?php echo esc_url($main['link']); ?>" class="headlines-of-the-day-card">
 							<div class="headlines-of-the-day-main-content-image">
-								<img src="<?php echo esc_url( $main['img'] ); ?>" alt="<?php echo esc_attr( $main['title'] ); ?>" class="w-100" loading="lazy" decoding="async">
+								<img src="<?php echo esc_url($main['img']); ?>" alt="<?php echo esc_attr($main['title']); ?>" class="w-100" loading="lazy" decoding="async">
 							</div>
-							<p><?php echo esc_html( $main['title'] ); ?></p>
+							<p><?php echo esc_html($main['title']); ?></p>
 						</a>
 					</div>
-					<?php if ( $ad_image ) : ?>
-					<div class="side-ad-content">
-						<a href="<?php echo esc_url( $ad_link ); ?>" class="">
-							<img src="<?php echo esc_url( $ad_image ); ?>" alt="" class="w-100" loading="lazy" decoding="async">
-						</a>
-					</div>
+					<?php if ($ad_image) : ?>
+						<div class="side-ad-content">
+							<a href="<?php echo esc_url($ad_link); ?>" class="">
+								<img src="<?php echo esc_url($ad_image); ?>" alt="" class="w-100" loading="lazy" decoding="async">
+							</a>
+						</div>
 					<?php else : ?>
-					<div class="side-ad-content"></div>
+						<div class="side-ad-content"></div>
 					<?php endif; ?>
 				</div>
 
-				<?php if ( ! empty( $grid ) ) : ?>
-				<div class="article-cards-grid">
-					<?php
-					$gi = 0;
-					foreach ( $grid as $row ) :
-						++$gi;
-						$card_class = 'article-card';
-						if ( 2 === $gi ) {
-							$card_class .= ' text-center';
-						}
-						?>
-					<a href="<?php echo esc_url( $row['link'] ); ?>" class="<?php echo esc_attr( $card_class ); ?>">
-						<div class="article-image">
-							<img src="<?php echo esc_url( $row['img'] ); ?>" alt="<?php echo esc_attr( $row['title'] ); ?>" class="w-100" loading="lazy" decoding="async">
-						</div>
-						<div class="article-title"><?php echo esc_html( $row['title'] ); ?></div>
-					</a>
+				<?php if (! empty($grid)) : ?>
+					<div class="article-cards-grid">
 						<?php
-					endforeach;
-					?>
-				</div>
+						$gi = 0;
+						foreach ($grid as $row) :
+							++$gi;
+							$card_class = 'article-card';
+							if (2 === $gi) {
+								$card_class .= ' text-center';
+							}
+						?>
+							<a href="<?php echo esc_url($row['link']); ?>" class="<?php echo esc_attr($card_class); ?>">
+								<div class="article-image">
+									<img src="<?php echo esc_url($row['img']); ?>" alt="<?php echo esc_attr($row['title']); ?>" class="w-100" loading="lazy" decoding="async">
+								</div>
+								<div class="article-title"><?php echo esc_html($row['title']); ?></div>
+							</a>
+						<?php
+						endforeach;
+						?>
+					</div>
 				<?php endif; ?>
 			</div>
 		</section>
-		<?php
+	<?php
 		echo $args['after_widget'];
 	}
 }
@@ -1354,57 +1559,62 @@ class Communicationstoday_Headlines_Day_Widget extends WP_Widget {
 /**
  * Top events carousel: latest Videos (CPT) with poster, title, duration; links open the stored video URL in a new tab.
  */
-class Communicationstoday_Top_Events_Videos_Widget extends WP_Widget {
+class Communicationstoday_Top_Events_Videos_Widget extends WP_Widget
+{
 
-	public function __construct() {
+	public function __construct()
+	{
 		parent::__construct(
 			'communicationstoday_top_events_videos',
-			esc_html__( 'Videos — Top events', 'communicationstoday' ),
+			esc_html__('Videos — Top events', 'communicationstoday'),
 			array(
-				'description' => esc_html__( 'Latest Videos (carousel): poster, title, duration; opens each post’s video link in a new tab.', 'communicationstoday' ),
+				'description' => esc_html__('Latest Videos (carousel): poster, title, duration; opens each post’s video link in a new tab.', 'communicationstoday'),
 			)
 		);
 	}
 
-	public function form( $instance ) {
-		$header_label = isset( $instance['header_label'] ) ? $instance['header_label'] : __( 'TOP EVENTS', 'communicationstoday' );
-		$post_count   = isset( $instance['post_count'] ) ? absint( $instance['post_count'] ) : 10;
-		$post_count   = min( 30, max( 1, $post_count ) );
-		?>
+	public function form($instance)
+	{
+		$header_label = isset($instance['header_label']) ? $instance['header_label'] : __('TOP EVENTS', 'communicationstoday');
+		$post_count   = isset($instance['post_count']) ? absint($instance['post_count']) : 10;
+		$post_count   = min(30, max(1, $post_count));
+	?>
 		<p>
-			<label for="<?php echo esc_attr( $this->get_field_id( 'header_label' ) ); ?>"><?php esc_html_e( 'Section heading', 'communicationstoday' ); ?></label>
-			<input class="widefat" type="text" id="<?php echo esc_attr( $this->get_field_id( 'header_label' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'header_label' ) ); ?>" value="<?php echo esc_attr( $header_label ); ?>">
+			<label for="<?php echo esc_attr($this->get_field_id('header_label')); ?>"><?php esc_html_e('Section heading', 'communicationstoday'); ?></label>
+			<input class="widefat" type="text" id="<?php echo esc_attr($this->get_field_id('header_label')); ?>" name="<?php echo esc_attr($this->get_field_name('header_label')); ?>" value="<?php echo esc_attr($header_label); ?>">
 		</p>
 		<p>
-			<label for="<?php echo esc_attr( $this->get_field_id( 'post_count' ) ); ?>"><?php esc_html_e( 'Number of videos', 'communicationstoday' ); ?></label>
-			<input class="small-text" type="number" min="1" max="30" id="<?php echo esc_attr( $this->get_field_id( 'post_count' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'post_count' ) ); ?>" value="<?php echo esc_attr( (string) $post_count ); ?>">
+			<label for="<?php echo esc_attr($this->get_field_id('post_count')); ?>"><?php esc_html_e('Number of videos', 'communicationstoday'); ?></label>
+			<input class="small-text" type="number" min="1" max="30" id="<?php echo esc_attr($this->get_field_id('post_count')); ?>" name="<?php echo esc_attr($this->get_field_name('post_count')); ?>" value="<?php echo esc_attr((string) $post_count); ?>">
 		</p>
-		<p><small><?php esc_html_e( 'Only published videos with a video link and featured image are shown.', 'communicationstoday' ); ?></small></p>
-		<?php
+		<p><small><?php esc_html_e('Only published videos with a video link and featured image are shown.', 'communicationstoday'); ?></small></p>
+	<?php
 	}
 
-	public function update( $new_instance, $old_instance ) {
-		unset( $old_instance );
+	public function update($new_instance, $old_instance)
+	{
+		unset($old_instance);
 		$instance                 = array();
-		$instance['header_label'] = isset( $new_instance['header_label'] ) ? sanitize_text_field( wp_unslash( $new_instance['header_label'] ) ) : '';
-		$n                        = isset( $new_instance['post_count'] ) ? absint( $new_instance['post_count'] ) : 10;
-		$instance['post_count']   = min( 30, max( 1, $n ) );
+		$instance['header_label'] = isset($new_instance['header_label']) ? sanitize_text_field(wp_unslash($new_instance['header_label'])) : '';
+		$n                        = isset($new_instance['post_count']) ? absint($new_instance['post_count']) : 10;
+		$instance['post_count']   = min(30, max(1, $n));
 		return $instance;
 	}
 
-	public function widget( $args, $instance ) {
-		if ( ! function_exists( 'communicationstoday_get_video_details' ) || ! post_type_exists( 'ct_video' ) ) {
+	public function widget($args, $instance)
+	{
+		if (! function_exists('communicationstoday_get_video_details') || ! post_type_exists('ct_video')) {
 			return;
 		}
 
-		$header_label = ! empty( $instance['header_label'] ) ? $instance['header_label'] : __( 'TOP EVENTS', 'communicationstoday' );
-		$post_count   = isset( $instance['post_count'] ) ? absint( $instance['post_count'] ) : 10;
-		$post_count   = min( 30, max( 1, $post_count ) );
+		$header_label = ! empty($instance['header_label']) ? $instance['header_label'] : __('TOP EVENTS', 'communicationstoday');
+		$post_count   = isset($instance['post_count']) ? absint($instance['post_count']) : 10;
+		$post_count   = min(30, max(1, $post_count));
 
 		$query = new WP_Query(
 			array(
 				'post_type'           => 'ct_video',
-				'posts_per_page'      => min( 50, $post_count * 3 ),
+				'posts_per_page'      => min(50, $post_count * 3),
 				'post_status'         => 'publish',
 				'ignore_sticky_posts' => true,
 				'no_found_rows'       => true,
@@ -1414,96 +1624,96 @@ class Communicationstoday_Top_Events_Videos_Widget extends WP_Widget {
 		);
 
 		$slides = array();
-		if ( $query->have_posts() ) {
-			while ( $query->have_posts() ) {
+		if ($query->have_posts()) {
+			while ($query->have_posts()) {
 				$query->the_post();
 				$post_id = get_the_ID();
-				$details = communicationstoday_get_video_details( $post_id );
-				$url     = isset( $details['url'] ) ? trim( (string) $details['url'] ) : '';
-				if ( '' === $url ) {
+				$details = communicationstoday_get_video_details($post_id);
+				$url     = isset($details['url']) ? trim((string) $details['url']) : '';
+				if ('' === $url) {
 					continue;
 				}
-				$url = esc_url( $url );
-				if ( '' === $url ) {
+				$url = esc_url($url);
+				if ('' === $url) {
 					continue;
 				}
-				$thumb = get_the_post_thumbnail_url( $post_id, 'medium_large' );
-				if ( ! $thumb ) {
-					$thumb = get_the_post_thumbnail_url( $post_id, 'medium' );
+				$thumb = get_the_post_thumbnail_url($post_id, 'medium_large');
+				if (! $thumb) {
+					$thumb = get_the_post_thumbnail_url($post_id, 'medium');
 				}
-				if ( ! $thumb ) {
+				if (! $thumb) {
 					continue;
 				}
-				$duration = isset( $details['duration'] ) ? trim( (string) $details['duration'] ) : '';
+				$duration = isset($details['duration']) ? trim((string) $details['duration']) : '';
 				$slides[] = array(
-					'title'    => get_the_title( $post_id ),
+					'title'    => get_the_title($post_id),
 					'url'      => $url,
 					'thumb'    => $thumb,
 					'duration' => '' !== $duration ? $duration : '',
 				);
-				if ( count( $slides ) >= $post_count ) {
+				if (count($slides) >= $post_count) {
 					break;
 				}
 			}
 			wp_reset_postdata();
 		}
 
-		if ( empty( $slides ) ) {
+		if (empty($slides)) {
 			return;
 		}
 
 		$wrapper_id = 'swiper-wrapper-' . wp_unique_id();
-		$total      = count( $slides );
+		$total      = count($slides);
 
 		echo $args['before_widget'];
-		?>
+	?>
 		<section class="top-events-section">
 			<div class="container">
 				<div class="top_event_divider"></div>
 				<div class="top-events-header">
-					<span class="category-link1"><?php echo esc_html( $header_label ); ?></span>
+					<span class="category-link1"><?php echo esc_html($header_label); ?></span>
 					<div class="top-events-navigation">
-						<div class="swiper-button-prev top-events-prev" tabindex="0" role="button" aria-label="<?php esc_attr_e( 'Previous slide', 'communicationstoday' ); ?>" aria-controls="<?php echo esc_attr( $wrapper_id ); ?>"></div>
-						<div class="swiper-button-next top-events-next" tabindex="0" role="button" aria-label="<?php esc_attr_e( 'Next slide', 'communicationstoday' ); ?>" aria-controls="<?php echo esc_attr( $wrapper_id ); ?>"></div>
+						<div class="swiper-button-prev top-events-prev" tabindex="0" role="button" aria-label="<?php esc_attr_e('Previous slide', 'communicationstoday'); ?>" aria-controls="<?php echo esc_attr($wrapper_id); ?>"></div>
+						<div class="swiper-button-next top-events-next" tabindex="0" role="button" aria-label="<?php esc_attr_e('Next slide', 'communicationstoday'); ?>" aria-controls="<?php echo esc_attr($wrapper_id); ?>"></div>
 					</div>
 				</div>
 				<div class="swiper top-events-swiper">
-					<div class="swiper-wrapper" id="<?php echo esc_attr( $wrapper_id ); ?>" aria-live="polite">
+					<div class="swiper-wrapper" id="<?php echo esc_attr($wrapper_id); ?>" aria-live="polite">
 						<?php
 						$index = 0;
-						foreach ( $slides as $slide ) :
+						foreach ($slides as $slide) :
 							++$index;
 							$aria = sprintf(
 								/* translators: 1: current slide number, 2: total slides */
-								__( '%1$d / %2$d', 'communicationstoday' ),
+								__('%1$d / %2$d', 'communicationstoday'),
 								$index,
 								$total
 							);
-							?>
-						<div class="swiper-slide" role="group" aria-label="<?php echo esc_attr( $aria ); ?>">
-							<a href="<?php echo esc_url( $slide['url'] ); ?>" class="event-card" target="_blank" rel="noopener noreferrer">
-								<div class="event-image">
-									<img src="<?php echo esc_url( $slide['thumb'] ); ?>" alt="<?php echo esc_attr( $slide['title'] ); ?>" class="w-100" loading="lazy" decoding="async">
-								</div>
-								<div class="event-info">
-									<div class="event-title"><?php echo esc_html( $slide['title'] ); ?></div>
-									<div class="event-meta">
-										<?php if ( '' !== $slide['duration'] ) : ?>
-										<span class="event-duration"><?php echo esc_html( $slide['duration'] ); ?></span>
-										<?php endif; ?>
-										<i class="fas fa-play-circle event-play-icon" aria-hidden="true"></i>
+						?>
+							<div class="swiper-slide" role="group" aria-label="<?php echo esc_attr($aria); ?>">
+								<a href="<?php echo esc_url($slide['url']); ?>" class="event-card" target="_blank" rel="noopener noreferrer">
+									<div class="event-image">
+										<img src="<?php echo esc_url($slide['thumb']); ?>" alt="<?php echo esc_attr($slide['title']); ?>" class="w-100" loading="lazy" decoding="async">
 									</div>
-								</div>
-							</a>
-						</div>
-							<?php
+									<div class="event-info">
+										<div class="event-title"><?php echo esc_html($slide['title']); ?></div>
+										<div class="event-meta">
+											<?php if ('' !== $slide['duration']) : ?>
+												<span class="event-duration"><?php echo esc_html($slide['duration']); ?></span>
+											<?php endif; ?>
+											<i class="fas fa-play-circle event-play-icon" aria-hidden="true"></i>
+										</div>
+									</div>
+								</a>
+							</div>
+						<?php
 						endforeach;
 						?>
 					</div>
 				</div>
 			</div>
 		</section>
-		<?php
+	<?php
 		echo $args['after_widget'];
 	}
 }
@@ -1511,18 +1721,20 @@ class Communicationstoday_Top_Events_Videos_Widget extends WP_Widget {
 /**
  * Media-upload helper widget base for ad/banner style widgets.
  */
-abstract class Communicationstoday_Abstract_Attachment_Banner_Widget extends WP_Widget {
+abstract class Communicationstoday_Abstract_Attachment_Banner_Widget extends WP_Widget
+{
 
 	/**
 	 * @param int $attachment_id Attachment ID.
 	 * @return string
 	 */
-	protected function get_attachment_image_url( $attachment_id ) {
-		$attachment_id = absint( $attachment_id );
-		if ( $attachment_id <= 0 ) {
+	protected function get_attachment_image_url($attachment_id)
+	{
+		$attachment_id = absint($attachment_id);
+		if ($attachment_id <= 0) {
 			return '';
 		}
-		$url = wp_get_attachment_image_url( $attachment_id, 'full' );
+		$url = wp_get_attachment_image_url($attachment_id, 'full');
 		return $url ? (string) $url : '';
 	}
 
@@ -1532,25 +1744,26 @@ abstract class Communicationstoday_Abstract_Attachment_Banner_Widget extends WP_
 	 * @param string $image_label Label.
 	 * @return void
 	 */
-	protected function render_media_field( $field_base, $attachment_id, $image_label ) {
-		$preview_url = $this->get_attachment_image_url( $attachment_id );
-		?>
+	protected function render_media_field($field_base, $attachment_id, $image_label)
+	{
+		$preview_url = $this->get_attachment_image_url($attachment_id);
+	?>
 		<div class="communicationstoday-think-tank-ad-media">
 			<p>
-				<label><?php echo esc_html( $image_label ); ?></label><br>
-				<input type="hidden" class="think-tank-attachment-id" id="<?php echo esc_attr( $this->get_field_id( $field_base ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( $field_base ) ); ?>" value="<?php echo esc_attr( (string) $attachment_id ); ?>">
-				<img src="<?php echo esc_url( $preview_url ); ?>" alt="" class="think-tank-attachment-preview" style="max-width:100%;height:auto;<?php echo $preview_url ? '' : 'display:none;'; ?>">
+				<label><?php echo esc_html($image_label); ?></label><br>
+				<input type="hidden" class="think-tank-attachment-id" id="<?php echo esc_attr($this->get_field_id($field_base)); ?>" name="<?php echo esc_attr($this->get_field_name($field_base)); ?>" value="<?php echo esc_attr((string) $attachment_id); ?>">
+				<img src="<?php echo esc_url($preview_url); ?>" alt="" class="think-tank-attachment-preview" style="max-width:100%;height:auto;<?php echo $preview_url ? '' : 'display:none;'; ?>">
 			</p>
 			<p>
-				<button type="button" class="button communicationstoday-think-tank-media"><?php esc_html_e( 'Select image', 'communicationstoday' ); ?></button>
-				<button type="button" class="button communicationstoday-think-tank-remove" style="<?php echo $attachment_id ? '' : 'display:none;'; ?>"><?php esc_html_e( 'Remove image', 'communicationstoday' ); ?></button>
+				<button type="button" class="button communicationstoday-think-tank-media"><?php esc_html_e('Select image', 'communicationstoday'); ?></button>
+				<button type="button" class="button communicationstoday-think-tank-remove" style="<?php echo $attachment_id ? '' : 'display:none;'; ?>"><?php esc_html_e('Remove image', 'communicationstoday'); ?></button>
 			</p>
 			<p>
-				<label><?php esc_html_e( 'Image URL', 'communicationstoday' ); ?></label>
-				<input class="widefat think-tank-image-url" type="url" value="<?php echo esc_attr( $preview_url ); ?>" readonly>
+				<label><?php esc_html_e('Image URL', 'communicationstoday'); ?></label>
+				<input class="widefat think-tank-image-url" type="url" value="<?php echo esc_attr($preview_url); ?>" readonly>
 			</p>
 		</div>
-		<?php
+	<?php
 	}
 
 	/**
@@ -1559,39 +1772,40 @@ abstract class Communicationstoday_Abstract_Attachment_Banner_Widget extends WP_
 	 * @param bool                 $allow_link Optional target link.
 	 * @return void
 	 */
-	protected function render_banner_output( $instance, $class, $allow_link = false ) {
-		$attachment_id = isset( $instance['attachment_id'] ) ? absint( $instance['attachment_id'] ) : 0;
-		$image_url     = $this->get_attachment_image_url( $attachment_id );
-		if ( '' === $image_url && isset( $instance['image_url'] ) ) {
-			$image_url = esc_url( (string) $instance['image_url'] );
+	protected function render_banner_output($instance, $class, $allow_link = false)
+	{
+		$attachment_id = isset($instance['attachment_id']) ? absint($instance['attachment_id']) : 0;
+		$image_url     = $this->get_attachment_image_url($attachment_id);
+		if ('' === $image_url && isset($instance['image_url'])) {
+			$image_url = esc_url((string) $instance['image_url']);
 		}
-		if ( '' === $image_url ) {
+		if ('' === $image_url) {
 			return;
 		}
 
-		$alt = isset( $instance['alt'] ) ? sanitize_text_field( (string) $instance['alt'] ) : '';
-		if ( '' === $alt ) {
-			$alt = __( 'Advertisement', 'communicationstoday' );
+		$alt = isset($instance['alt']) ? sanitize_text_field((string) $instance['alt']) : '';
+		if ('' === $alt) {
+			$alt = __('Advertisement', 'communicationstoday');
 		}
 
 		$link = '';
-		if ( $allow_link ) {
-			$link = isset( $instance['link_url'] ) ? esc_url( (string) $instance['link_url'] ) : '';
+		if ($allow_link) {
+			$link = isset($instance['link_url']) ? esc_url((string) $instance['link_url']) : '';
 		}
 
-		if ( $allow_link && $link ) {
-			echo '<a href="' . esc_url( $link ) . '" class="' . esc_attr( $class ) . '" target="_blank" rel="noopener noreferrer">';
+		if ($allow_link && $link) {
+			echo '<a href="' . esc_url($link) . '" class="' . esc_attr($class) . '" target="_blank" rel="noopener noreferrer">';
 		} else {
-			echo '<div class="' . esc_attr( $class ) . '">';
+			echo '<div class="' . esc_attr($class) . '">';
 		}
 
 		printf(
 			'<img src="%1$s" alt="%2$s" loading="lazy" decoding="async">',
-			esc_url( $image_url ),
-			esc_attr( $alt )
+			esc_url($image_url),
+			esc_attr($alt)
 		);
 
-		if ( $allow_link && $link ) {
+		if ($allow_link && $link) {
 			echo '</a>';
 		} else {
 			echo '</div>';
@@ -1602,47 +1816,52 @@ abstract class Communicationstoday_Abstract_Attachment_Banner_Widget extends WP_
 /**
  * Archive right rail side banner with media upload + image URL + optional target link.
  */
-class Communicationstoday_Archive_Side_Banner_Widget extends Communicationstoday_Abstract_Attachment_Banner_Widget {
+class Communicationstoday_Archive_Side_Banner_Widget extends Communicationstoday_Abstract_Attachment_Banner_Widget
+{
 
-	public function __construct() {
+	public function __construct()
+	{
 		parent::__construct(
 			'communicationstoday_archive_side_banner',
-			esc_html__( 'Archive side banner', 'communicationstoday' ),
+			esc_html__('Archive side banner', 'communicationstoday'),
 			array(
-				'description' => esc_html__( 'For “Archive listing — right rail”: upload image (with visible image URL) and optional click URL.', 'communicationstoday' ),
+				'description' => esc_html__('For “Archive listing — right rail”: upload image (with visible image URL) and optional click URL.', 'communicationstoday'),
 			)
 		);
 	}
 
-	public function form( $instance ) {
-		$attachment_id = isset( $instance['attachment_id'] ) ? absint( $instance['attachment_id'] ) : 0;
-		$link_url      = isset( $instance['link_url'] ) ? (string) $instance['link_url'] : '';
-		$alt           = isset( $instance['alt'] ) ? (string) $instance['alt'] : '';
-		$this->render_media_field( 'attachment_id', $attachment_id, __( 'Banner image', 'communicationstoday' ) );
-		?>
+	public function form($instance)
+	{
+		$attachment_id = isset($instance['attachment_id']) ? absint($instance['attachment_id']) : 0;
+		$link_url      = isset($instance['link_url']) ? (string) $instance['link_url'] : '';
+		$alt           = isset($instance['alt']) ? (string) $instance['alt'] : '';
+		$this->render_media_field('attachment_id', $attachment_id, __('Banner image', 'communicationstoday'));
+	?>
 		<p>
-			<label for="<?php echo esc_attr( $this->get_field_id( 'link_url' ) ); ?>"><?php esc_html_e( 'Click URL (optional)', 'communicationstoday' ); ?></label>
-			<input class="widefat" type="url" id="<?php echo esc_attr( $this->get_field_id( 'link_url' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'link_url' ) ); ?>" value="<?php echo esc_attr( $link_url ); ?>" placeholder="https://">
+			<label for="<?php echo esc_attr($this->get_field_id('link_url')); ?>"><?php esc_html_e('Click URL (optional)', 'communicationstoday'); ?></label>
+			<input class="widefat" type="url" id="<?php echo esc_attr($this->get_field_id('link_url')); ?>" name="<?php echo esc_attr($this->get_field_name('link_url')); ?>" value="<?php echo esc_attr($link_url); ?>" placeholder="https://">
 		</p>
 		<p>
-			<label for="<?php echo esc_attr( $this->get_field_id( 'alt' ) ); ?>"><?php esc_html_e( 'Image alt text', 'communicationstoday' ); ?></label>
-			<input class="widefat" type="text" id="<?php echo esc_attr( $this->get_field_id( 'alt' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'alt' ) ); ?>" value="<?php echo esc_attr( $alt ); ?>">
+			<label for="<?php echo esc_attr($this->get_field_id('alt')); ?>"><?php esc_html_e('Image alt text', 'communicationstoday'); ?></label>
+			<input class="widefat" type="text" id="<?php echo esc_attr($this->get_field_id('alt')); ?>" name="<?php echo esc_attr($this->get_field_name('alt')); ?>" value="<?php echo esc_attr($alt); ?>">
 		</p>
-		<?php
+	<?php
 	}
 
-	public function update( $new_instance, $old_instance ) {
-		unset( $old_instance );
+	public function update($new_instance, $old_instance)
+	{
+		unset($old_instance);
 		$instance                  = array();
-		$instance['attachment_id'] = isset( $new_instance['attachment_id'] ) ? absint( $new_instance['attachment_id'] ) : 0;
-		$instance['link_url']      = isset( $new_instance['link_url'] ) ? esc_url_raw( trim( wp_unslash( $new_instance['link_url'] ) ) ) : '';
-		$instance['alt']           = isset( $new_instance['alt'] ) ? sanitize_text_field( wp_unslash( $new_instance['alt'] ) ) : '';
+		$instance['attachment_id'] = isset($new_instance['attachment_id']) ? absint($new_instance['attachment_id']) : 0;
+		$instance['link_url']      = isset($new_instance['link_url']) ? esc_url_raw(trim(wp_unslash($new_instance['link_url']))) : '';
+		$instance['alt']           = isset($new_instance['alt']) ? sanitize_text_field(wp_unslash($new_instance['alt'])) : '';
 		return $instance;
 	}
 
-	public function widget( $args, $instance ) {
+	public function widget($args, $instance)
+	{
 		echo $args['before_widget'];
-		$this->render_banner_output( $instance, 'archive-side-banner', true );
+		$this->render_banner_output($instance, 'archive-side-banner', true);
 		echo $args['after_widget'];
 	}
 }
@@ -1650,41 +1869,46 @@ class Communicationstoday_Archive_Side_Banner_Widget extends Communicationstoday
 /**
  * Leaderboard top banner (site-wide) - image upload only (no click URL).
  */
-class Communicationstoday_Leaderboard_Banner_Widget extends Communicationstoday_Abstract_Attachment_Banner_Widget {
+class Communicationstoday_Leaderboard_Banner_Widget extends Communicationstoday_Abstract_Attachment_Banner_Widget
+{
 
-	public function __construct() {
+	public function __construct()
+	{
 		parent::__construct(
 			'communicationstoday_leaderboard_banner',
-			esc_html__( 'Leaderboard banner', 'communicationstoday' ),
+			esc_html__('Leaderboard banner', 'communicationstoday'),
 			array(
-				'description' => esc_html__( 'Top leaderboard image upload (no click URL). Place in “Leaderboard (top, site-wide)”.', 'communicationstoday' ),
+				'description' => esc_html__('Top leaderboard image upload (no click URL). Place in “Leaderboard (top, site-wide)”.', 'communicationstoday'),
 			)
 		);
 	}
 
-	public function form( $instance ) {
-		$attachment_id = isset( $instance['attachment_id'] ) ? absint( $instance['attachment_id'] ) : 0;
-		$alt           = isset( $instance['alt'] ) ? (string) $instance['alt'] : '';
-		$this->render_media_field( 'attachment_id', $attachment_id, __( 'Banner image', 'communicationstoday' ) );
-		?>
+	public function form($instance)
+	{
+		$attachment_id = isset($instance['attachment_id']) ? absint($instance['attachment_id']) : 0;
+		$alt           = isset($instance['alt']) ? (string) $instance['alt'] : '';
+		$this->render_media_field('attachment_id', $attachment_id, __('Banner image', 'communicationstoday'));
+	?>
 		<p>
-			<label for="<?php echo esc_attr( $this->get_field_id( 'alt' ) ); ?>"><?php esc_html_e( 'Image alt text', 'communicationstoday' ); ?></label>
-			<input class="widefat" type="text" id="<?php echo esc_attr( $this->get_field_id( 'alt' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'alt' ) ); ?>" value="<?php echo esc_attr( $alt ); ?>">
+			<label for="<?php echo esc_attr($this->get_field_id('alt')); ?>"><?php esc_html_e('Image alt text', 'communicationstoday'); ?></label>
+			<input class="widefat" type="text" id="<?php echo esc_attr($this->get_field_id('alt')); ?>" name="<?php echo esc_attr($this->get_field_name('alt')); ?>" value="<?php echo esc_attr($alt); ?>">
 		</p>
-		<?php
+	<?php
 	}
 
-	public function update( $new_instance, $old_instance ) {
-		unset( $old_instance );
+	public function update($new_instance, $old_instance)
+	{
+		unset($old_instance);
 		$instance                  = array();
-		$instance['attachment_id'] = isset( $new_instance['attachment_id'] ) ? absint( $new_instance['attachment_id'] ) : 0;
-		$instance['alt']           = isset( $new_instance['alt'] ) ? sanitize_text_field( wp_unslash( $new_instance['alt'] ) ) : '';
+		$instance['attachment_id'] = isset($new_instance['attachment_id']) ? absint($new_instance['attachment_id']) : 0;
+		$instance['alt']           = isset($new_instance['alt']) ? sanitize_text_field(wp_unslash($new_instance['alt'])) : '';
 		return $instance;
 	}
 
-	public function widget( $args, $instance ) {
+	public function widget($args, $instance)
+	{
 		echo $args['before_widget'];
-		$this->render_banner_output( $instance, 'top-ad-banner', false );
+		$this->render_banner_output($instance, 'top-ad-banner', false);
 		echo $args['after_widget'];
 	}
 }
@@ -1692,41 +1916,46 @@ class Communicationstoday_Leaderboard_Banner_Widget extends Communicationstoday_
 /**
  * Leaderboard bottom banner (archive mid ad) - image upload only (no click URL).
  */
-class Communicationstoday_Bottom_Ad_Banner_Widget extends Communicationstoday_Abstract_Attachment_Banner_Widget {
+class Communicationstoday_Bottom_Ad_Banner_Widget extends Communicationstoday_Abstract_Attachment_Banner_Widget
+{
 
-	public function __construct() {
+	public function __construct()
+	{
 		parent::__construct(
 			'communicationstoday_bottom_ad_banner',
-			esc_html__( 'Leaderboard banner (bottom)', 'communicationstoday' ),
+			esc_html__('Leaderboard banner (bottom)', 'communicationstoday'),
 			array(
-				'description' => esc_html__( 'Bottom leaderboard image upload (no click URL). For “Archive listing — mid ad”.', 'communicationstoday' ),
+				'description' => esc_html__('Bottom leaderboard image upload (no click URL). For “Archive listing — mid ad”.', 'communicationstoday'),
 			)
 		);
 	}
 
-	public function form( $instance ) {
-		$attachment_id = isset( $instance['attachment_id'] ) ? absint( $instance['attachment_id'] ) : 0;
-		$alt           = isset( $instance['alt'] ) ? (string) $instance['alt'] : '';
-		$this->render_media_field( 'attachment_id', $attachment_id, __( 'Banner image', 'communicationstoday' ) );
-		?>
+	public function form($instance)
+	{
+		$attachment_id = isset($instance['attachment_id']) ? absint($instance['attachment_id']) : 0;
+		$alt           = isset($instance['alt']) ? (string) $instance['alt'] : '';
+		$this->render_media_field('attachment_id', $attachment_id, __('Banner image', 'communicationstoday'));
+	?>
 		<p>
-			<label for="<?php echo esc_attr( $this->get_field_id( 'alt' ) ); ?>"><?php esc_html_e( 'Image alt text', 'communicationstoday' ); ?></label>
-			<input class="widefat" type="text" id="<?php echo esc_attr( $this->get_field_id( 'alt' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'alt' ) ); ?>" value="<?php echo esc_attr( $alt ); ?>">
+			<label for="<?php echo esc_attr($this->get_field_id('alt')); ?>"><?php esc_html_e('Image alt text', 'communicationstoday'); ?></label>
+			<input class="widefat" type="text" id="<?php echo esc_attr($this->get_field_id('alt')); ?>" name="<?php echo esc_attr($this->get_field_name('alt')); ?>" value="<?php echo esc_attr($alt); ?>">
 		</p>
-		<?php
+	<?php
 	}
 
-	public function update( $new_instance, $old_instance ) {
-		unset( $old_instance );
+	public function update($new_instance, $old_instance)
+	{
+		unset($old_instance);
 		$instance                  = array();
-		$instance['attachment_id'] = isset( $new_instance['attachment_id'] ) ? absint( $new_instance['attachment_id'] ) : 0;
-		$instance['alt']           = isset( $new_instance['alt'] ) ? sanitize_text_field( wp_unslash( $new_instance['alt'] ) ) : '';
+		$instance['attachment_id'] = isset($new_instance['attachment_id']) ? absint($new_instance['attachment_id']) : 0;
+		$instance['alt']           = isset($new_instance['alt']) ? sanitize_text_field(wp_unslash($new_instance['alt'])) : '';
 		return $instance;
 	}
 
-	public function widget( $args, $instance ) {
+	public function widget($args, $instance)
+	{
 		echo $args['before_widget'];
-		$this->render_banner_output( $instance, 'bottom-ad-banner', false );
+		$this->render_banner_output($instance, 'bottom-ad-banner', false);
 		echo $args['after_widget'];
 	}
 }
@@ -1734,29 +1963,30 @@ class Communicationstoday_Bottom_Ad_Banner_Widget extends Communicationstoday_Ab
 add_action(
 	'widgets_init',
 	function () {
-		register_widget( 'Communicationstoday_Homepage_Stories_Widget' );
-		register_widget( 'Communicationstoday_Think_Tank_Widget' );
-		register_widget( 'Communicationstoday_Perspective_Swiper_Widget' );
-		register_widget( 'Communicationstoday_Headlines_Day_Widget' );
-		register_widget( 'Communicationstoday_Top_Events_Videos_Widget' );
-		register_widget( 'Communicationstoday_Archive_Side_Banner_Widget' );
-		register_widget( 'Communicationstoday_Leaderboard_Banner_Widget' );
-		register_widget( 'Communicationstoday_Bottom_Ad_Banner_Widget' );
+		register_widget('Communicationstoday_Homepage_Stories_Widget');
+		register_widget('Communicationstoday_Think_Tank_Widget');
+		register_widget('Communicationstoday_Perspective_Swiper_Widget');
+		register_widget('Communicationstoday_Headlines_Day_Widget');
+		register_widget('Communicationstoday_Top_Events_Videos_Widget');
+		register_widget('Communicationstoday_Archive_Side_Banner_Widget');
+		register_widget('Communicationstoday_Leaderboard_Banner_Widget');
+		register_widget('Communicationstoday_Bottom_Ad_Banner_Widget');
 	}
 );
 
 /**
  * Media picker for Think Tank widget (Widgets + Customizer + block-based widgets screen).
  */
-function communicationstoday_enqueue_think_tank_widget_admin() {
-	if ( wp_script_is( 'communicationstoday-think-tank-admin', 'enqueued' ) ) {
+function communicationstoday_enqueue_think_tank_widget_admin()
+{
+	if (wp_script_is('communicationstoday-think-tank-admin', 'enqueued')) {
 		return;
 	}
 	wp_enqueue_media();
 	wp_enqueue_script(
 		'communicationstoday-think-tank-admin',
 		get_template_directory_uri() . '/js/think-tank-widget-admin.js',
-		array( 'jquery' ),
+		array('jquery'),
 		_S_VERSION,
 		true
 	);
@@ -1764,46 +1994,185 @@ function communicationstoday_enqueue_think_tank_widget_admin() {
 		'communicationstoday-think-tank-admin',
 		'communicationstodayThinkTank',
 		array(
-			'select' => esc_html__( 'Choose image', 'communicationstoday' ),
-			'use'    => esc_html__( 'Use image', 'communicationstoday' ),
+			'select' => esc_html__('Choose image', 'communicationstoday'),
+			'use'    => esc_html__('Use image', 'communicationstoday'),
 		)
 	);
 }
 
 add_action(
 	'admin_enqueue_scripts',
-	function ( $hook ) {
-		$load = in_array( $hook, array( 'widgets.php', 'customize.php', 'site-editor.php' ), true );
-		if ( 'themes.php' === $hook && isset( $_GET['page'] ) && 'gutenberg-widgets' === $_GET['page'] ) {
+	function ($hook) {
+		$load = in_array($hook, array('widgets.php', 'customize.php', 'site-editor.php'), true);
+		if ('themes.php' === $hook && isset($_GET['page']) && 'gutenberg-widgets' === $_GET['page']) {
 			$load = true;
 		}
-		if ( $load ) {
+		if ($load) {
 			communicationstoday_enqueue_think_tank_widget_admin();
 		}
 	},
 	20
 );
 
-add_action( 'customize_controls_enqueue_scripts', 'communicationstoday_enqueue_think_tank_widget_admin' );
+add_action('customize_controls_enqueue_scripts', 'communicationstoday_enqueue_think_tank_widget_admin');
 
 
 
 
 
-function itf_pdf_shortcode($atts, $content = null) {
-    if (!$content) return '';
+/**
+ * Body class when a post uses the PDF viewer shortcode.
+ *
+ * @param string[] $classes Body classes.
+ * @return string[]
+ */
+function communicationstoday_itf_pdf_body_class($classes)
+{
+	$classes[] = 'itf-pdf-page';
+	return $classes;
+}
 
-    $pdf_url = trim($content);
+/**
+ * Register PDF viewer assets (pdf.js + theme viewer).
+ */
+function communicationstoday_register_pdf_viewer_assets()
+{
+	wp_register_style(
+		'communicationstoday-pdf-viewer',
+		get_template_directory_uri() . '/css/pdf-viewer.css',
+		array(),
+		_S_VERSION
+	);
 
-    add_filter('body_class', function($classes) {
-        $classes[] = 'itf-pdf-page';
-        return $classes;
-    });
+	wp_register_script(
+		'pdfjs',
+		'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',
+		array(),
+		'3.11.174',
+		true
+	);
 
-    return '
-    <div class="itf-pdf-fullscreen">
-        <iframe src="' . esc_url($pdf_url) . '#toolbar=0&navpanes=0&scrollbar=0"></iframe>
-    </div>
-    ';
+	wp_register_script(
+		'communicationstoday-pdf-viewer',
+		get_template_directory_uri() . '/js/pdf-viewer.js',
+		array('pdfjs'),
+		_S_VERSION,
+		true
+	);
+}
+add_action('wp_enqueue_scripts', 'communicationstoday_register_pdf_viewer_assets', 5);
+
+/**
+ * Enqueue PDF assets in head when post content has [ITFPDF] (before shortcode runs).
+ */
+function communicationstoday_maybe_enqueue_pdf_viewer_assets()
+{
+	if (! is_singular()) {
+		return;
+	}
+	$post = get_post();
+	if (! $post || ! has_shortcode($post->post_content, 'ITFPDF')) {
+		return;
+	}
+	communicationstoday_enqueue_pdf_viewer_assets();
+}
+add_action('wp_enqueue_scripts', 'communicationstoday_maybe_enqueue_pdf_viewer_assets', 20);
+
+/**
+ * Enqueue PDF viewer assets once per request.
+ */
+function communicationstoday_enqueue_pdf_viewer_assets()
+{
+	static $done = false;
+	if ($done) {
+		return;
+	}
+	$done = true;
+
+	wp_enqueue_style('communicationstoday-pdf-viewer');
+	wp_enqueue_script('pdfjs');
+	wp_enqueue_script('communicationstoday-pdf-viewer');
+	wp_localize_script(
+		'communicationstoday-pdf-viewer',
+		'communicationstodayPdfViewer',
+		array(
+			'i18n' => array(
+				'loadError'     => __('Unable to load PDF. Check the file URL.', 'communicationstoday'),
+				'renderError'   => __('Unable to display this page.', 'communicationstoday'),
+				'libraryError'  => __('PDF viewer failed to load. Please refresh the page.', 'communicationstoday'),
+				'loading'       => __('Loading PDF…', 'communicationstoday'),
+			),
+		)
+	);
+}
+
+/**
+ * Modern PDF viewer shortcode: [ITFPDF]https://example.com/file.pdf[/ITFPDF]
+ * Optional title: [ITFPDF title="Report name"]url[/ITFPDF]
+ *
+ * @param array<string,string>|string $atts    Shortcode attributes.
+ * @param string|null                 $content PDF URL.
+ * @return string
+ */
+function itf_pdf_shortcode($atts, $content = null)
+{
+	if (! is_string($content) || '' === trim($content)) {
+		return '';
+	}
+
+	$atts = shortcode_atts(
+		array(
+			'title' => '',
+		),
+		is_array($atts) ? $atts : array(),
+		'ITFPDF'
+	);
+
+	$pdf_url = esc_url_raw(trim($content));
+	if ('' === $pdf_url) {
+		return '';
+	}
+
+	communicationstoday_enqueue_pdf_viewer_assets();
+
+	if (! has_filter('body_class', 'communicationstoday_itf_pdf_body_class')) {
+		add_filter('body_class', 'communicationstoday_itf_pdf_body_class');
+	}
+
+	static $instance = 0;
+	$instance++;
+
+	$title = is_string($atts['title']) ? trim($atts['title']) : '';
+	if ('' === $title && is_singular('post')) {
+		$title = get_the_title();
+	}
+
+	$loading = __('Loading PDF…', 'communicationstoday');
+
+	ob_start();
+	?>
+	<div class="itf-pdf-viewer-wrap">
+
+		<div
+			class="itf-pdf-viewer"
+			id="<?php echo esc_attr('itf-pdf-viewer-' . $instance); ?>"
+			data-pdf-url="<?php echo esc_url($pdf_url); ?>">
+			<div class="itf-pdf-card">
+				<canvas class="itf-pdf-canvas" aria-label="<?php esc_attr_e('PDF document', 'communicationstoday'); ?>"></canvas>
+				<div class="itf-pdf-controls" role="toolbar" aria-label="<?php esc_attr_e('PDF navigation', 'communicationstoday'); ?>">
+					<button type="button" class="itf-pdf-prev" aria-label="<?php esc_attr_e('Previous page', 'communicationstoday'); ?>">←</button>
+					<div class="itf-pdf-page-info">
+						<span class="itf-pdf-page-num">1</span> /
+						<span class="itf-pdf-page-count">0</span>
+					</div>
+					<button type="button" class="itf-pdf-next" aria-label="<?php esc_attr_e('Next page', 'communicationstoday'); ?>">→</button>
+				</div>
+				<p class="itf-pdf-status itf-pdf-loading"><?php echo esc_html($loading); ?></p>
+				<p class="itf-pdf-status itf-pdf-error" hidden></p>
+			</div>
+		</div>
+	</div>
+<?php
+	return (string) ob_get_clean();
 }
 add_shortcode('ITFPDF', 'itf_pdf_shortcode');

@@ -1,0 +1,138 @@
+/* Modern PDF viewer ([ITFPDF] shortcode) */
+.itf-pdf-page {
+	background:
+		radial-gradient(circle at top left, #0ea5e9 0%, transparent 30%),
+		radial-gradient(circle at bottom right, #6366f1 0%, transparent 30%),
+		#0f172a;
+}
+
+.itf-pdf-page .article-detail-content-right,
+.itf-pdf-page .article-lisitng-banner,
+.itf-pdf-page .article-detail-section {
+	display: none !important;
+}
+
+.itf-pdf-page .article-detail-content-left {
+	width: 100%;
+	max-width: 1100px;
+	margin-left: auto;
+	margin-right: auto;
+	float: none;
+}
+
+.itf-pdf-viewer-wrap {
+	width: 100%;
+	max-width: 1100px;
+	margin: 0 auto;
+	padding: 20px 0 40px;
+	font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.itf-pdf-viewer-title {
+	color: #fff;
+	font-size: 24px;
+	font-weight: 700;
+	margin: 0 0 20px;
+	line-height: 1.3;
+}
+
+.itf-pdf-card {
+	position: relative;
+	background: rgba(255, 255, 255, 0.08);
+	backdrop-filter: blur(20px);
+	border: 1px solid rgba(255, 255, 255, 0.08);
+	border-radius: 32px;
+	overflow: hidden;
+	padding: 25px;
+	box-shadow:
+		0 10px 40px rgba(0, 0, 0, 0.2),
+		inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.itf-pdf-canvas {
+	width: 100%;
+	height: auto;
+	display: block;
+	border-radius: 18px;
+	background: #fff;
+}
+
+.itf-pdf-controls {
+	position: absolute;
+	bottom: 35px;
+	left: 50%;
+	transform: translateX(-50%);
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	padding: 12px 18px;
+	border-radius: 100px;
+	background: rgba(15, 23, 42, 0.75);
+	backdrop-filter: blur(12px);
+	border: 1px solid rgba(255, 255, 255, 0.08);
+	z-index: 2;
+}
+
+.itf-pdf-controls button {
+	width: 46px;
+	height: 46px;
+	border: none;
+	border-radius: 50%;
+	cursor: pointer;
+	background: #0ea5e9;
+	color: #fff;
+	font-size: 18px;
+	line-height: 1;
+	transition: transform 0.3s ease;
+}
+
+.itf-pdf-controls button:hover {
+	transform: scale(1.08);
+}
+
+.itf-pdf-page-info {
+	color: #fff;
+	font-size: 14px;
+	font-weight: 600;
+	min-width: 70px;
+	text-align: center;
+}
+
+.itf-pdf-status {
+	color: rgba(255, 255, 255, 0.85);
+	font-size: 14px;
+	margin: 16px 0 0;
+	text-align: center;
+}
+
+.itf-pdf-viewer--loading .itf-pdf-canvas {
+	min-height: 420px;
+	opacity: 0.35;
+}
+
+@media (max-width: 768px) {
+	.itf-pdf-viewer-wrap {
+		padding: 10px 0 30px;
+	}
+
+	.itf-pdf-viewer-title {
+		font-size: 20px;
+		margin-bottom: 14px;
+	}
+
+	.itf-pdf-card {
+		padding: 15px;
+		border-radius: 22px;
+	}
+
+	.itf-pdf-controls {
+		bottom: 20px;
+		gap: 10px;
+		padding: 10px 14px;
+	}
+
+	.itf-pdf-controls button {
+		width: 40px;
+		height: 40px;
+	}
+}

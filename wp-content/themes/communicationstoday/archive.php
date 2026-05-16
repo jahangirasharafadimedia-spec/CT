@@ -38,7 +38,7 @@ get_header();
 						while ( have_posts() ) :
 							the_post();
 							get_template_part( 'template-parts/content', 'archive' );
-							if ( ! $communicationstoday_archive_after_first ) {
+							if ( ! $communicationstoday_archive_after_first && ! is_paged() ) {
 								communicationstoday_render_archive_mid_ad();
 								$communicationstoday_archive_after_first = true;
 							}
@@ -68,7 +68,7 @@ get_header();
 
 				</div>
 
-				<div class="article-lisitng-banner">
+				<div class="article-lisitng-banner<?php echo ( function_exists( 'communicationstoday_is_editors_desk_category_archive' ) && communicationstoday_is_editors_desk_category_archive() ) ? ' article-lisitng-banner--editors-desk' : ''; ?>">
 					<?php communicationstoday_render_archive_listing_banner(); ?>
 				</div>
 

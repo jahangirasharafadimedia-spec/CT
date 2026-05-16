@@ -24,7 +24,12 @@ function communicationstoday_live_search_min_length() {
  * @return string[]
  */
 function communicationstoday_live_search_post_types() {
-	$types = array( 'post', 'page', 'ct_video' );
+	$types = array_merge(
+		array( 'post', 'page', 'ct_video' ),
+		function_exists( 'communicationstoday_get_newsletter_post_types' )
+			? communicationstoday_get_newsletter_post_types()
+			: array( '5g_weekly_newsletter', 'daily_newsletter', 'weekly_roundup', 'imc_newsletter' )
+	);
 	$types = array_values( array_filter( array_unique( array_map( 'sanitize_key', apply_filters( 'communicationstoday_live_search_post_types', $types ) ) ) ) );
 	if ( empty( $types ) ) {
 		return array( 'post' );
@@ -255,6 +260,10 @@ function communicationstoday_ajax_archive_load_more() {
 	$query['ignore_sticky_posts'] = true;
 	$query['posts_per_page']      = 10;
 	$query['paged']               = $page;
+	if ( function_exists( 'communicationstoday_get_menu_order_query_orderby' ) ) {
+		$query['orderby'] = communicationstoday_get_menu_order_query_orderby();
+	}
+	$query                        = communicationstoday_archive_load_more_exclude_sticky( $query );
 
 	$wpq = new WP_Query( $query );
 

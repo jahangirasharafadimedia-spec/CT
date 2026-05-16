@@ -1,0 +1,67 @@
+.communicationstoday-bulk-images-wrap .ct-bulk-images-warning {
+	margin: 16px 0;
+}
+
+.communicationstoday-bulk-images-wrap .ct-bulk-images-card {
+	background: #fff;
+	border: 1px solid #c3c4c7;
+	border-radius: 4px;
+	padding: 16px 20px 8px;
+	margin: 20px 0;
+	max-width: 720px;
+}
+
+.communicationstoday-bulk-images-wrap .ct-bulk-images-status {
+	margin-left: 10px;
+	font-style: italic;
+}
+
+.communicationstoday-bulk-images-wrap .ct-bulk-images-status.is-error {
+	color: #b32d2e;
+	font-style: normal;
+}
+
+.communicationstoday-bulk-images-wrap .ct-bulk-images-status.is-success {
+	color: #00a32a;
+	font-style: normal;
+}
+
+.communicationstoday-bulk-images-wrap .ct-bulk-images-stats {
+	margin: 12px 0 20px;
+	padding-left: 1.2em;
+	list-style: disc;
+}
+
+.communicationstoday-bulk-images-wrap .ct-bulk-images-stats li {
+	margin-bottom: 6px;
+}
+
+.communicationstoday-bulk-images-wrap .ct-bulk-images-period {
+	font-size: 14px;
+	color: #50575e;
+}
+
+.communicationstoday-bulk-images-wrap .ct-bulk-images-progress-wrap {
+	margin: 16px 0 20px;
+	max-width: 480px;
+}
+
+.communicationstoday-bulk-images-wrap .ct-bulk-images-progress-bar {
+	height: 10px;
+	background: #dcdcde;
+	border-radius: 4px;
+	overflow: hidden;
+}
+
+.communicationstoday-bulk-images-wrap .ct-bulk-images-progress-fill {
+	height: 100%;
+	width: 0;
+	background: #2271b1;
+	transition: width 0.2s ease;
+}
+
+.communicationstoday-bulk-images-wrap .ct-bulk-images-progress-label {
+	margin: 8px 0 0;
+	font-size: 13px;
+	color: #50575e;
+}

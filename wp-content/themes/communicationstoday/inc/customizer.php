@@ -112,35 +112,38 @@ function communicationstoday_customize_register( $wp_customize ) {
 		'communicationstoday_ticker',
 		array(
 			'title'       => __( 'News ticker', 'communicationstoday' ),
-			'description' => __( 'Header bar that scrolls the latest posts from one category.', 'communicationstoday' ),
+			'description' => __( 'Header bar that scrolls the latest posts. Only the categories you check below will appear in the ticker.', 'communicationstoday' ),
 			'priority'    => 86,
 		)
 	);
 
+	require_once get_template_directory() . '/inc/class-communicationstoday-customize-ticker-categories-control.php';
+
+	$legacy_ticker_category = absint( get_theme_mod( 'communicationstoday_ticker_category_id', 0 ) );
+	$ticker_categories_default = '';
+	if ( $legacy_ticker_category > 0 ) {
+		$ticker_categories_default = (string) $legacy_ticker_category;
+	}
+
 	$wp_customize->add_setting(
-		'communicationstoday_ticker_category_id',
+		'communicationstoday_ticker_category_ids',
 		array(
-			'default'           => 0,
-			'sanitize_callback' => 'absint',
+			'default'           => $ticker_categories_default,
+			'sanitize_callback' => 'communicationstoday_sanitize_ticker_category_ids',
 			'transport'         => 'refresh',
 		)
 	);
 
-	$ticker_choices = array(
-		0 => __( 'Default: category slug latest-news', 'communicationstoday' ),
-	);
-	foreach ( get_categories( array( 'hide_empty' => false ) ) as $ticker_cat ) {
-		$ticker_choices[ (int) $ticker_cat->term_id ] = $ticker_cat->name;
-	}
-
 	$wp_customize->add_control(
-		'communicationstoday_ticker_category_id',
-		array(
-			'label'       => __( 'Category', 'communicationstoday' ),
-			'description' => __( 'If Default is selected, the ticker uses the category whose slug is latest-news (Posts → Categories). Override by choosing another category.', 'communicationstoday' ),
-			'section'     => 'communicationstoday_ticker',
-			'type'        => 'select',
-			'choices'     => $ticker_choices,
+		new Communicationstoday_Customize_Ticker_Categories_Control(
+			$wp_customize,
+			'communicationstoday_ticker_category_ids',
+			array(
+				'label'       => __( 'Categories', 'communicationstoday' ),
+				'description' => __( 'Check only the categories you want in the ticker, then click Publish. Unchecked categories will not show.', 'communicationstoday' ),
+				'section'     => 'communicationstoday_ticker',
+				'priority'    => 10,
+			)
 		)
 	);
 
@@ -156,9 +159,10 @@ function communicationstoday_customize_register( $wp_customize ) {
 	$wp_customize->add_control(
 		'communicationstoday_ticker_label',
 		array(
-			'label'   => __( 'Ticker label', 'communicationstoday' ),
-			'section' => 'communicationstoday_ticker',
-			'type'    => 'text',
+			'label'    => __( 'Ticker label', 'communicationstoday' ),
+			'section'  => 'communicationstoday_ticker',
+			'type'     => 'text',
+			'priority' => 20,
 		)
 	);
 
@@ -175,9 +179,10 @@ function communicationstoday_customize_register( $wp_customize ) {
 		'communicationstoday_ticker_post_count',
 		array(
 			'label'       => __( 'Number of posts', 'communicationstoday' ),
-			'description' => __( 'Between 1 and 20.', 'communicationstoday' ),
+			'description' => __( 'Total posts in the ticker from all selected categories combined (e.g. 10 = up to 10 posts total, not 10 per category). Between 1 and 20.', 'communicationstoday' ),
 			'section'     => 'communicationstoday_ticker',
 			'type'        => 'number',
+			'priority'    => 30,
 			'input_attrs' => array(
 				'min'  => 1,
 				'max'  => 20,
@@ -252,3 +257,31 @@ function communicationstoday_customize_preview_js() {
 	wp_enqueue_script( 'communicationstoday-customizer', get_template_directory_uri() . '/js/customizer.js', array( 'customize-preview' ), _S_VERSION, true );
 }
 add_action( 'customize_preview_init', 'communicationstoday_customize_preview_js' );
+
+/**
+ * Scripts and styles for ticker multi-category control in Customizer.
+ */
+function communicationstoday_customize_ticker_categories_controls_js() {
+	wp_enqueue_script(
+		'communicationstoday-customizer-ticker-categories',
+		get_template_directory_uri() . '/js/customizer-ticker-categories.js',
+		array( 'customize-controls', 'jquery' ),
+		_S_VERSION,
+		true
+	);
+
+	wp_add_inline_style(
+		'customize-controls',
+		'.communicationstoday-ticker-categories-list{max-height:220px;overflow-y:auto;margin-top:8px;padding:8px;border:1px solid #c3c4c7;background:#fff;}' .
+		'.communicationstoday-ticker-category-option{display:block;margin:0 0 6px;}'
+	);
+}
+add_action( 'customize_controls_enqueue_scripts', 'communicationstoday_customize_ticker_categories_controls_js' );
+
+/**
+ * After ticker categories are saved, drop legacy single-category mod so latest-news is not reused.
+ */
+function communicationstoday_customize_save_ticker_categories() {
+	remove_theme_mod( 'communicationstoday_ticker_category_id' );
+}
+add_action( 'customize_save_communicationstoday_ticker_category_ids', 'communicationstoday_customize_save_ticker_categories' );

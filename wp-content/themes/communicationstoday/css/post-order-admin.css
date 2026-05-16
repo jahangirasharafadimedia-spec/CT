@@ -1,0 +1,121 @@
+.communicationstoday-story-order-wrap .ct-story-order-list {
+	margin: 1em 0 2em;
+	padding: 0;
+	max-width: 720px;
+}
+
+.communicationstoday-story-order-wrap .ct-story-order-item {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin: 0 0 6px;
+	padding: 10px 12px;
+	background: #fff;
+	border: 1px solid #c3c4c7;
+	border-radius: 4px;
+	cursor: move;
+	list-style: none;
+}
+
+.communicationstoday-story-order-wrap .ct-story-order-item.ui-sortable-helper {
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.communicationstoday-story-order-wrap .ct-story-order-handle {
+	color: #787c82;
+	flex-shrink: 0;
+}
+
+.communicationstoday-story-order-wrap .ct-story-order-title {
+	flex: 1;
+	font-weight: 500;
+}
+
+.communicationstoday-story-order-wrap .ct-story-order-badge {
+	flex-shrink: 0;
+	font-size: 11px;
+	text-transform: uppercase;
+	letter-spacing: 0.02em;
+	padding: 2px 8px;
+	background: #2271b1;
+	color: #fff;
+	border-radius: 3px;
+}
+
+.communicationstoday-story-order-wrap .ct-story-order-meta {
+	flex-shrink: 0;
+	font-size: 12px;
+	color: #646970;
+}
+
+.communicationstoday-story-order-wrap .ct-story-order-status {
+	margin-left: 8px;
+	font-style: italic;
+}
+
+.communicationstoday-story-order-wrap .ct-story-order-status.is-error {
+	color: #b32d2e;
+}
+
+.communicationstoday-story-order-wrap .ct-story-order-status.is-success {
+	color: #00a32a;
+}
+
+/* Posts list (edit.php) drag-and-drop */
+.ct-posts-order-notice .ct-posts-order-notice-status {
+	margin-left: 8px;
+	font-weight: 600;
+}
+
+.ct-posts-order-notice .ct-posts-order-notice-status.is-success {
+	color: #00a32a;
+}
+
+.ct-posts-order-notice .ct-posts-order-notice-status.is-error {
+	color: #b32d2e;
+}
+
+.wp-list-table .column-menu_order {
+	width: 72px;
+	text-align: center;
+}
+
+.wp-list-table .ct-posts-drag-handle {
+	cursor: move;
+	vertical-align: middle;
+	color: #787c82;
+	margin-right: 4px;
+}
+
+.wp-list-table .ct-posts-drag-handle:hover {
+	color: #2271b1;
+}
+
+.wp-list-table .ct-posts-order-num {
+	display: inline-block;
+	min-width: 1.2em;
+	vertical-align: middle;
+	font-variant-numeric: tabular-nums;
+}
+
+.wp-list-table tbody#the-list tr.ct-posts-sortable-placeholder {
+	display: table-row;
+	visibility: visible;
+	background: #f0f6fc;
+	outline: 2px dashed #2271b1;
+	outline-offset: -2px;
+}
+
+.wp-list-table tbody#the-list tr.ct-posts-sortable-placeholder td {
+	border-top: 1px solid #c3c4c7;
+	border-bottom: 1px solid #c3c4c7;
+}
+
+.wp-list-table tbody#the-list tr.ui-sortable-helper {
+	background: #fff;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.wp-list-table tbody#the-list tr.ui-sortable-helper td {
+	background: #fff;
+}

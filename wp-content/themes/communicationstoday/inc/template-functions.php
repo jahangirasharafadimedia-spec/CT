@@ -123,44 +123,149 @@ function communicationstoday_get_social_url( $slug ) {
 }
 
 /**
- * Category term ID for the header news ticker: Customizer choice, else category slug latest-news (filterable).
+ * Sanitize comma-separated category IDs for the news ticker.
  *
- * @return int
+ * @param mixed $value Raw setting value.
+ * @return string Comma-separated term IDs.
  */
-function communicationstoday_get_ticker_category_id() {
-	$mod_id = absint( get_theme_mod( 'communicationstoday_ticker_category_id', 0 ) );
-	if ( $mod_id > 0 ) {
-		$term = get_term( $mod_id, 'category' );
+function communicationstoday_sanitize_ticker_category_ids( $value ) {
+	if ( is_array( $value ) ) {
+		$ids = array_map( 'absint', $value );
+	} else {
+		$ids = array_map( 'absint', explode( ',', (string) $value ) );
+	}
+
+	$valid = array();
+	foreach ( array_unique( array_filter( $ids ) ) as $id ) {
+		$term = get_term( $id, 'category' );
 		if ( $term && ! is_wp_error( $term ) ) {
-			return $mod_id;
+			$valid[] = (int) $term->term_id;
 		}
 	}
+
+	return implode( ',', $valid );
+}
+
+/**
+ * Default ticker category term IDs (slug latest-news, filterable).
+ *
+ * @return int[]
+ */
+function communicationstoday_get_ticker_default_category_ids() {
+	$ids = array();
 
 	$default_slugs = apply_filters(
 		'communicationstoday_ticker_default_category_slugs',
 		array( 'latest-news', 'latest_news' )
 	);
+
 	foreach ( (array) $default_slugs as $slug_try ) {
 		if ( ! is_string( $slug_try ) || '' === $slug_try ) {
 			continue;
 		}
 		$term = get_term_by( 'slug', sanitize_title( $slug_try ), 'category' );
 		if ( $term && ! is_wp_error( $term ) ) {
-			return (int) $term->term_id;
+			$ids[] = (int) $term->term_id;
 		}
 	}
 
-	return 0;
+	return array_values( array_unique( array_filter( $ids ) ) );
+}
+
+/**
+ * Whether the multi-category ticker setting was saved in Customizer (even if empty).
+ *
+ * @return bool
+ */
+function communicationstoday_ticker_categories_setting_exists() {
+	$mods = get_theme_mods();
+	return is_array( $mods ) && array_key_exists( 'communicationstoday_ticker_category_ids', $mods );
+}
+
+/**
+ * Parse comma-separated category IDs from theme mod.
+ *
+ * @param string $raw Raw theme mod value.
+ * @return int[]
+ */
+function communicationstoday_parse_ticker_category_ids( $raw ) {
+	$ids = array();
+
+	if ( ! is_string( $raw ) || '' === trim( $raw ) ) {
+		return $ids;
+	}
+
+	foreach ( array_map( 'absint', explode( ',', $raw ) ) as $id ) {
+		if ( $id <= 0 ) {
+			continue;
+		}
+		$term = get_term( $id, 'category' );
+		if ( $term && ! is_wp_error( $term ) ) {
+			$ids[] = $id;
+		}
+	}
+
+	return array_values( array_unique( $ids ) );
+}
+
+/**
+ * Category term IDs for the header news ticker (Customizer: multiple categories).
+ * Only checked categories are used after the first Customizer save — no silent latest-news fallback.
+ *
+ * @return int[]
+ */
+function communicationstoday_get_ticker_category_ids() {
+	static $cached = null;
+
+	if ( null !== $cached ) {
+		return $cached;
+	}
+
+	$ids = array();
+
+	if ( communicationstoday_ticker_categories_setting_exists() ) {
+		$raw = get_theme_mod( 'communicationstoday_ticker_category_ids', '' );
+		$ids = communicationstoday_parse_ticker_category_ids( is_string( $raw ) ? $raw : '' );
+	} else {
+		$legacy_id = absint( get_theme_mod( 'communicationstoday_ticker_category_id', 0 ) );
+		if ( $legacy_id > 0 ) {
+			$term = get_term( $legacy_id, 'category' );
+			if ( $term && ! is_wp_error( $term ) ) {
+				$ids[] = $legacy_id;
+			}
+		}
+
+		if ( empty( $ids ) ) {
+			$ids = communicationstoday_get_ticker_default_category_ids();
+		}
+	}
+
+	$cached = apply_filters( 'communicationstoday_ticker_category_ids', $ids );
+	$cached = array_values( array_unique( array_map( 'absint', (array) $cached ) ) );
+
+	return $cached;
+}
+
+/**
+ * First ticker category ID (backward compatibility).
+ *
+ * @return int
+ */
+function communicationstoday_get_ticker_category_id() {
+	$ids = communicationstoday_get_ticker_category_ids();
+	return ! empty( $ids ) ? (int) $ids[0] : 0;
 }
 
 /**
  * Latest posts for the news ticker.
  *
+ * Post count is total across all selected categories (not per category).
+ *
  * @return WP_Post[]
  */
 function communicationstoday_get_ticker_posts() {
-	$cat_id = communicationstoday_get_ticker_category_id();
-	if ( $cat_id <= 0 ) {
+	$cat_ids = communicationstoday_get_ticker_category_ids();
+	if ( empty( $cat_ids ) ) {
 		return array();
 	}
 
@@ -169,7 +274,7 @@ function communicationstoday_get_ticker_posts() {
 
 	$query = new WP_Query(
 		array(
-			'cat'                    => $cat_id,
+			'category__in'           => $cat_ids,
 			'posts_per_page'         => $n,
 			'post_type'              => 'post',
 			'post_status'            => 'publish',
@@ -227,4 +332,83 @@ function communicationstoday_render_social_links( $link_class, $network_order = 
 </a>
 		<?php
 	}
+}
+
+/**
+ * Share URLs for a single post (Facebook, X, LinkedIn).
+ *
+ * @param int $post_id Post ID.
+ * @return array<string, array{url: string, icon: string, label: string}>
+ */
+function communicationstoday_get_post_share_links( $post_id = 0 ) {
+	$post_id = absint( $post_id );
+	if ( $post_id < 1 ) {
+		$post_id = get_the_ID();
+	}
+	if ( $post_id < 1 ) {
+		return array();
+	}
+
+	$permalink = get_permalink( $post_id );
+	$title     = get_the_title( $post_id );
+	if ( ! $permalink ) {
+		return array();
+	}
+
+	$encoded_url   = rawurlencode( $permalink );
+	$encoded_title = rawurlencode( $title );
+
+	return array(
+		'facebook' => array(
+			'url'   => 'https://www.facebook.com/sharer/sharer.php?u=' . $encoded_url,
+			'icon'  => 'fab fa-facebook-f',
+			'name'  => 'Facebook',
+			'label' => __( 'Share on Facebook', 'communicationstoday' ),
+		),
+		'twitter'  => array(
+			'url'   => 'https://twitter.com/intent/tweet?url=' . $encoded_url . '&text=' . $encoded_title,
+			'icon'  => 'fab fa-x-twitter',
+			'name'  => 'X',
+			'label' => __( 'Share on X (Twitter)', 'communicationstoday' ),
+		),
+		'linkedin' => array(
+			'url'   => 'https://www.linkedin.com/sharing/share-offsite/?url=' . $encoded_url,
+			'icon'  => 'fab fa-linkedin-in',
+			'name'  => 'LinkedIn',
+			'label' => __( 'Share on LinkedIn', 'communicationstoday' ),
+		),
+	);
+}
+
+/**
+ * Echo post share links (detail page).
+ *
+ * @param int $post_id Post ID.
+ * @return void
+ */
+function communicationstoday_render_post_share_links( $post_id = 0 ) {
+	$links = communicationstoday_get_post_share_links( $post_id );
+	if ( empty( $links ) ) {
+		return;
+	}
+	?>
+	<div class="article-share" role="group" aria-label="<?php esc_attr_e( 'Share this article', 'communicationstoday' ); ?>">
+		<p class="article-share-heading"><?php esc_html_e( 'Share this article', 'communicationstoday' ); ?></p>
+		<ul class="article-share-list">
+			<?php foreach ( $links as $slug => $link ) : ?>
+				<li class="article-share-item">
+					<a
+						href="<?php echo esc_url( $link['url'] ); ?>"
+						class="article-share-btn article-share-btn--<?php echo esc_attr( sanitize_key( $slug ) ); ?>"
+						target="_blank"
+						rel="noopener noreferrer"
+						aria-label="<?php echo esc_attr( $link['label'] ); ?>"
+					>
+						<i class="<?php echo esc_attr( $link['icon'] ); ?>" aria-hidden="true"></i>
+					</a>
+				</li>
+			<?php endforeach; ?>
+		</ul>
+	</div>
+	<?php
 }

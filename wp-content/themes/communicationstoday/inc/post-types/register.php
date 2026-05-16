@@ -10,3 +10,4 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 require get_template_directory() . '/inc/post-types/videos.php';
+require get_template_directory() . '/inc/post-types/5g-weekly-newsletters.php';

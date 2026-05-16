@@ -9,7 +9,7 @@
 
 if ( ! defined( '_S_VERSION' ) ) {
 	// Replace the version number of the theme on each release.
-	define( '_S_VERSION', '1.0.0' );
+	define( '_S_VERSION', '1.0.8' );
 }
 
 /**
@@ -120,11 +120,37 @@ add_action( 'after_setup_theme', 'communicationstoday_content_width', 0 );
  * Widgets & related theme hooks (sidebars, custom widgets, category image, think tank helpers).
  */
 require get_template_directory() . '/inc/functions/widgets.php';
+require get_template_directory() . '/inc/functions/editors-desk-widget.php';
+
+/**
+ * Category sticky posts (homepage sections + archives).
+ */
+require get_template_directory() . '/inc/functions/sticky-posts.php';
+
+/**
+ * Manual story order (menu_order + admin drag-and-drop).
+ */
+require get_template_directory() . '/inc/functions/post-order.php';
+
+/**
+ * Post view counter (frontend) + Views column in Posts list.
+ */
+require get_template_directory() . '/inc/functions/post-views.php';
+
+/**
+ * Weekly newsletter subscribe + activation emails.
+ */
+require get_template_directory() . '/inc/functions/newsletter.php';
 
 /**
  * Custom post types.
  */
 require get_template_directory() . '/inc/post-types/register.php';
+
+/**
+ * Newsletter CPT singles (pure HTML templates from zox-news).
+ */
+require get_template_directory() . '/inc/functions/newsletter-singles.php';
 
 /**
  * Live search (AJAX).
@@ -137,11 +163,35 @@ require get_template_directory() . '/inc/ajax-live-search.php';
 require get_template_directory() . '/inc/functions/impressions.php';
 
 /**
+ * Bulk image management & deletion (admin).
+ */
+require get_template_directory() . '/inc/functions/bulk-image-management.php';
+
+/**
+ * Duplicate post / page / CPT as draft (full meta + terms copy).
+ */
+require get_template_directory() . '/inc/functions/duplicate-post.php';
+
+/**
  * Enqueue scripts and styles.
  */
 function communicationstoday_scripts() {
 	wp_enqueue_style( 'communicationstoday-style', get_stylesheet_uri(), array(), _S_VERSION );
 	wp_style_add_data( 'communicationstoday-style', 'rtl', 'replace' );
+
+	wp_enqueue_style(
+		'font-awesome',
+		'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css',
+		array(),
+		'6.7.2'
+	);
+
+	wp_enqueue_style(
+		'swiper-bundle',
+		'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css',
+		array(),
+		'11.0.0'
+	);
 
 	wp_enqueue_script( 'communicationstoday-navigation', get_template_directory_uri() . '/js/navigation.js', array(), _S_VERSION, true );
 
@@ -159,29 +209,49 @@ function communicationstoday_scripts() {
 		_S_VERSION,
 		true
 	);
+
+	$theme_ajax_url = admin_url( 'admin-ajax.php' );
 	wp_localize_script(
 		'communicationstoday-custom',
-		'communicationstodaySearch',
+		'communicationstodayTheme',
 		array(
-			'ajaxUrl' => admin_url( 'admin-ajax.php' ),
-			'nonce'   => wp_create_nonce( 'communicationstoday_search' ),
-			'i18n'    => array(
-				'minChars' => __( 'Type at least 3 characters to search.', 'communicationstoday' ),
-				'loading'  => __( 'Searching…', 'communicationstoday' ),
-				'error'    => __( 'Something went wrong. Try again.', 'communicationstoday' ),
+			'ajaxUrl' => $theme_ajax_url,
+			'search'  => array(
+				'nonce' => wp_create_nonce( 'communicationstoday_search' ),
+				'i18n'  => array(
+					'minChars' => __( 'Type at least 3 characters to search.', 'communicationstoday' ),
+					'loading'  => __( 'Searching…', 'communicationstoday' ),
+					'error'    => __( 'Something went wrong. Try again.', 'communicationstoday' ),
+				),
+			),
+			'archiveLoadMore' => array(
+				'nonce' => wp_create_nonce( 'communicationstoday_archive_load_more' ),
+				'i18n'  => array(
+					'more'    => __( 'More posts', 'communicationstoday' ),
+					'loading' => __( 'Loading...', 'communicationstoday' ),
+					'error'   => __( 'Unable to load more posts.', 'communicationstoday' ),
+				),
 			),
 		)
 	);
+
+	wp_enqueue_script(
+		'communicationstoday-newsletter',
+		get_template_directory_uri() . '/asset/js/newsletter.js',
+		array(),
+		_S_VERSION,
+		true
+	);
 	wp_localize_script(
-		'communicationstoday-custom',
-		'communicationstodayArchiveLoadMore',
+		'communicationstoday-newsletter',
+		'communicationstodayNewsletter',
 		array(
-			'ajaxUrl' => admin_url( 'admin-ajax.php' ),
-			'nonce'   => wp_create_nonce( 'communicationstoday_archive_load_more' ),
+			'ajaxUrl' => $theme_ajax_url,
+			'nonce'   => wp_create_nonce( 'communicationstoday_newsletter' ),
 			'i18n'    => array(
-				'more'    => __( 'More posts', 'communicationstoday' ),
-				'loading' => __( 'Loading...', 'communicationstoday' ),
-				'error'   => __( 'Unable to load more posts.', 'communicationstoday' ),
+				'invalidEmail' => __( 'Please enter a valid email address.', 'communicationstoday' ),
+				'sending'      => __( 'Sending…', 'communicationstoday' ),
+				'error'        => __( 'Something went wrong. Please try again.', 'communicationstoday' ),
 			),
 		)
 	);
@@ -212,6 +282,11 @@ require get_template_directory() . '/inc/template-functions.php';
  * Sidebar off-canvas menu walker.
  */
 require get_template_directory() . '/inc/class-communicationstoday-sidebar-nav-walker.php';
+
+/**
+ * Primary header nav walker.
+ */
+require get_template_directory() . '/inc/class-communicationstoday-primary-nav-walker.php';
 
 /**
  * Customizer additions.

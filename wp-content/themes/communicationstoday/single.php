@@ -15,8 +15,8 @@ get_header();
 		<section class="article-detail-section">
 			<div class="container">
 				<div class="article-detail-layout">
-					<div class="article-content-wrapper">
-						<div class="article-date-wrapper">
+						<div class="article-content-wrapper<?php echo has_post_thumbnail() ? '' : ' article-content-wrapper11'; ?>">
+							<div class="article-date-wrapper">
 							<div class="article-header">
 								<?php
 								$categories      = get_the_category();
@@ -26,12 +26,13 @@ get_header();
 								<span class="article-date"><?php echo esc_html( get_the_date( 'M j, Y' ) ); ?></span>
 							</div>
 							<h1 class="detail-title"><?php the_title(); ?></h1>
+							<?php communicationstoday_render_post_share_links(); ?>
 						</div>
+						<?php if ( has_post_thumbnail() ) : ?>
 						<div class="article-right">
-							<?php if ( has_post_thumbnail() ) : ?>
-								<?php the_post_thumbnail( 'full', array( 'class' => 'w-100', 'alt' => the_title_attribute( array( 'echo' => false ) ) ) ); ?>
-							<?php endif; ?>
+							<?php the_post_thumbnail( 'full', array( 'class' => 'w-100', 'alt' => the_title_attribute( array( 'echo' => false ) ) ) ); ?>
 						</div>
+						<?php endif; ?>
 					</div>
 				</div>
 			</div>

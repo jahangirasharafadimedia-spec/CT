@@ -1,12 +1,24 @@
 // Dropdown functionality
 document.addEventListener('DOMContentLoaded', function() {
+    if (window.location.hash === '#newsletter-section') {
+        const newsletterSection = document.getElementById('newsletter-section');
+        if (newsletterSection) {
+            setTimeout(function () {
+                newsletterSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 300);
+        }
+    }
+
     // Get all dropdown items
     const dropdownItems = document.querySelectorAll('.nav-item.dropdown');
 
     // Add click event to each dropdown toggle
     dropdownItems.forEach(function(item) {
         const toggle = item.querySelector('.dropdown-toggle');
-        
+        if (!toggle) {
+            return;
+        }
+
         toggle.addEventListener('click', function(e) {
             e.preventDefault();
             
@@ -84,6 +96,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // TOP EVENTS Swiper — one instance per section (widget-safe)
+    if (typeof Swiper !== 'undefined') {
     document.querySelectorAll('.top-events-section').forEach(function (section) {
         const swiperEl = section.querySelector('.top-events-swiper');
         if (!swiperEl || swiperEl.swiper) {
@@ -122,8 +135,10 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+    }
 
     // Initialize PERSPECTIVE Swiper (one instance per .perspective-section — supports widget + static markup)
+    if (typeof Swiper !== 'undefined') {
     document.querySelectorAll('.perspective-section').forEach(function (section) {
         const swiperEl = section.querySelector('.perspective-swiper');
         if (!swiperEl || swiperEl.swiper) {
@@ -192,6 +207,7 @@ document.addEventListener('DOMContentLoaded', function() {
             },
         });
     });
+    }
 
     // Hamburger Menu Toggle
     const hamburgerIcon = document.querySelector('.hamburger-menu-icon');
@@ -305,6 +321,12 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Live search (header panel): 3+ chars, matches title, content, excerpt, ACF/post meta.
+    var communicationstodaySearch =
+        typeof communicationstodayTheme !== 'undefined' && communicationstodayTheme.search
+            ? Object.assign( { ajaxUrl: communicationstodayTheme.ajaxUrl }, communicationstodayTheme.search )
+            : typeof window.communicationstodaySearch !== 'undefined'
+              ? window.communicationstodaySearch
+              : undefined;
     if (typeof communicationstodaySearch !== 'undefined') {
         const liveSearchInput = document.getElementById('liveSearchInput');
         const liveSearchResults = document.getElementById('liveSearchResults');
@@ -378,6 +400,12 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Archive listing "More posts" button (AJAX append).
+    var communicationstodayArchiveLoadMore =
+        typeof communicationstodayTheme !== 'undefined' && communicationstodayTheme.archiveLoadMore
+            ? Object.assign( { ajaxUrl: communicationstodayTheme.ajaxUrl }, communicationstodayTheme.archiveLoadMore )
+            : typeof window.communicationstodayArchiveLoadMore !== 'undefined'
+              ? window.communicationstodayArchiveLoadMore
+              : undefined;
     if (typeof communicationstodayArchiveLoadMore !== 'undefined') {
         const moreBtn = document.querySelector('.archive-load-more-button');
         const postList = document.getElementById('archive-post-list');

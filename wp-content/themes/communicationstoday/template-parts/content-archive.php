@@ -14,12 +14,22 @@ if ( '' === $cat_label && 'post' === get_post_type() ) {
 	$cat_label = __( 'News', 'communicationstoday' );
 }
 
-$thumb_url = get_the_post_thumbnail_url( get_the_ID(), 'medium_large' );
-if ( ! $thumb_url ) {
-	$thumb_url = get_the_post_thumbnail_url( get_the_ID(), 'medium' );
+$has_thumb = has_post_thumbnail();
+$thumb_url = '';
+
+if ( $has_thumb ) {
+	$thumb_url = get_the_post_thumbnail_url( get_the_ID(), 'medium_large' );
+	if ( ! $thumb_url ) {
+		$thumb_url = get_the_post_thumbnail_url( get_the_ID(), 'medium' );
+	}
+	if ( ! $thumb_url ) {
+		$has_thumb = false;
+	}
 }
-if ( ! $thumb_url ) {
-	$thumb_url = get_template_directory_uri() . '/asset/img/4a5e7e0aed3b12697a186a692abd5914622822d6.png';
+
+$card_classes = array( 'listing-article-card' );
+if ( ! $has_thumb ) {
+	$card_classes[] = 'listing-article-card1';
 }
 
 $excerpt = get_the_excerpt();
@@ -29,12 +39,14 @@ if ( '' === trim( wp_strip_all_tags( (string) $excerpt ) ) ) {
 	$excerpt = wp_trim_words( wp_strip_all_tags( (string) $excerpt ), 45, '…' );
 }
 ?>
-<div id="post-<?php the_ID(); ?>" <?php post_class( 'listing-article-card' ); ?>>
+<div id="post-<?php the_ID(); ?>" <?php post_class( $card_classes ); ?>>
+	<?php if ( $has_thumb && $thumb_url ) : ?>
 	<div class="listing-article-image">
 		<a href="<?php the_permalink(); ?>" aria-hidden="true" tabindex="-1">
 			<img src="<?php echo esc_url( $thumb_url ); ?>" alt="" class="w-100" loading="lazy" decoding="async">
 		</a>
 	</div>
+	<?php endif; ?>
 	<div class="listing-article-content">
 		<h2 class="listing-article-title">
 			<a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>

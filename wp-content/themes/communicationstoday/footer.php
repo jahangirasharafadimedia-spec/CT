@@ -13,16 +13,18 @@
 ?>
 <footer class="main-footer">
     <!-- Newsletter Section -->
-    <div class="newsletter-section">
+    <div id="newsletter-section" class="newsletter-section">
         <div class="container">
-            <div class="newsletter-content" data-np-autofill-form-type="subscribe" data-np-watching="1">
-                <i class="fas fa-envelope newsletter-icon"></i>
-                <h2 class="newsletter-heading">Subscribe to our Weekly Newsletter</h2>
-                <p class="newsletter-subheading">Top stories, delivered to your inbox every week.</p>
-                <div class="newsletter-form">
-                    <input type="email" class="newsletter-input" placeholder="Your email" data-np-checked="1" data-np-autofill-field-type="email">
-                    <button class="newsletter-button" data-np-autofill-submit="">Subscribe now</button>
-                </div>
+            <div class="newsletter-content">
+                <i class="fas fa-envelope newsletter-icon" aria-hidden="true"></i>
+                <h2 class="newsletter-heading"><?php esc_html_e( 'Subscribe to our Weekly Newsletter', 'communicationstoday' ); ?></h2>
+                <p class="newsletter-subheading"><?php esc_html_e( 'Top stories, delivered to your inbox every week.', 'communicationstoday' ); ?></p>
+                <form class="newsletter-form" id="ct-newsletter-form" action="#" method="post" novalidate>
+                    <label class="screen-reader-text" for="ct-newsletter-email"><?php esc_html_e( 'Your email', 'communicationstoday' ); ?></label>
+                    <input type="email" id="ct-newsletter-email" name="email" class="newsletter-input" placeholder="<?php esc_attr_e( 'Your email', 'communicationstoday' ); ?>" required autocomplete="email">
+                    <button type="submit" class="newsletter-button"><?php esc_html_e( 'Subscribe now', 'communicationstoday' ); ?></button>
+                </form>
+                <p class="newsletter-form-message" id="ct-newsletter-message" role="status" aria-live="polite" hidden></p>
             </div>
         </div>
     </div>
