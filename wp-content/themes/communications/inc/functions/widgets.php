@@ -259,7 +259,10 @@ function communicationstoday_archive_mid_ad_has_image()
 		if ( preg_match( '/^communicationstoday_bottom_ad_banner-(\d+)$/', $widget_id, $matches ) ) {
 			$instances = get_option( 'widget_communicationstoday_bottom_ad_banner', array() );
 			$num       = (int) $matches[1];
-			if ( ! empty( $instances[ $num ]['attachment_id'] ) ) {
+			if (
+				! empty( $instances[ $num ]['attachment_id'] )
+				|| ! empty( $instances[ $num ]['mobile_attachment_id'] )
+			) {
 				$has_image = true;
 				return true;
 			}
@@ -355,7 +358,10 @@ function communicationstoday_get_mid_ad_banner_instance()
 		if ( preg_match( '/^communicationstoday_bottom_ad_banner-(\d+)$/', $widget_id, $matches ) ) {
 			$instances = get_option( 'widget_communicationstoday_bottom_ad_banner', array() );
 			$num       = (int) $matches[1];
-			if ( ! empty( $instances[ $num ]['attachment_id'] ) ) {
+			if (
+				! empty( $instances[ $num ]['attachment_id'] )
+				|| ! empty( $instances[ $num ]['mobile_attachment_id'] )
+			) {
 				return $instances[ $num ];
 			}
 		}
@@ -367,14 +373,15 @@ function communicationstoday_get_mid_ad_banner_instance()
 /**
  * Mid-ad banner image data from the widget instance.
  *
- * @return array{image_url: string, alt: string, link: string}
+ * @return array{image_url: string, mobile_image_url: string, alt: string, link: string}
  */
 function communicationstoday_get_mid_ad_banner_data()
 {
 	$data = array(
-		'image_url' => '',
-		'alt'       => __( 'Advertisement', 'communicationstoday' ),
-		'link'      => '#',
+		'image_url'        => '',
+		'mobile_image_url' => '',
+		'alt'              => __( 'Advertisement', 'communicationstoday' ),
+		'link'             => '#',
 	);
 
 	$instance = communicationstoday_get_mid_ad_banner_instance();
@@ -382,12 +389,29 @@ function communicationstoday_get_mid_ad_banner_data()
 		return $data;
 	}
 
-	$attachment_id = isset( $instance['attachment_id'] ) ? absint( $instance['attachment_id'] ) : 0;
-	if ( $attachment_id > 0 ) {
-		$image_url = wp_get_attachment_image_url( $attachment_id, 'full' );
-		if ( $image_url ) {
-			$data['image_url'] = $image_url;
+	$desktop_id = isset( $instance['attachment_id'] ) ? absint( $instance['attachment_id'] ) : 0;
+	$mobile_id  = isset( $instance['mobile_attachment_id'] ) ? absint( $instance['mobile_attachment_id'] ) : 0;
+
+	if ( $desktop_id > 0 ) {
+		$desktop_url = wp_get_attachment_image_url( $desktop_id, 'full' );
+		if ( $desktop_url ) {
+			$data['image_url'] = $desktop_url;
 		}
+	}
+
+	if ( $mobile_id > 0 ) {
+		$mobile_url = wp_get_attachment_image_url( $mobile_id, 'full' );
+		if ( $mobile_url ) {
+			$data['mobile_image_url'] = $mobile_url;
+		}
+	}
+
+	// Fallbacks so one upload still works on both viewports.
+	if ( '' === $data['mobile_image_url'] && '' !== $data['image_url'] ) {
+		$data['mobile_image_url'] = $data['image_url'];
+	}
+	if ( '' === $data['image_url'] && '' !== $data['mobile_image_url'] ) {
+		$data['image_url'] = $data['mobile_image_url'];
 	}
 
 	if ( ! empty( $instance['alt'] ) ) {
@@ -414,13 +438,14 @@ function communicationstoday_render_mobile_mid_ad()
 		return;
 	}
 
-	$banner = communicationstoday_get_mid_ad_banner_data();
-	if ( '' === $banner['image_url'] ) {
+	$banner     = communicationstoday_get_mid_ad_banner_data();
+	$image_url  = $banner['mobile_image_url'] ? $banner['mobile_image_url'] : $banner['image_url'];
+	if ( '' === $image_url ) {
 		return;
 	}
 	?>
-	<a href="<?php echo esc_url( $banner['link'] ); ?>" class="bottom-ad-banner container formobile_ad_banner" id="formobile_ad_banner">
-		<img src="<?php echo esc_url( $banner['image_url'] ); ?>" alt="<?php echo esc_attr( $banner['alt'] ); ?>" loading="lazy" decoding="async">
+	<a href="<?php echo esc_url( $banner['link'] ); ?>" class="bottom-ad-banner container formobile_ad_banner ct-responsive-ad" id="formobile_ad_banner">
+		<img class="ct-ad-mobile" src="<?php echo esc_url( $image_url ); ?>" alt="<?php echo esc_attr( $banner['alt'] ); ?>" loading="lazy" decoding="async">
 	</a>
 	<?php
 }
@@ -438,12 +463,13 @@ function communicationstoday_render_archive_mid_ad()
 		return;
 	}
 
-	$banner    = communicationstoday_get_mid_ad_banner_data();
-	$image_url = $banner['image_url'];
-	$alt       = $banner['alt'];
-	$link      = $banner['link'];
+	$banner           = communicationstoday_get_mid_ad_banner_data();
+	$desktop_image_url = $banner['image_url'];
+	$mobile_image_url  = $banner['mobile_image_url'] ? $banner['mobile_image_url'] : $banner['image_url'];
+	$alt               = $banner['alt'];
+	$link              = $banner['link'];
 
-	if ( '' === $image_url ) {
+	if ( '' === $desktop_image_url && '' === $mobile_image_url ) {
 		$html = communicationstoday_get_archive_mid_ad_html();
 		if ( '' === $html ) {
 			return;
@@ -459,8 +485,13 @@ function communicationstoday_render_archive_mid_ad()
 	?>
 	<div class="bottom-banner-wrapper" id="banner_ad_desk">
 		<div class="container">
-			<a href="<?php echo esc_url( $link ); ?>" class="bottom-ad-banner">
-				<img src="<?php echo esc_url( $image_url ); ?>" alt="<?php echo esc_attr( $alt ); ?>" loading="lazy" decoding="async">
+			<a href="<?php echo esc_url( $link ); ?>" class="bottom-ad-banner ct-responsive-ad">
+				<?php if ( '' !== $desktop_image_url ) : ?>
+					<img class="ct-ad-desktop" src="<?php echo esc_url( $desktop_image_url ); ?>" alt="<?php echo esc_attr( $alt ); ?>" loading="lazy" decoding="async">
+				<?php endif; ?>
+				<?php if ( '' !== $mobile_image_url ) : ?>
+					<img class="ct-ad-mobile" src="<?php echo esc_url( $mobile_image_url ); ?>" alt="<?php echo esc_attr( $alt ); ?>" loading="lazy" decoding="async">
+				<?php endif; ?>
 			</a>
 		</div>
 	</div>
@@ -958,11 +989,28 @@ class Communicationstoday_Think_Tank_Widget extends WP_Widget
 		$thumb_url  = '';
 		$main_link  = $category_link;
 		$img_alt    = '';
+		$cat_name   = '';
+		$post_title = '';
 
 		if ($category_id > 0) {
-			$img_alt   = get_cat_name($category_id);
+			$cat_name  = (string) get_cat_name($category_id);
+			$img_alt   = $cat_name;
 			$image_id  = communicationstoday_get_think_tank_category_image_attachment_id($category_id);
 			$thumb_url = $image_id ? (string) wp_get_attachment_image_url($image_id, 'large') : '';
+
+			if (function_exists('communicationstoday_get_posts_for_category_with_sticky')) {
+				$featured_posts = communicationstoday_get_posts_for_category_with_sticky($category_id, 1);
+				if (! empty($featured_posts) && $featured_posts[0] instanceof WP_Post) {
+					$featured_post = $featured_posts[0];
+					$post_title    = get_the_title($featured_post);
+					if ('' === $thumb_url) {
+						$thumb_url = (string) get_the_post_thumbnail_url($featured_post, 'large');
+					}
+					if ('' === $img_alt && $post_title) {
+						$img_alt = $post_title;
+					}
+				}
+			}
 		}
 
 	?>
@@ -976,8 +1024,20 @@ class Communicationstoday_Think_Tank_Widget extends WP_Widget
 				<div class="top-stories-content">
 					<div class="think_tank_content">
 						<?php if ($thumb_url) : ?>
-							<a href="<?php echo esc_url($main_link); ?>" class="top-story-card">
-								<img src="<?php echo esc_url($thumb_url); ?>" alt="<?php echo esc_attr($img_alt); ?>" class="w-100">
+							<a href="<?php echo esc_url($main_link); ?>" class="story-card think-tank-story-card">
+								<div class="story-image">
+									<img src="<?php echo esc_url($thumb_url); ?>" alt="<?php echo esc_attr($img_alt); ?>">
+								</div>
+								<div class="story-image-overlay">
+									<div class="story-content">
+										<?php if ('' !== $cat_name) : ?>
+											<span class="category-link"><?php echo esc_html($cat_name); ?></span>
+										<?php endif; ?>
+										<?php if ('' !== $post_title) : ?>
+											<h3 class="story-title"></h3>
+										<?php endif; ?>
+									</div>
+								</div>
 							</a>
 						<?php endif; ?>
 					</div>
@@ -1768,11 +1828,19 @@ class Communicationstoday_Top_Events_Videos_Widget extends WP_Widget
 				if ('' === $url) {
 					continue;
 				}
-				$thumb = get_the_post_thumbnail_url($post_id, 'medium_large');
-				if (! $thumb) {
-					$thumb = get_the_post_thumbnail_url($post_id, 'medium');
+				$thumb = '';
+				if ( function_exists( 'communicationstoday_get_video_card_image_url' ) ) {
+					$thumb = communicationstoday_get_video_card_image_url( $post_id, 'medium_large' );
+					if ( ! $thumb ) {
+						$thumb = communicationstoday_get_video_card_image_url( $post_id, 'medium' );
+					}
+				} else {
+					$thumb = get_the_post_thumbnail_url( $post_id, 'medium_large' );
+					if ( ! $thumb ) {
+						$thumb = get_the_post_thumbnail_url( $post_id, 'medium' );
+					}
 				}
-				if (! $thumb) {
+				if ( ! $thumb ) {
 					continue;
 				}
 				$duration = isset($details['duration']) ? trim((string) $details['duration']) : '';
@@ -1902,6 +1970,37 @@ abstract class Communicationstoday_Abstract_Attachment_Banner_Widget extends WP_
 	}
 
 	/**
+	 * Resolve desktop + mobile banner URLs from a widget instance.
+	 *
+	 * @param array<string, mixed> $instance Instance.
+	 * @return array{desktop: string, mobile: string}
+	 */
+	protected function get_responsive_banner_urls( $instance )
+	{
+		$desktop_id  = isset( $instance['attachment_id'] ) ? absint( $instance['attachment_id'] ) : 0;
+		$mobile_id   = isset( $instance['mobile_attachment_id'] ) ? absint( $instance['mobile_attachment_id'] ) : 0;
+		$desktop_url = $this->get_attachment_image_url( $desktop_id );
+		$mobile_url  = $this->get_attachment_image_url( $mobile_id );
+
+		// Legacy single image_url field.
+		if ( '' === $desktop_url && isset( $instance['image_url'] ) ) {
+			$desktop_url = esc_url( (string) $instance['image_url'] );
+		}
+
+		if ( '' === $mobile_url && '' !== $desktop_url ) {
+			$mobile_url = $desktop_url;
+		}
+		if ( '' === $desktop_url && '' !== $mobile_url ) {
+			$desktop_url = $mobile_url;
+		}
+
+		return array(
+			'desktop' => $desktop_url,
+			'mobile'  => $mobile_url,
+		);
+	}
+
+	/**
 	 * @param array<string, mixed> $instance Instance.
 	 * @param string               $class     CSS class.
 	 * @param bool                 $allow_link Optional target link.
@@ -1909,12 +2008,8 @@ abstract class Communicationstoday_Abstract_Attachment_Banner_Widget extends WP_
 	 */
 	protected function render_banner_output($instance, $class, $allow_link = false)
 	{
-		$attachment_id = isset($instance['attachment_id']) ? absint($instance['attachment_id']) : 0;
-		$image_url     = $this->get_attachment_image_url($attachment_id);
-		if ('' === $image_url && isset($instance['image_url'])) {
-			$image_url = esc_url((string) $instance['image_url']);
-		}
-		if ('' === $image_url) {
+		$urls = $this->get_responsive_banner_urls( $instance );
+		if ( '' === $urls['desktop'] && '' === $urls['mobile'] ) {
 			return;
 		}
 
@@ -1928,17 +2023,29 @@ abstract class Communicationstoday_Abstract_Attachment_Banner_Widget extends WP_
 			$link = isset($instance['link_url']) ? esc_url((string) $instance['link_url']) : '';
 		}
 
+		$classes = trim( $class . ' ct-responsive-ad' );
+
 		if ($allow_link && $link) {
-			echo '<a href="' . esc_url($link) . '" class="' . esc_attr($class) . '" target="_blank" rel="noopener noreferrer">';
+			echo '<a href="' . esc_url($link) . '" class="' . esc_attr($classes) . '" target="_blank" rel="noopener noreferrer">';
 		} else {
-			echo '<div class="' . esc_attr($class) . '">';
+			echo '<div class="' . esc_attr($classes) . '">';
 		}
 
-		printf(
-			'<img src="%1$s" alt="%2$s" loading="lazy" decoding="async">',
-			esc_url($image_url),
-			esc_attr($alt)
-		);
+		if ( '' !== $urls['desktop'] ) {
+			printf(
+				'<img class="ct-ad-desktop" src="%1$s" alt="%2$s" loading="lazy" decoding="async">',
+				esc_url( $urls['desktop'] ),
+				esc_attr( $alt )
+			);
+		}
+
+		if ( '' !== $urls['mobile'] ) {
+			printf(
+				'<img class="ct-ad-mobile" src="%1$s" alt="%2$s" loading="lazy" decoding="async">',
+				esc_url( $urls['mobile'] ),
+				esc_attr( $alt )
+			);
+		}
 
 		if ($allow_link && $link) {
 			echo '</a>';
@@ -2002,7 +2109,7 @@ class Communicationstoday_Archive_Side_Banner_Widget extends Communicationstoday
 }
 
 /**
- * Leaderboard top banner (site-wide) - image upload only (no click URL).
+ * Leaderboard top banner (site-wide) - separate desktop + mobile images.
  */
 class Communicationstoday_Leaderboard_Banner_Widget extends Communicationstoday_Abstract_Attachment_Banner_Widget
 {
@@ -2013,16 +2120,18 @@ class Communicationstoday_Leaderboard_Banner_Widget extends Communicationstoday_
 			'communicationstoday_leaderboard_banner',
 			esc_html__('Leaderboard banner', 'communicationstoday'),
 			array(
-				'description' => esc_html__('Top leaderboard image upload (no click URL). Place in “Leaderboard (top, site-wide)”.', 'communicationstoday'),
+				'description' => esc_html__('Top leaderboard with separate desktop and mobile images. Place in “Leaderboard (top, site-wide)”.', 'communicationstoday'),
 			)
 		);
 	}
 
 	public function form($instance)
 	{
-		$attachment_id = isset($instance['attachment_id']) ? absint($instance['attachment_id']) : 0;
-		$alt           = isset($instance['alt']) ? (string) $instance['alt'] : '';
-		$this->render_media_field('attachment_id', $attachment_id, __('Banner image', 'communicationstoday'));
+		$attachment_id        = isset($instance['attachment_id']) ? absint($instance['attachment_id']) : 0;
+		$mobile_attachment_id = isset($instance['mobile_attachment_id']) ? absint($instance['mobile_attachment_id']) : 0;
+		$alt                  = isset($instance['alt']) ? (string) $instance['alt'] : '';
+		$this->render_media_field('attachment_id', $attachment_id, __('Desktop banner', 'communicationstoday'));
+		$this->render_media_field('mobile_attachment_id', $mobile_attachment_id, __('Mobile banner', 'communicationstoday'));
 	?>
 		<p>
 			<label for="<?php echo esc_attr($this->get_field_id('alt')); ?>"><?php esc_html_e('Image alt text', 'communicationstoday'); ?></label>
@@ -2034,9 +2143,10 @@ class Communicationstoday_Leaderboard_Banner_Widget extends Communicationstoday_
 	public function update($new_instance, $old_instance)
 	{
 		unset($old_instance);
-		$instance                  = array();
-		$instance['attachment_id'] = isset($new_instance['attachment_id']) ? absint($new_instance['attachment_id']) : 0;
-		$instance['alt']           = isset($new_instance['alt']) ? sanitize_text_field(wp_unslash($new_instance['alt'])) : '';
+		$instance                         = array();
+		$instance['attachment_id']        = isset($new_instance['attachment_id']) ? absint($new_instance['attachment_id']) : 0;
+		$instance['mobile_attachment_id'] = isset($new_instance['mobile_attachment_id']) ? absint($new_instance['mobile_attachment_id']) : 0;
+		$instance['alt']                  = isset($new_instance['alt']) ? sanitize_text_field(wp_unslash($new_instance['alt'])) : '';
 		return $instance;
 	}
 
@@ -2049,7 +2159,7 @@ class Communicationstoday_Leaderboard_Banner_Widget extends Communicationstoday_
 }
 
 /**
- * Leaderboard bottom banner (archive mid ad) - image upload only (no click URL).
+ * Leaderboard bottom banner (archive mid ad) - separate desktop + mobile images.
  */
 class Communicationstoday_Bottom_Ad_Banner_Widget extends Communicationstoday_Abstract_Attachment_Banner_Widget
 {
@@ -2060,16 +2170,18 @@ class Communicationstoday_Bottom_Ad_Banner_Widget extends Communicationstoday_Ab
 			'communicationstoday_bottom_ad_banner',
 			esc_html__('Leaderboard banner (bottom)', 'communicationstoday'),
 			array(
-				'description' => esc_html__('Bottom leaderboard image upload (no click URL). For “Archive listing — mid ad”.', 'communicationstoday'),
+				'description' => esc_html__('Mid-ad banner with separate desktop and mobile images. For “Archive listing — mid ad”.', 'communicationstoday'),
 			)
 		);
 	}
 
 	public function form($instance)
 	{
-		$attachment_id = isset($instance['attachment_id']) ? absint($instance['attachment_id']) : 0;
-		$alt           = isset($instance['alt']) ? (string) $instance['alt'] : '';
-		$this->render_media_field('attachment_id', $attachment_id, __('Banner image', 'communicationstoday'));
+		$attachment_id        = isset($instance['attachment_id']) ? absint($instance['attachment_id']) : 0;
+		$mobile_attachment_id = isset($instance['mobile_attachment_id']) ? absint($instance['mobile_attachment_id']) : 0;
+		$alt                  = isset($instance['alt']) ? (string) $instance['alt'] : '';
+		$this->render_media_field('attachment_id', $attachment_id, __('Desktop banner', 'communicationstoday'));
+		$this->render_media_field('mobile_attachment_id', $mobile_attachment_id, __('Mobile banner', 'communicationstoday'));
 	?>
 		<p>
 			<label for="<?php echo esc_attr($this->get_field_id('alt')); ?>"><?php esc_html_e('Image alt text', 'communicationstoday'); ?></label>
@@ -2081,9 +2193,10 @@ class Communicationstoday_Bottom_Ad_Banner_Widget extends Communicationstoday_Ab
 	public function update($new_instance, $old_instance)
 	{
 		unset($old_instance);
-		$instance                  = array();
-		$instance['attachment_id'] = isset($new_instance['attachment_id']) ? absint($new_instance['attachment_id']) : 0;
-		$instance['alt']           = isset($new_instance['alt']) ? sanitize_text_field(wp_unslash($new_instance['alt'])) : '';
+		$instance                         = array();
+		$instance['attachment_id']        = isset($new_instance['attachment_id']) ? absint($new_instance['attachment_id']) : 0;
+		$instance['mobile_attachment_id'] = isset($new_instance['mobile_attachment_id']) ? absint($new_instance['mobile_attachment_id']) : 0;
+		$instance['alt']                  = isset($new_instance['alt']) ? sanitize_text_field(wp_unslash($new_instance['alt'])) : '';
 		return $instance;
 	}
 

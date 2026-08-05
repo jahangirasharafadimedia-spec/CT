@@ -70,6 +70,11 @@ body {
     transition: opacity 0.3s ease;
 }
 
+
+.top-stories .top-stories-grid.mb-30 {
+    display: none;
+}
+
 .hamburger-menu-icon:hover {
     opacity: 0.7;
 }
@@ -78,7 +83,7 @@ body {
     display: none;
 }
 
-.test-md{
+.test-md {
     display: none;
 }
 
@@ -89,11 +94,11 @@ header.header-container .container {
 
 .top-banner-center {
     position: relative;
-    left: -49px;
+    left: -70px;
 }
 
 
-#banner_ad_desk{
+#banner_ad_desk {
     display: block;
 }
 
@@ -124,16 +129,16 @@ header.header-container .container {
     left: 0;
 }
 
-.more_post{
+.more_post {
     margin-bottom: 50px;
     display: flex;
 }
 
-.listing_desktop{
-    padding: 10px 120px!important;
+.listing_desktop {
+    padding: 10px 120px !important;
 }
 
-.post_mobile{
+.post_mobile {
     display: none;
 }
 
@@ -212,12 +217,12 @@ header.header-container .container {
 }
 
 
-.perspective-featured-photo{
+.perspective-featured-photo {
     display: none !important;
 }
 
 
-.perspective-writer-photo{
+.perspective-writer-photo {
     display: block !important;
 }
 
@@ -681,9 +686,20 @@ body.admin-bar {
 }
 
 @media screen and (max-width: 600px) {
-    /* Admin bar is not fixed on small screens; keep banner at top of viewport. */
+
+    /*
+     * WP makes #wpadminbar position:absolute under 600px, which hides our
+     * fixed .top-banner under the bar at scroll-top. Keep the same 46px
+     * offset as tablet and pin the admin bar so the header stays below it.
+     */
     body.admin-bar {
-        --ct-admin-bar-offset: 0px;
+        --ct-admin-bar-offset: var(--wp-admin--admin-bar--height, 46px);
+    }
+
+    body.admin-bar #wpadminbar {
+        position: fixed !important;
+        top: 0;
+        width: 100%;
     }
 }
 
@@ -724,7 +740,30 @@ body.admin-bar {
 .top-banner-right {
     display: flex;
     align-items: center;
-    gap: 25px;
+    gap: 15px;
+}
+
+a.top-banner-social-link {
+    background: rgba(255, 255, 255, .15);
+    border-radius: 200px;
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+a.communicationstoday-social-youtube:hover {
+    background-color: red;
+}
+
+a.communicationstoday-social-twitter:hover {
+    background-color: black;
+}
+
+a.communicationstoday-social-linkedin:hover {
+    background-color: #0a66c2;
 }
 
 .top-banner-right i {
@@ -745,7 +784,7 @@ body.admin-bar {
 }
 
 .top-banner-right a.top-banner-social-link i {
-    font-size: 20px;
+    font-size: 17px;
     cursor: pointer;
     transition: opacity 0.3s;
 }
@@ -755,7 +794,7 @@ body.admin-bar {
     opacity: 0.7;
 }
 
-    /* Navigation Bar */
+/* Navigation Bar */
 .nav-bar {
     background-color: var(--primary-white);
     padding: 15px 20px;
@@ -884,6 +923,8 @@ body.admin-bar {
 
 .top-banner-center img {
     width: 350px;
+    top: 3px;
+    position: relative;
 }
 
 /* News Ticker — scrolls with page, never sticky */
@@ -944,7 +985,7 @@ body.admin-bar {
 .ticker-item {
     white-space: nowrap;
     font-family: var(--font-roboto-regular);
-    font-size: 14px;
+    font-size: 16px;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -1004,6 +1045,31 @@ body.admin-bar {
     width: 100%;
     height: auto;
     display: block;
+}
+
+/* Responsive ad images: desktop vs mobile */
+.ct-responsive-ad .ct-ad-desktop {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.ct-responsive-ad .ct-ad-mobile {
+    display: none;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+@media (max-width: 767px) {
+    .ct-responsive-ad .ct-ad-desktop {
+        display: none;
+    }
+
+    .ct-responsive-ad .ct-ad-mobile {
+        display: block;
+    }
 }
 
 /* Stories Section */
@@ -1174,7 +1240,7 @@ body.admin-bar {
 /* Top Stories */
 
 .top-stories {
-    padding: 20px 0 50px 0;
+    padding: 0px 0 30px 0;
 }
 
 .top-stories-grid {
@@ -1208,6 +1274,21 @@ body.admin-bar {
     width: 100%;
     overflow: hidden;
     position: relative;
+}
+
+.think_tank_content .think-tank-story-card {
+    height: 100%;
+    width: 100%;
+    background: transparent;
+}
+
+.think_tank_content .think-tank-story-card .story-image {
+    height: 100%;
+}
+
+.think_tank_content .think-tank-story-card .story-title {
+    width: 80%;
+    max-width: 520px;
 }
 
 .think_tank_content img {
@@ -1321,13 +1402,14 @@ body.admin-bar {
     transform: translateY(-5px);
 }
 
-.bottom-ad-banner-wrapper{
-    padding: 25px 0 10px 0 ;
+.bottom-ad-banner-wrapper {
+    padding: 25px 0 10px 0;
 }
 
-.wrapper-ads{
-     padding: 0px 0 15px 0 ;
+.wrapper-ads {
+    padding: 0px 0 15px 0;
 }
+
 .article-image {
     width: 100%;
     height: 280px;
@@ -1694,43 +1776,51 @@ body.admin-bar {
         padding: 30px 0;
     }
 
-    
-.perspective-featured-photo{
-    display: block !important;
-}
+
+    .perspective-featured-photo {
+        display: block !important;
+    }
 
 
-.perspective-writer-photo{
-    display: none !important;
-}
+    .perspective-writer-photo {
+        display: none !important;
+    }
 
-.perspective-listing-card .listing-article-image.perspective-featured-photo{
-    margin-bottom: 15px;
-}
- 
+    .perspective-listing-card .listing-article-image.perspective-featured-photo {
+        margin-bottom: 15px;
+    }
 
-#story-card1{
-    margin-bottom: 10px;
-}
 
-#formobile_ad_banner {
-    display: block;
-    padding: 10px 0;
-    width: 100%;
-    max-width: 100%;
-}
+    #story-card1 {
+        margin-bottom: 10px;
+    }
 
-#formobile_ad_banner img {
-    width: 100%;
-    height: auto;
-    object-fit: cover;
-    display: block;
-}
+    #formobile_ad_banner {
+        display: block;
+        padding: 10px 0;
+        width: 100%;
+        max-width: 100%;
+    }
 
-#banner_ad_desk,
-.home .bottom-banner-wrapper {
-    display: none;
-}
+    #formobile_ad_banner img {
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+        display: block;
+    }
+
+    #banner_ad_desk,
+    .home .bottom-banner-wrapper {
+        display: none;
+    }
+
+    /* Archives keep mid-ad on mobile; responsive imgs swap desktop/mobile. */
+    body.archive #banner_ad_desk,
+    body.archive .bottom-banner-wrapper,
+    body.post-type-archive #banner_ad_desk,
+    body.post-type-archive .bottom-banner-wrapper {
+        display: flex;
+    }
 
     .speaker-image img {
         height: 250px;
@@ -1972,7 +2062,8 @@ body.admin-bar {
     max-width: 100%;
 }
 
-.company-description,.footer-grid p {
+.company-description,
+.footer-grid p {
     font-family: var(--font-roboto-regular);
     font-size: 15px;
     line-height: 1.6;
@@ -1994,7 +2085,8 @@ body.admin-bar {
     gap: 5px;
 }
 
-.contact-label,.footer-grid h4 {
+.contact-label,
+.footer-grid h4 {
     font-family: var(--font-roboto);
     font-size: 16px;
     font-weight: 600;
@@ -2012,7 +2104,8 @@ body.admin-bar {
     opacity: 0.8;
 }
 
-.footer-column-title,.footer-grid h3 {
+.footer-column-title,
+.footer-grid h3 {
     font-family: var(--font-roboto);
     font-size: 18px;
     font-weight: 600;
@@ -2022,14 +2115,16 @@ body.admin-bar {
     letter-spacing: 0.5px;
 }
 
-.footer-links,.footer-grid ul {
+.footer-links,
+.footer-grid ul {
     list-style: none;
     display: flex;
     flex-direction: column;
     gap: 25px;
 }
 
-.footer-links li a,.footer-grid ul li a {
+.footer-links li a,
+.footer-grid ul li a {
     font-family: var(--font-roboto-regular);
     font-size: 15px;
     color: var(--text-white);
@@ -2038,7 +2133,8 @@ body.admin-bar {
     transition: opacity 0.3s ease, color 0.3s ease;
 }
 
-.footer-links li a:hover,.footer-grid ul li a:hover {
+.footer-links li a:hover,
+.footer-grid ul li a:hover {
     opacity: 1;
     color: var(--primary-blue);
 }
@@ -2100,7 +2196,8 @@ body.admin-bar {
     margin-bottom: 0px;
 }
 
-.footer-company-logo-link,.footer-grid img {
+.footer-company-logo-link,
+.footer-grid img {
     display: inline-block;
     margin-bottom: 10px;
 }
@@ -2138,7 +2235,7 @@ body.admin-bar {
 
 .detail-title {
     font-family: var(--font-oswald);
-    font-size: 32px;
+    font-size: 28px;
     font-weight: 600;
     color: var(--text-black);
     padding: 14px 0 8px;
@@ -2238,11 +2335,11 @@ body.admin-bar {
     transition: color 0.3s ease;
 }
 
-.article-date-wrapper{
+.article-date-wrapper {
     width: 40%;
 }
 
-.article-right{
+.article-right {
     width: 60%;
 }
 
@@ -2313,14 +2410,14 @@ body.admin-bar {
 
 
 
-.article-listing-layout{
-   display: flex;
-   gap: 20px;
-   align-items: start;
+.article-listing-layout {
+    display: flex;
+    gap: 20px;
+    align-items: start;
 }
 
-.article-listing-section{
-    padding: 20px 0 50px 0 ;
+.article-listing-section {
+    padding: 20px 0 50px 0;
 }
 
 .archive-page-header {
@@ -2373,7 +2470,7 @@ body.admin-bar {
 }
 
 
-.article-lisitng-banner{
+.article-lisitng-banner {
     width: 320px;
 }
 
@@ -2612,13 +2709,14 @@ body.admin-bar {
         padding: 0 15px;
     }
 
- .post_mobile{
+    .post_mobile {
         display: unset;
     }
 
-    .more_post{
+    .more_post {
         display: none;
     }
+
     .header-container {
         max-width: 100%;
         padding: 0px;
@@ -2639,7 +2737,7 @@ body.admin-bar {
 
     /* News Ticker */
     .ticker-label {
-        font-size: 12px;
+        font-size: 16px;
         padding: 5px 10px;
     }
 
@@ -2706,25 +2804,33 @@ body.admin-bar {
         width: 100%;
     }
 
-    .article-date-wrapper{
-    width: 100%;
-}
+    .article-date-wrapper {
+        width: 100%;
+    }
 
-.article-right{
-    width: 100%;
-}
-.bottom-ad-banner img, .top-ad-banner img{
+    .article-right {
+        width: 100%;
+    }
+
+    .bottom-ad-banner img,
+    .top-ad-banner img {
         object-fit: contain;
-}
+    }
 }
 
 /* Mobile View (up to 767px) */
 @media (max-width: 767px) {
+
+    .single-perspective-main .article-right img {
+        height: 200px !important;
+    }
+
+
     .container {
         padding: 0 15px;
     }
 
-    .listing-article-card{
+    .listing-article-card {
         display: block !important;
     }
 
@@ -2733,18 +2839,19 @@ body.admin-bar {
         flex-direction: column-reverse;
     }
 
-    .article-content-wrapper1{
+    .article-content-wrapper1 {
         grid-template-columns: 1fr;
     }
 
-    .article-detail-section{
+    .article-detail-section {
         padding-bottom: 30px;
     }
-    .article-detail-content{
+
+    .article-detail-content {
         padding: 30px 0;
     }
 
-    .article-detail-content-left{
+    .article-detail-content-left {
         width: 100%;
     }
 
@@ -2754,7 +2861,7 @@ body.admin-bar {
 
     /* Header */
     .top-banner {
-        padding: 12px 15px;
+        padding: 6px 15px;
     }
 
     .top-banner-left {
@@ -2774,9 +2881,10 @@ body.admin-bar {
 
 
     .top-banner-center img {
-        width: 195px;
-        margin-left: -20px;
+        width: 230px;
+        margin-left: 0px;
         margin-top: 4px;
+        top: 0;
     }
 
 
@@ -2890,7 +2998,7 @@ body.admin-bar {
 
     /* Top Stories */
     .top-stories {
-        padding: 20px 0 30px 0;
+        padding: 6px 0 30px 0;
     }
 
     .top-stories-content {
@@ -2945,7 +3053,7 @@ body.admin-bar {
     .top-events-section {
         padding: 30px 0;
         position: relative !important;
-     
+
     }
 
     .top-events-header {
@@ -3116,20 +3224,22 @@ body.admin-bar {
     }
 
 
-    .article-date-wrapper{
-    width: 100%;
-}
+    .article-date-wrapper {
+        width: 100%;
+    }
 
-.article-right{
-    width: 100%;
-}
-.bottom-ad-banner img, .top-ad-banner img{
+    .article-right {
+        width: 100%;
+    }
+
+    .bottom-ad-banner img,
+    .top-ad-banner img {
         object-fit: contain;
-}
+    }
 
-.bottom-ad-banner-wrapper {
-    padding: 0;
-}
+    .bottom-ad-banner-wrapper {
+        padding: 0;
+    }
 
 }
 
@@ -3224,16 +3334,18 @@ body.admin-bar {
     }
 
 
-    .article-date-wrapper{
-    width: 100%;
-}
+    .article-date-wrapper {
+        width: 100%;
+    }
 
-.article-right{
-    width: 100%;
-}
-.bottom-ad-banner img, .top-ad-banner img{
+    .article-right {
+        width: 100%;
+    }
+
+    .bottom-ad-banner img,
+    .top-ad-banner img {
         object-fit: contain;
-}
+    }
 
 
 }
@@ -3265,12 +3377,12 @@ body.archive .bottom-ad-banner {
     object-fit: cover;
 }
 
-.perspective-listing-card{
+.perspective-listing-card {
     grid-template-columns: 250px 1fr !important;
     align-items: center !important;
 }
 
-p.perspective-writer-name{
+p.perspective-writer-name {
     font-size: 15px !important;
     line-height: 1.5 !important;
     font-family: var(--font-roboto-regular);
@@ -3367,13 +3479,13 @@ p.perspective-writer-role {
 } */
 
 
-.listing-article-card1{
+.listing-article-card1 {
     grid-template-columns: 1fr !important;
-    padding:20px 10px;
+    padding: 20px 10px;
 }
 
 
-.article-content-wrapper11{
+.article-content-wrapper11 {
     grid-template-columns: 1fr;
 }
 
@@ -3473,11 +3585,12 @@ p.perspective-writer-role {
 
 /* Responsive Listing */
 @media (max-width: 968px) {
-    
 
-    .top-banner-center{
-        left:0 !important;
+
+    .top-banner-center {
+        left: 0 !important;
     }
+
     .listing-article-card {
         grid-template-columns: 280px 1fr;
         gap: 20px;
@@ -3498,9 +3611,10 @@ p.perspective-writer-role {
 }
 
 @media (max-width: 767px) {
-    .test-md{
+    .test-md {
         display: block;
     }
+
     .article-lisitng-content-wrapper {
         gap: 25px;
         padding: 0px 0;
@@ -3508,15 +3622,15 @@ p.perspective-writer-role {
         display: block;
     }
 
-    .archive-load-more-wrap{
+    .archive-load-more-wrap {
         margin-bottom: 28px;
     }
 
-    .article-lisitng-banner{
+    .article-lisitng-banner {
         width: 100%;
     }
 
-    .article-listing-layout{
+    .article-listing-layout {
         grid-template-columns: 1fr;
         display: block;
     }
@@ -3550,8 +3664,16 @@ p.perspective-writer-role {
         line-clamp: 2;
     }
 
-    .bottom-banner-wrapper{
+    .home .bottom-banner-wrapper,
+    .home #banner_ad_desk {
         display: none !important;
+    }
+
+    body.archive .bottom-banner-wrapper,
+    body.archive #banner_ad_desk,
+    body.post-type-archive .bottom-banner-wrapper,
+    body.post-type-archive #banner_ad_desk {
+        display: flex !important;
     }
 
     #formobile_ad_banner {

@@ -111,6 +111,11 @@
 								<?php communicationstoday_the_custom_logo_image(); ?>
 							</a>
 						</div>
+
+						<div class="nav-bar-left test-md">
+				
+						<i class="fas fa-search search-icon"></i>
+					</div>
 						
 					</div>
 				</div>
@@ -126,7 +131,6 @@
 			<div class="news-ticker">
 				<div class="ticker-container">
 					<div class="ticker-label">
-						<span><?php echo esc_html( communicationstoday_get_ticker_label() ); ?></span>
 						<i class="fas fa-bolt" aria-hidden="true"></i>
 					</div>
 					<div class="ticker-wrapper">

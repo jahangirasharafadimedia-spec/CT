@@ -1,30 +1,39 @@
 <?php
 /**
- * Archive listing card (category / tag / date / author).
+ * Archive listing card (category / tag / date / author / videos).
  *
  * @package Communicationstoday
  */
 
+$post_id    = get_the_ID();
+$post_type  = get_post_type( $post_id );
 $categories = get_the_category();
 $cat_label  = '';
 if ( ! empty( $categories ) ) {
 	$cat_label = $categories[0]->name;
 }
-if ( '' === $cat_label && 'post' === get_post_type() ) {
+if ( '' === $cat_label && 'post' === $post_type ) {
 	$cat_label = __( 'News', 'communicationstoday' );
 }
+if ( '' === $cat_label && 'ct_video' === $post_type ) {
+	$cat_label = __( 'Videos', 'communicationstoday' );
+}
 
-$has_thumb = has_post_thumbnail();
+$has_thumb = false;
 $thumb_url = '';
 
-if ( $has_thumb ) {
-	$thumb_url = get_the_post_thumbnail_url( get_the_ID(), 'medium_large' );
+if ( 'ct_video' === $post_type && function_exists( 'communicationstoday_get_video_card_image_url' ) ) {
+	$thumb_url = communicationstoday_get_video_card_image_url( $post_id, 'medium_large' );
 	if ( ! $thumb_url ) {
-		$thumb_url = get_the_post_thumbnail_url( get_the_ID(), 'medium' );
+		$thumb_url = communicationstoday_get_video_card_image_url( $post_id, 'medium' );
 	}
+	$has_thumb = ( '' !== $thumb_url );
+} elseif ( has_post_thumbnail( $post_id ) ) {
+	$thumb_url = get_the_post_thumbnail_url( $post_id, 'medium_large' );
 	if ( ! $thumb_url ) {
-		$has_thumb = false;
+		$thumb_url = get_the_post_thumbnail_url( $post_id, 'medium' );
 	}
+	$has_thumb = (bool) $thumb_url;
 }
 
 $card_classes = array( 'listing-article-card' );
@@ -34,7 +43,7 @@ if ( ! $has_thumb ) {
 
 $excerpt = get_the_excerpt();
 if ( '' === trim( wp_strip_all_tags( (string) $excerpt ) ) ) {
-	$excerpt = wp_trim_words( wp_strip_all_tags( (string) get_post_field( 'post_content', get_the_ID() ) ), 45, '…' );
+	$excerpt = wp_trim_words( wp_strip_all_tags( (string) get_post_field( 'post_content', $post_id ) ), 45, '…' );
 } else {
 	$excerpt = wp_trim_words( wp_strip_all_tags( (string) $excerpt ), 45, '…' );
 }

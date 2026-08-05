@@ -115,7 +115,7 @@ function communicationstoday_video_meta_box_callback( $post ) {
 		<label for="communicationstoday_video_duration"><strong><?php esc_html_e( 'Total time', 'communicationstoday' ); ?></strong></label><br>
 		<input type="text" class="regular-text" id="communicationstoday_video_duration" name="communicationstoday_video_duration" value="<?php echo esc_attr( (string) $duration ); ?>" placeholder="<?php esc_attr_e( 'e.g. 12:45 or 1:05:30', 'communicationstoday' ); ?>">
 	</p>
-	<p class="description"><?php esc_html_e( 'Use the Detail banner field below for the image on the video detail page. Use Featured image for listing thumbnails / video poster.', 'communicationstoday' ); ?></p>
+	<p class="description"><?php esc_html_e( 'Use the Video banner → Detail banner field for listing + detail images. Featured image is fallback / video poster.', 'communicationstoday' ); ?></p>
 	<?php
 }
 
@@ -170,7 +170,7 @@ function communicationstoday_register_video_acf_fields() {
 					'label'             => esc_html__( 'Detail banner', 'communicationstoday' ),
 					'name'              => 'detail_banner',
 					'type'              => 'image',
-					'instructions'      => esc_html__( 'Shown on the video detail page (right side). Featured image is used for listings and video poster.', 'communicationstoday' ),
+					'instructions'      => esc_html__( 'Shown on the video detail page and video listing cards. Featured image is used only as fallback / video poster.', 'communicationstoday' ),
 					'required'          => 0,
 					'return_format'     => 'id',
 					'preview_size'      => 'medium',
@@ -214,6 +214,31 @@ function communicationstoday_get_video_detail_banner_id( $post_id = 0 ) {
 	}
 
 	return is_numeric( $value ) ? absint( $value ) : 0;
+}
+
+/**
+ * Image for video listing / cards: detail_banner first, then featured image.
+ *
+ * @param int    $post_id Post ID.
+ * @param string $size    Image size.
+ * @return string Image URL or empty.
+ */
+function communicationstoday_get_video_card_image_url( $post_id = 0, $size = 'medium_large' ) {
+	$post_id = $post_id ? absint( $post_id ) : get_the_ID();
+	if ( ! $post_id ) {
+		return '';
+	}
+
+	$banner_id = communicationstoday_get_video_detail_banner_id( $post_id );
+	if ( $banner_id > 0 ) {
+		$url = wp_get_attachment_image_url( $banner_id, $size );
+		if ( $url ) {
+			return (string) $url;
+		}
+	}
+
+	$url = get_the_post_thumbnail_url( $post_id, $size );
+	return $url ? (string) $url : '';
 }
 
 /**
