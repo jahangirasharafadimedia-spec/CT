@@ -48,7 +48,7 @@ function communicationstoday_newsletter_single_suppress_debug_display() {
 add_action( 'template_redirect', 'communicationstoday_newsletter_single_suppress_debug_display', 0 );
 
 /**
- * Avoid slow/broken image_downsize() for array( 600 ) in newsletter-parts/content-posts.php.
+ * Fallback image_downsize() for legacy array( 600 ) width-only requests in newsletter templates.
  *
  * @param mixed $downsize Current downsize result.
  * @param int   $id       Attachment ID.
@@ -60,7 +60,11 @@ function communicationstoday_newsletter_image_downsize( $downsize, $id, $size ) 
 		return $downsize;
 	}
 
-	if ( ! is_array( $size ) || ! isset( $size[0] ) || isset( $size[1] ) ) {
+	if ( ! is_array( $size ) || ! isset( $size[0] ) ) {
+		return $downsize;
+	}
+
+	if ( isset( $size[1] ) && (int) $size[1] > 0 ) {
 		return $downsize;
 	}
 

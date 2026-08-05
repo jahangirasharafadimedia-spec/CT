@@ -1,8 +1,6 @@
 <?php
 /**
- * Archive pages: category, tag, author, date, post type (except templates like archive-ct_video.php).
- *
- * @link https://developer.wordpress.org/themes/basics/template-hierarchy/
+ * Video post type archive — same layout as category archives (e.g. /category/headlines/).
  *
  * @package Communicationstoday
  */
@@ -17,13 +15,7 @@ get_header();
 
 			<header class="archive-page-header">
 				<h1 class="listing-article-category">
-					<?php
-					if ( is_category() ) {
-						single_cat_title();
-					} else {
-						the_archive_title();
-					}
-					?>
+					<?php post_type_archive_title(); ?>
 				</h1>
 			</header>
 
@@ -68,7 +60,7 @@ get_header();
 
 				</div>
 
-				<div class="article-lisitng-banner<?php echo ( function_exists( 'communicationstoday_is_editors_desk_category_archive' ) && communicationstoday_is_editors_desk_category_archive() ) ? ' article-lisitng-banner--editors-desk' : ''; ?>">
+				<div class="article-lisitng-banner">
 					<?php communicationstoday_render_archive_listing_banner(); ?>
 				</div>
 

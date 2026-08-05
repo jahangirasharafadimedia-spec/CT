@@ -209,7 +209,7 @@ $body = '';
 									<td style="width: 600px;">
 										<a
 											href="<?php echo esc_url(get_permalink($data->ID)); ?>?utm_source=newsletter&utm_medium=email&utm_campaign=<?php echo $utm_campaign; ?>">
-											<?= get_the_post_thumbnail($data->ID, array(600)); ?>
+											<?= get_the_post_thumbnail( $data->ID, array( 600, 0 ) ); ?>
 										</a>
 									</td>
 

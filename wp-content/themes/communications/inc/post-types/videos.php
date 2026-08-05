@@ -46,7 +46,7 @@ function communicationstoday_register_video_post_type() {
 			'hierarchical'       => false,
 			'menu_position'      => 6,
 			'menu_icon'          => 'dashicons-video-alt3',
-			'supports'           => array( 'title', 'editor', 'thumbnail', 'excerpt' ),
+			'supports'           => array( 'title', 'editor', 'thumbnail', 'excerpt', 'page-attributes' ),
 		)
 	);
 
@@ -115,7 +115,7 @@ function communicationstoday_video_meta_box_callback( $post ) {
 		<label for="communicationstoday_video_duration"><strong><?php esc_html_e( 'Total time', 'communicationstoday' ); ?></strong></label><br>
 		<input type="text" class="regular-text" id="communicationstoday_video_duration" name="communicationstoday_video_duration" value="<?php echo esc_attr( (string) $duration ); ?>" placeholder="<?php esc_attr_e( 'e.g. 12:45 or 1:05:30', 'communicationstoday' ); ?>">
 	</p>
-	<p class="description"><?php esc_html_e( 'Use the Featured image box (sidebar) for the video poster / thumbnail.', 'communicationstoday' ); ?></p>
+	<p class="description"><?php esc_html_e( 'Use the Detail banner field below for the image on the video detail page. Use Featured image for listing thumbnails / video poster.', 'communicationstoday' ); ?></p>
 	<?php
 }
 
@@ -153,6 +153,70 @@ function communicationstoday_video_flush_rewrites() {
 add_action( 'after_switch_theme', 'communicationstoday_video_flush_rewrites' );
 
 /**
+ * Register ACF fields for videos.
+ */
+function communicationstoday_register_video_acf_fields() {
+	if ( ! function_exists( 'acf_add_local_field_group' ) ) {
+		return;
+	}
+
+	acf_add_local_field_group(
+		array(
+			'key'                   => 'group_ct_video_detail',
+			'title'                 => esc_html__( 'Video banner', 'communicationstoday' ),
+			'fields'                => array(
+				array(
+					'key'               => 'field_ct_video_detail_banner',
+					'label'             => esc_html__( 'Detail banner', 'communicationstoday' ),
+					'name'              => 'detail_banner',
+					'type'              => 'image',
+					'instructions'      => esc_html__( 'Shown on the video detail page (right side). Featured image is used for listings and video poster.', 'communicationstoday' ),
+					'required'          => 0,
+					'return_format'     => 'id',
+					'preview_size'      => 'medium',
+					'library'           => 'all',
+					'mime_types'        => 'jpg,jpeg,png,webp,gif',
+				),
+			),
+			'location'              => array(
+				array(
+					array(
+						'param'    => 'post_type',
+						'operator' => '==',
+						'value'    => 'ct_video',
+					),
+				),
+			),
+			'menu_order'            => 0,
+			'position'              => 'normal',
+			'style'                 => 'default',
+			'label_placement'       => 'top',
+			'instruction_placement' => 'label',
+			'active'                => true,
+		)
+	);
+}
+add_action( 'acf/init', 'communicationstoday_register_video_acf_fields' );
+
+/**
+ * @param int $post_id Post ID.
+ * @return int Attachment ID for detail banner, or 0.
+ */
+function communicationstoday_get_video_detail_banner_id( $post_id = 0 ) {
+	$post_id = $post_id ? absint( $post_id ) : get_the_ID();
+	if ( ! $post_id || ! function_exists( 'get_field' ) ) {
+		return 0;
+	}
+
+	$value = get_field( 'detail_banner', $post_id );
+	if ( function_exists( 'communicationstoday_acf_image_value_to_attachment_id' ) ) {
+		return communicationstoday_acf_image_value_to_attachment_id( $value );
+	}
+
+	return is_numeric( $value ) ? absint( $value ) : 0;
+}
+
+/**
  * @param int $post_id Post ID.
  * @return array{url: string, duration: string}
  */
@@ -162,4 +226,39 @@ function communicationstoday_get_video_details( $post_id ) {
 		'url'      => $post_id ? (string) get_post_meta( $post_id, COMMUNICATIONSTODAY_VIDEO_URL_META, true ) : '',
 		'duration' => $post_id ? (string) get_post_meta( $post_id, COMMUNICATIONSTODAY_VIDEO_DURATION_META, true ) : '',
 	);
+}
+
+/**
+ * Output video player markup for a video post.
+ *
+ * @param int $post_id Post ID.
+ */
+function communicationstoday_render_video_player( $post_id = 0 ) {
+	$post_id   = $post_id ? absint( $post_id ) : get_the_ID();
+	$details   = communicationstoday_get_video_details( $post_id );
+	$video_url = $details['url'];
+
+	if ( ! $video_url ) {
+		return;
+	}
+
+	$poster_id = get_post_thumbnail_id( $post_id );
+	$poster    = $poster_id ? wp_get_attachment_image_url( $poster_id, 'large' ) : '';
+
+	$embed = wp_oembed_get( $video_url, array( 'width' => 848 ) );
+	if ( $embed ) {
+		echo '<div class="video-embed-responsive">' . $embed . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	} elseif ( preg_match( '/\.(mp4|webm|ogg)(\?.*)?$/i', $video_url ) ) {
+		?>
+		<video class="w-100 video-player-native" controls playsinline <?php echo $poster ? 'poster="' . esc_url( $poster ) . '"' : ''; ?>>
+			<source src="<?php echo esc_url( $video_url ); ?>">
+		</video>
+		<?php
+	} else {
+		printf(
+			'<p><a class="button" href="%1$s" target="_blank" rel="noopener noreferrer">%2$s</a></p>',
+			esc_url( $video_url ),
+			esc_html__( 'Open video', 'communicationstoday' )
+		);
+	}
 }

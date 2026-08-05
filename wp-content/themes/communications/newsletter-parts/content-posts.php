@@ -21,7 +21,7 @@ $post_id = get_the_ID();
 								<tr>
 									<td style="width: 600px;">
 										<a href="<?php echo esc_url( get_permalink($post_id)); ?>?utm_source=newsletter&utm_medium=email&utm_campaign=<?php echo $utm_campaign; ?>">
-											<?= get_the_post_thumbnail( $post_id, array( 600) ); ?>												</a>
+											<?= get_the_post_thumbnail( $post_id, array( 600, 0 ) ); ?>												</a>
 										</td>
 
 									</tr>

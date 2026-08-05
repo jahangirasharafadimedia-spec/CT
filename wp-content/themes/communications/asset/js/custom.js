@@ -473,47 +473,81 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Sticky Header Container Functionality
-    const headerContainer = document.querySelector('.header-container');
-    
-    if (headerContainer) {
+    // Sticky header: top-banner always fixed, nav-bar sticky on scroll-up only, ticker never sticky.
+    const topBanner = document.querySelector('.top-banner');
+    const topBannerSpacer = document.querySelector('.top-banner-spacer');
+    const navBar = document.querySelector('.nav-bar');
+
+    if (topBanner && navBar) {
         let lastScrollTop = 0;
         let ticking = false;
-        const headerHeight = headerContainer.offsetHeight;
-        
+        let navSticky = false;
+
+        const spacer = document.createElement('div');
+        spacer.className = 'nav-bar-sticky-spacer';
+        spacer.setAttribute('aria-hidden', 'true');
+        navBar.parentNode.insertBefore(spacer, navBar.nextSibling);
+
+        function syncTopBannerHeight() {
+            const height = Math.ceil(topBanner.getBoundingClientRect().height);
+            document.documentElement.style.setProperty('--ct-top-banner-height', height + 'px');
+            if (topBannerSpacer) {
+                topBannerSpacer.style.height = height + 'px';
+            }
+            return height;
+        }
+
+        function setNavSticky(active) {
+            if (active === navSticky) {
+                return;
+            }
+            navSticky = active;
+            if (active) {
+                spacer.style.height = navBar.offsetHeight + 'px';
+                spacer.classList.add('is-active');
+                navBar.classList.add('nav-bar-sticky');
+            } else {
+                navBar.classList.remove('nav-bar-sticky');
+                spacer.classList.remove('is-active');
+                spacer.style.height = '0';
+            }
+        }
+
         function handleScroll() {
+            syncTopBannerHeight();
+
             const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-            
-            if (scrollTop > 0) {
-                headerContainer.classList.add('sticky-active');
-                // Add padding to body to prevent content jump
-                document.body.style.paddingTop = headerHeight + 'px';
-            } else {
-                headerContainer.classList.remove('sticky-active');
-                document.body.style.paddingTop = '0';
+            const scrollingUp = scrollTop < lastScrollTop;
+            const pastTop = scrollTop > 40;
+
+            // At page top: nav in normal flow. Scroll down: nav scrolls away. Scroll up: pin nav under banner.
+            if (scrollTop <= 8) {
+                setNavSticky(false);
+            } else if (scrollingUp && pastTop) {
+                setNavSticky(true);
+            } else if (!scrollingUp) {
+                setNavSticky(false);
             }
-            
-            // Hide/show on scroll down/up (optional)
-            if (scrollTop > lastScrollTop && scrollTop > 100) {
-                // Scrolling down - hide header
-                headerContainer.style.transform = 'translateY(-100%)';
-            } else {
-                // Scrolling up - show header
-                headerContainer.style.transform = 'translateY(0)';
-            }
-            
+
             lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
             ticking = false;
         }
-        
-        window.addEventListener('scroll', function() {
+
+        window.addEventListener('scroll', function () {
             if (!ticking) {
                 window.requestAnimationFrame(handleScroll);
                 ticking = true;
             }
         }, { passive: true });
-        
-        // Initial check
+
+        window.addEventListener('resize', function () {
+            syncTopBannerHeight();
+            if (navSticky) {
+                spacer.style.height = navBar.offsetHeight + 'px';
+            }
+        }, { passive: true });
+
+        syncTopBannerHeight();
         handleScroll();
     }
 

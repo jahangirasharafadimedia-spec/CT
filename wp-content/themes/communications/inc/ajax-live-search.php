@@ -267,11 +267,16 @@ function communicationstoday_ajax_archive_load_more() {
 
 	$wpq = new WP_Query( $query );
 
+	$template_slug = 'archive';
+	if ( function_exists( 'communicationstoday_is_perspective_archive_query' ) && communicationstoday_is_perspective_archive_query( $query ) ) {
+		$template_slug = 'archive-perspective';
+	}
+
 	ob_start();
 	if ( $wpq->have_posts() ) {
 		while ( $wpq->have_posts() ) {
 			$wpq->the_post();
-			get_template_part( 'template-parts/content', 'archive' );
+			get_template_part( 'template-parts/content', $template_slug );
 		}
 	}
 	wp_reset_postdata();

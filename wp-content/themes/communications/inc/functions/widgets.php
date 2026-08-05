@@ -205,6 +205,17 @@ function communicationstoday_set_archive_stories_grid_post_ids( array $post_ids 
 }
 
 /**
+ * Whether this request is rendering legacy widgets via the block editor REST API.
+ * Nested dynamic_sidebar() during preview can recurse and break all widget blocks.
+ *
+ * @return bool
+ */
+function communicationstoday_is_widget_preview_request()
+{
+	return ( defined( 'REST_REQUEST' ) && REST_REQUEST );
+}
+
+/**
  * Cached HTML for the archive mid-ad sidebar.
  *
  * @return string
@@ -212,6 +223,10 @@ function communicationstoday_set_archive_stories_grid_post_ids( array $post_ids 
 function communicationstoday_get_archive_mid_ad_html()
 {
 	static $html = null;
+
+	if ( communicationstoday_is_widget_preview_request() ) {
+		return '';
+	}
 
 	if ( null !== $html ) {
 		return $html;
@@ -327,22 +342,129 @@ function communicationstoday_render_archive_stories_grid( array $story_posts, $c
 }
 
 /**
- * Optional ad after stories grid on archives (wrapped in .bottom-ad-banner-wrapper).
+ * Leaderboard bottom banner widget instance from the mid-ad sidebar.
+ *
+ * @return array<string, mixed>|null
  */
-function communicationstoday_render_archive_mid_ad()
+function communicationstoday_get_mid_ad_banner_instance()
 {
+	$sidebar_widgets = wp_get_sidebars_widgets();
+	$widget_ids      = ! empty( $sidebar_widgets['archive-listing-mid-ad'] ) ? $sidebar_widgets['archive-listing-mid-ad'] : array();
+
+	foreach ( $widget_ids as $widget_id ) {
+		if ( preg_match( '/^communicationstoday_bottom_ad_banner-(\d+)$/', $widget_id, $matches ) ) {
+			$instances = get_option( 'widget_communicationstoday_bottom_ad_banner', array() );
+			$num       = (int) $matches[1];
+			if ( ! empty( $instances[ $num ]['attachment_id'] ) ) {
+				return $instances[ $num ];
+			}
+		}
+	}
+
+	return null;
+}
+
+/**
+ * Mid-ad banner image data from the widget instance.
+ *
+ * @return array{image_url: string, alt: string, link: string}
+ */
+function communicationstoday_get_mid_ad_banner_data()
+{
+	$data = array(
+		'image_url' => '',
+		'alt'       => __( 'Advertisement', 'communicationstoday' ),
+		'link'      => '#',
+	);
+
+	$instance = communicationstoday_get_mid_ad_banner_instance();
+	if ( ! is_array( $instance ) ) {
+		return $data;
+	}
+
+	$attachment_id = isset( $instance['attachment_id'] ) ? absint( $instance['attachment_id'] ) : 0;
+	if ( $attachment_id > 0 ) {
+		$image_url = wp_get_attachment_image_url( $attachment_id, 'full' );
+		if ( $image_url ) {
+			$data['image_url'] = $image_url;
+		}
+	}
+
+	if ( ! empty( $instance['alt'] ) ) {
+		$data['alt'] = sanitize_text_field( (string) $instance['alt'] );
+	}
+
+	if ( ! empty( $instance['link_url'] ) ) {
+		$data['link'] = esc_url( (string) $instance['link_url'] );
+	}
+
+	return $data;
+}
+
+/**
+ * Mobile mid-ad after the first homepage story (hidden on desktop via CSS).
+ */
+function communicationstoday_render_mobile_mid_ad()
+{
+	if ( communicationstoday_is_widget_preview_request() ) {
+		return;
+	}
+
 	if ( ! communicationstoday_archive_mid_ad_has_image() ) {
 		return;
 	}
 
-	$html = communicationstoday_get_archive_mid_ad_html();
-	if ( '' === $html ) {
+	$banner = communicationstoday_get_mid_ad_banner_data();
+	if ( '' === $banner['image_url'] ) {
+		return;
+	}
+	?>
+	<a href="<?php echo esc_url( $banner['link'] ); ?>" class="bottom-ad-banner container formobile_ad_banner" id="formobile_ad_banner">
+		<img src="<?php echo esc_url( $banner['image_url'] ); ?>" alt="<?php echo esc_attr( $banner['alt'] ); ?>" loading="lazy" decoding="async">
+	</a>
+	<?php
+}
+
+/**
+ * Optional ad after stories grid (homepage desktop + archives).
+ */
+function communicationstoday_render_archive_mid_ad()
+{
+	if ( communicationstoday_is_widget_preview_request() ) {
 		return;
 	}
 
-	echo '<div class="bottom-ad-banner-wrapper">';
-	echo $html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-	echo '</div>';
+	if ( ! communicationstoday_archive_mid_ad_has_image() ) {
+		return;
+	}
+
+	$banner    = communicationstoday_get_mid_ad_banner_data();
+	$image_url = $banner['image_url'];
+	$alt       = $banner['alt'];
+	$link      = $banner['link'];
+
+	if ( '' === $image_url ) {
+		$html = communicationstoday_get_archive_mid_ad_html();
+		if ( '' === $html ) {
+			return;
+		}
+		echo '<div class="bottom-banner-wrapper" id="banner_ad_desk">';
+		echo '<div class="container">';
+		echo $html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo '</div>';
+		echo '</div>';
+		return;
+	}
+
+	?>
+	<div class="bottom-banner-wrapper" id="banner_ad_desk">
+		<div class="container">
+			<a href="<?php echo esc_url( $link ); ?>" class="bottom-ad-banner">
+				<img src="<?php echo esc_url( $image_url ); ?>" alt="<?php echo esc_attr( $alt ); ?>" loading="lazy" decoding="async">
+			</a>
+		</div>
+	</div>
+	<?php
 }
 
 /**
@@ -672,6 +794,7 @@ class Communicationstoday_Homepage_Stories_Widget extends WP_Widget
 		} ?>
 		<div class="stories-grid">
 			<?php
+			$story_index = 0;
 			foreach ($story_posts as $story_post) :
 				$post_id = $story_post->ID;
 				setup_postdata($story_post);
@@ -694,6 +817,10 @@ class Communicationstoday_Homepage_Stories_Widget extends WP_Widget
 					</div>
 				</a>
 			<?php
+				if ( 0 === $story_index && function_exists( 'communicationstoday_render_mobile_mid_ad' ) ) {
+					communicationstoday_render_mobile_mid_ad();
+				}
+				++$story_index;
 			endforeach;
 			wp_reset_postdata();
 			?>
@@ -1363,8 +1490,12 @@ class Communicationstoday_Perspective_Swiper_Widget extends WP_Widget
 						</div>
 					</div>
 					<div class="perspective-navigation">
-						<div class="swiper-button-prev perspective-prev" tabindex="0" role="button" aria-label="<?php esc_attr_e('Previous slide', 'communicationstoday'); ?>" aria-controls="<?php echo esc_attr($wrapper_id); ?>"></div>
-						<div class="swiper-button-next perspective-next" tabindex="0" role="button" aria-label="<?php esc_attr_e('Next slide', 'communicationstoday'); ?>" aria-controls="<?php echo esc_attr($wrapper_id); ?>"></div>
+						<button type="button" class="perspective-prev" aria-label="<?php esc_attr_e('Previous slide', 'communicationstoday'); ?>" aria-controls="<?php echo esc_attr($wrapper_id); ?>">
+							<i class="fas fa-chevron-left" aria-hidden="true"></i>
+						</button>
+						<button type="button" class="perspective-next" aria-label="<?php esc_attr_e('Next slide', 'communicationstoday'); ?>" aria-controls="<?php echo esc_attr($wrapper_id); ?>">
+							<i class="fas fa-chevron-right" aria-hidden="true"></i>
+						</button>
 					</div>
 				</div>
 			</div>
@@ -1673,8 +1804,12 @@ class Communicationstoday_Top_Events_Videos_Widget extends WP_Widget
 				<div class="top-events-header">
 					<span class="category-link1"><?php echo esc_html($header_label); ?></span>
 					<div class="top-events-navigation">
-						<div class="swiper-button-prev top-events-prev" tabindex="0" role="button" aria-label="<?php esc_attr_e('Previous slide', 'communicationstoday'); ?>" aria-controls="<?php echo esc_attr($wrapper_id); ?>"></div>
-						<div class="swiper-button-next top-events-next" tabindex="0" role="button" aria-label="<?php esc_attr_e('Next slide', 'communicationstoday'); ?>" aria-controls="<?php echo esc_attr($wrapper_id); ?>"></div>
+						<button type="button" class="top-events-prev" aria-label="<?php esc_attr_e('Previous slide', 'communicationstoday'); ?>" aria-controls="<?php echo esc_attr($wrapper_id); ?>">
+							<i class="fas fa-chevron-left" aria-hidden="true"></i>
+						</button>
+						<button type="button" class="top-events-next" aria-label="<?php esc_attr_e('Next slide', 'communicationstoday'); ?>" aria-controls="<?php echo esc_attr($wrapper_id); ?>">
+							<i class="fas fa-chevron-right" aria-hidden="true"></i>
+						</button>
 					</div>
 				</div>
 				<div class="swiper top-events-swiper">

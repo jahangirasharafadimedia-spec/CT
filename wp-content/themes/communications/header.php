@@ -95,24 +95,73 @@
 			<div class="top-banner">
 				<div class="container">
 					<div class="top-banner-content">
-						<div class="top-banner-left">
-							<i class="fas fa-bars hamburger-menu-icon"></i>
-							<i class="fas fa-search search-icon"></i>
+					<div class="nav-bar-left test-md">
+						<i class="fas fa-bars hamburger-menu-icon"></i>
+						
+					</div>
+					
+						<div class="top-banner-right">
+							<?php communicationstoday_render_social_links( 'top-banner-social-link', array( 'linkedin', 'twitter', 'youtube' ) ); ?>
+						
+						
+						
 						</div>
 						<div class="top-banner-center">
 							<a href="<?php echo esc_url( home_url( '/' ) ); ?>">
 								<?php communicationstoday_the_custom_logo_image(); ?>
 							</a>
 						</div>
-						<div class="top-banner-right">
-							<?php communicationstoday_render_social_links( 'top-banner-social-link', array( 'linkedin', 'twitter', 'youtube' ) ); ?>
-						</div>
+						
 					</div>
 				</div>
 			</div>
 
+			<div class="top-banner-spacer" aria-hidden="true"></div>
+
+			<?php
+			$communicationstoday_ticker_posts = communicationstoday_get_ticker_posts();
+			if ( ! empty( $communicationstoday_ticker_posts ) ) :
+				?>
+			<!-- News Ticker -->
+			<div class="news-ticker">
+				<div class="ticker-container">
+					<div class="ticker-label">
+						<span><?php echo esc_html( communicationstoday_get_ticker_label() ); ?></span>
+						<i class="fas fa-bolt" aria-hidden="true"></i>
+					</div>
+					<div class="ticker-wrapper">
+						<div class="ticker-content">
+							<?php
+							$ticker_i = 0;
+							foreach ( $communicationstoday_ticker_posts as $communicationstoday_ticker_post ) :
+								if ( ! $communicationstoday_ticker_post instanceof WP_Post ) {
+									continue;
+								}
+								if ( $ticker_i > 0 ) {
+									echo '<div class="ticker-separator"></div>';
+								}
+								++$ticker_i;
+								?>
+							<a href="<?php echo esc_url( get_permalink( $communicationstoday_ticker_post ) ); ?>" class="ticker-item"><?php echo esc_html( get_the_title( $communicationstoday_ticker_post ) ); ?></a>
+								<?php
+							endforeach;
+							?>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- End of News Ticker -->
+				<?php
+			endif;
+			?>
+
 			<div class="nav-bar">
 				<div class="container">
+					<div class="nav-bar-container">
+					<div class="nav-bar-left">
+						<i class="fas fa-bars hamburger-menu-icon"></i>
+						
+					</div>
 					<?php
 					if ( has_nav_menu( 'menu-1' ) ) {
 						wp_nav_menu(
@@ -145,46 +194,14 @@
 						<?php
 					}
 					?>
+					<div class="nav-bar-left">
+				
+						<i class="fas fa-search search-icon"></i>
+					</div>
+					</div>
 				</div>
 			</div>
 		</header>
 		<!-- End of Header -->
-
-		<?php
-		$communicationstoday_ticker_posts = communicationstoday_get_ticker_posts();
-		if ( ! empty( $communicationstoday_ticker_posts ) ) :
-			?>
-		<!-- News Ticker -->
-		<div class="news-ticker">
-			<div class="ticker-container">
-				<div class="ticker-label">
-					<span><?php echo esc_html( communicationstoday_get_ticker_label() ); ?></span>
-					<i class="fas fa-bolt" aria-hidden="true"></i>
-				</div>
-				<div class="ticker-wrapper">
-					<div class="ticker-content">
-						<?php
-						$ticker_i = 0;
-						foreach ( $communicationstoday_ticker_posts as $communicationstoday_ticker_post ) :
-							if ( ! $communicationstoday_ticker_post instanceof WP_Post ) {
-								continue;
-							}
-							if ( $ticker_i > 0 ) {
-								echo '<div class="ticker-separator"></div>';
-							}
-							++$ticker_i;
-							?>
-						<a href="<?php echo esc_url( get_permalink( $communicationstoday_ticker_post ) ); ?>" class="ticker-item"><?php echo esc_html( get_the_title( $communicationstoday_ticker_post ) ); ?></a>
-							<?php
-						endforeach;
-						?>
-					</div>
-				</div>
-			</div>
-		</div>
-		<!-- End of News Ticker -->
-			<?php
-		endif;
-		?>
 
 		<?php communicationstoday_render_leaderboard_banner(); ?>

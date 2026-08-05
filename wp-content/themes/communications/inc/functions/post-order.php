@@ -113,7 +113,7 @@ function communicationstoday_archive_posts_orderby_menu_order( $query ) {
 		return;
 	}
 
-	if ( ! is_category() ) {
+	if ( ! is_category() && ! is_post_type_archive( 'ct_video' ) ) {
 		return;
 	}
 

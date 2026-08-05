@@ -90,8 +90,8 @@ function communicationstoday_get_social_networks() {
 			'label' => __( 'LinkedIn', 'communicationstoday' ),
 		),
 		'twitter'  => array(
-			'icon'  => 'fab fa-twitter',
-			'label' => __( 'Twitter', 'communicationstoday' ),
+			'icon'  => 'fab fa-x-twitter',
+			'label' => __( 'X', 'communicationstoday' ),
 		),
 		'youtube'  => array(
 			'icon'  => 'fab fa-youtube',

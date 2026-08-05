@@ -121,6 +121,7 @@ add_action( 'after_setup_theme', 'communicationstoday_content_width', 0 );
  */
 require get_template_directory() . '/inc/functions/widgets.php';
 require get_template_directory() . '/inc/functions/editors-desk-widget.php';
+require get_template_directory() . '/inc/functions/perspective-archive.php';
 
 /**
  * Category sticky posts (homepage sections + archives).
